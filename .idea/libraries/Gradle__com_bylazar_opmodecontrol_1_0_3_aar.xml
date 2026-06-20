@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="Gradle: com.bylazar:opmodecontrol:1.0.3@aar" external-system-id="GRADLE">
+    <CLASSES>
+      <root url="file://$USER_HOME$/.gradle/caches/8.13/transforms/7952c09545758d89f876d7ef386dd45e/transformed/opmodecontrol-1.0.3/AndroidManifest.xml" />
+      <root url="jar://$USER_HOME$/.gradle/caches/8.13/transforms/7952c09545758d89f876d7ef386dd45e/transformed/opmodecontrol-1.0.3/jars/classes.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

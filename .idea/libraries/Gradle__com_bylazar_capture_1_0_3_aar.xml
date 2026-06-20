@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="Gradle: com.bylazar:capture:1.0.3@aar" external-system-id="GRADLE">
+    <CLASSES>
+      <root url="file://$USER_HOME$/.gradle/caches/8.13/transforms/1457b76d2c4f68b6705705e8ca190f5f/transformed/capture-1.0.3/AndroidManifest.xml" />
+      <root url="jar://$USER_HOME$/.gradle/caches/8.13/transforms/1457b76d2c4f68b6705705e8ca190f5f/transformed/capture-1.0.3/jars/classes.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="Gradle: com.bylazar:telemetry:1.0.5@aar" external-system-id="GRADLE">
+    <CLASSES>
+      <root url="file://$USER_HOME$/.gradle/caches/8.13/transforms/ff6c363aecbbfb9416f8e2073a0dba68/transformed/telemetry-1.0.5/AndroidManifest.xml" />
+      <root url="jar://$USER_HOME$/.gradle/caches/8.13/transforms/ff6c363aecbbfb9416f8e2073a0dba68/transformed/telemetry-1.0.5/jars/classes.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

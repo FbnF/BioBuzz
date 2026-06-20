@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="Gradle: com.bylazar:fullpanels:1.0.12@aar" external-system-id="GRADLE">
+    <CLASSES>
+      <root url="file://$USER_HOME$/.gradle/caches/8.13/transforms/c369d3185ce7fbfa7c796db429f2c92c/transformed/fullpanels-1.0.12/AndroidManifest.xml" />
+      <root url="jar://$USER_HOME$/.gradle/caches/8.13/transforms/c369d3185ce7fbfa7c796db429f2c92c/transformed/fullpanels-1.0.12/jars/classes.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

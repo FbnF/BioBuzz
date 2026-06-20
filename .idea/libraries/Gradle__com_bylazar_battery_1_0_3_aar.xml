@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="Gradle: com.bylazar:battery:1.0.3@aar" external-system-id="GRADLE">
+    <CLASSES>
+      <root url="file://$USER_HOME$/.gradle/caches/8.13/transforms/51be6101d25bd8486cb245a3cccd95f3/transformed/battery-1.0.3/AndroidManifest.xml" />
+      <root url="jar://$USER_HOME$/.gradle/caches/8.13/transforms/51be6101d25bd8486cb245a3cccd95f3/transformed/battery-1.0.3/jars/classes.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

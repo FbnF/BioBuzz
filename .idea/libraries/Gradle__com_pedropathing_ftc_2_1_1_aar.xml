@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="Gradle: com.pedropathing:ftc:2.1.1@aar" external-system-id="GRADLE">
+    <CLASSES>
+      <root url="file://$USER_HOME$/.gradle/caches/8.13/transforms/02de44234c2e10497683dbd9b4490402/transformed/ftc-2.1.1/AndroidManifest.xml" />
+      <root url="jar://$USER_HOME$/.gradle/caches/8.13/transforms/02de44234c2e10497683dbd9b4490402/transformed/ftc-2.1.1/jars/classes.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.pedropathing/ftc/2.1.1/8d7a74a37eaab6ce565ee99052fbb8ebcd3e8e2f/ftc-2.1.1-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.pedropathing/ftc/2.1.1/8cdd85fc81a0bd8f8c28d2760de50fd2641cee07/ftc-2.1.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

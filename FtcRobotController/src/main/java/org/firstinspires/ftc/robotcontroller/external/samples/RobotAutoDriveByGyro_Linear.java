@@ -159,6 +159,7 @@ public class RobotAutoDriveByGyro_Linear extends LinearOpMode {
 
         // Now initialize the IMU with this mounting orientation
         // This sample expects the IMU to be in a REV Hub and named "imu".
+        //Turning off IMU temporarily.
         imu = hardwareMap.get(IMU.class, "imu");
         imu.initialize(new IMU.Parameters(orientationOnRobot));
 
@@ -425,5 +426,6 @@ public class RobotAutoDriveByGyro_Linear extends LinearOpMode {
     public double getHeading() {
         YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
         return orientation.getYaw(AngleUnit.DEGREES);
+       // return  0.1;
     }
 }
