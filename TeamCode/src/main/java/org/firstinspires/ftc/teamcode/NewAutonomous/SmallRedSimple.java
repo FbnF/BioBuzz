@@ -48,11 +48,13 @@ public class SmallRedSimple extends LinearOpMode {
         driveToShoot = follower.pathBuilder()
                 .addPath(new BezierLine(startPose, scorePose))
                 .setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading())
+                .setGlobalDeceleration()
                 .build();
 
         driveToPark = follower.pathBuilder()
                 .addPath(new BezierLine(scorePose, parkPose))
                 .setLinearHeadingInterpolation(scorePose.getHeading(), parkPose.getHeading())
+                .setGlobalDeceleration()
                 .build();
     }
 
@@ -91,9 +93,9 @@ public class SmallRedSimple extends LinearOpMode {
 
     public Command autoRoutine() {
         return sequential(
-                follow(follower, driveToShoot), 
-                combinedShootLogic(),           
-                follow(follower, driveToPark)   
+                follow(follower, driveToShoot, true),
+                combinedShootLogic(),
+                follow(follower, driveToPark, true)
         );
     }
 
