@@ -12,6 +12,6 @@ public class ShooterConfig {
     public static double WAIT_TIME = 10.5;
     
     // Intake and Handoff Tunables
-    public static double INTAKE_POWER = 0.75;
+    public static double INTAKE_POWER = 0.85;
     public static double HANDOFF_DISTANCE_MM = 107.0;
 }
