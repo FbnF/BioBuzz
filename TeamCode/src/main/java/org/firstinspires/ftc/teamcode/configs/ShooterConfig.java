@@ -5,7 +5,7 @@ import com.bylazar.configurables.annotations.Configurable;
 @Configurable
 public class ShooterConfig {
     // Shooter and Feeder Tunables
-    public static double SHOOTER_VEL_LONG = 1605.0;
+    public static double SHOOTER_VEL_LONG = 1580.0;
     public static double SHOOTER_VEL_SHORT = 1200.0;
     public static double SIDE_POWER = -0.145;
     public static double START_WAIT_TIME = 2.0;

@@ -39,7 +39,7 @@ public class SmallRedSimple extends LinearOpMode {
 
     // Poses from Visualizer (Starting facing goal side @ 90 degrees)
     private final Pose startPose = new Pose(86.298, 8.385, Math.toRadians(90));
-    private final Pose scorePose = new Pose(82.378, 18.531, Math.toRadians(70));
+    private final Pose scorePose = new Pose(82.378, 18.531, Math.toRadians(65));
     private final Pose parkPose = new Pose(105.253, 16.638, Math.toRadians(90));
 
     private PathChain driveToShoot, driveToPark;

@@ -9,8 +9,6 @@ import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 
 import com.pedropathing.follower.Follower;
-import com.pedropathing.ftc.InvertedFTCCoordinates;
-import com.pedropathing.ftc.PoseConverter;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.ivy.Command;
@@ -29,8 +27,8 @@ import org.firstinspires.ftc.teamcode.configs.HardwareConfig;
 import org.firstinspires.ftc.teamcode.configs.ShooterConfig;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
-@Autonomous(name = "SmallBlueSimple", group = "Autonomous")
-public class SmallBlueSimple extends LinearOpMode {
+@Autonomous(name = "SmallTriRed", group = "Autonomous")
+public class SmallTriRed extends LinearOpMode {
 
     private Follower follower;
     private DcMotor intake;
@@ -39,52 +37,70 @@ public class SmallBlueSimple extends LinearOpMode {
     private CRServo sideServo;
     private DistanceSensor rangeSensor;
 
-    // Poses derived from the visualizer
-    private final Pose startPose = new Pose(55.377, 7.861, Math.toRadians(90));
-    private final Pose scorePose = new Pose(58.446, 16.959, Math.toRadians(110));
-    private final Pose parkPose = new Pose(35.726, 16.464, Math.toRadians(90));
+    // Latest Poses from the Visualizer
+    private final Pose startPose = new Pose(86.298, 8.385, Math.toRadians(90));
+    private final Pose scorePose1 = new Pose(82.378, 18.531, Math.toRadians(65));
+    private final Pose intakeStart = new Pose(92.326, 33.360, Math.toRadians(0));
+    private final Pose intakeEnd = new Pose(128.92222222222222, 32.841975308641985, Math.toRadians(0));
+    private final Pose scorePose2 = new Pose(82.378, 18.531, Math.toRadians(65));
+    private final Pose parkPose = new Pose(105.253, 16.638, Math.toRadians(90));
 
-    private PathChain driveToShoot, driveToPark;
+    private PathChain driveToShoot1, driveToIntake, driveToShoot2, driveToPark;
 
-    // Building the paths using the visualizer points
+    // Building the paths based on the new visualizer points
     public void buildPaths() {
-        driveToShoot = follower.pathBuilder()
-                .addPath(new BezierLine(startPose, scorePose))
-                .setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading())
-                .setGlobalDeceleration() // Keep it smooth when coming out of the first move
+        driveToShoot1 = follower.pathBuilder()
+                .addPath(new BezierLine(startPose, scorePose1))
+                .setLinearHeadingInterpolation(startPose.getHeading(), scorePose1.getHeading())
+                .setGlobalDeceleration()
+                .build();
+
+        driveToIntake = follower.pathBuilder()
+                .addPath(new BezierLine(scorePose1, intakeStart))
+                .setLinearHeadingInterpolation(scorePose1.getHeading(), intakeStart.getHeading())
+                .addPath(new BezierLine(intakeStart, intakeEnd))
+                .setConstantHeadingInterpolation(intakeStart.getHeading())
+                .setGlobalDeceleration()
+                .build();
+
+        driveToShoot2 = follower.pathBuilder()
+                .addPath(new BezierLine(intakeEnd, scorePose2))
+                .setLinearHeadingInterpolation(intakeEnd.getHeading(), scorePose2.getHeading())
+                .setGlobalDeceleration()
                 .build();
 
         driveToPark = follower.pathBuilder()
-                .addPath(new BezierLine(scorePose, parkPose))
-                .setLinearHeadingInterpolation(scorePose.getHeading(), parkPose.getHeading())
-                .setGlobalDeceleration() // Smooth landing into the park
+                .addPath(new BezierLine(scorePose2, parkPose))
+                .setLinearHeadingInterpolation(scorePose2.getHeading(), parkPose.getHeading())
+                .setGlobalDeceleration()
                 .build();
     }
 
-    //Shooter and feeder combined into one code action
+    // Logic for the shooter and reloading the next ball
     public Command combinedShootLogic() {
         return sequential(
-                // Spin up the shooter with the long distance velocity
+                // Spin up the shooter flywheel
                 instant(() -> shooter.setVelocity(ShooterConfig.SHOOTER_VEL_LONG)),
                 
-                // Give it a second to get up to speed
+                // Let the motor get to speed
                 waitMs((long)(ShooterConfig.START_WAIT_TIME * 1000)),
                 
-                // Start feeding the ball into the shooter
+                // Fire the ball
                 instant(() -> feed.setPower(ShooterConfig.SIDE_POWER)),
 
-                // Wait for the range sensor to tell us the ball is gone
-                // Then kick on the intake and side servo to grab the next one
+                // Wait for the ball to clear the handoff sensor
                 waitUntil(() -> rangeSensor.getDistance(DistanceUnit.MM) > ShooterConfig.HANDOFF_DISTANCE_MM),
+                
+                // Start pulling in the next ball immediately
                 parallel(
                         instant(() -> sideServo.setPower(1.0)),
                         instant(() -> intake.setPower(ShooterConfig.INTAKE_POWER))
                 ),
 
-                // Keep everything running for the full shot time
-                waitMs((long)((ShooterConfig.WAIT_TIME - ShooterConfig.START_WAIT_TIME) * 1000)),
+                // Short wait to finish the cycle and ensure the ball is secure
+                waitMs(5000),
 
-                // Shut it all down
+                // Shut down to prep for driving
                 instant(() -> {
                     feed.setPower(0);
                     shooter.setVelocity(0);
@@ -94,18 +110,35 @@ public class SmallBlueSimple extends LinearOpMode {
         );
     }
 
-    // The main auto routine
+    // The full autonomous sequence
     public Command autoRoutine() {
         return sequential(
-                follow(follower, driveToShoot, true), // Hold ground while shooting
-                combinedShootLogic(),           
-                follow(follower, driveToPark, true)   // Hold ground in the park
+                // Score the preload
+                follow(follower, driveToShoot1, true),
+                combinedShootLogic(),
+
+                // Drive through the intake zone and start grabbing balls immediately
+                // We slow down to 50% power for accuracy while picking up, then speed back up
+                instant(() -> follower.setMaxPower(0.5)),
+                parallel(
+                        follow(follower, driveToIntake, true),
+                        instant(() -> intake.setPower(ShooterConfig.INTAKE_POWER)),
+                        instant(() -> sideServo.setPower(1.0))
+                ),
+                instant(() -> follower.setMaxPower(1.0)),
+
+                // Score the second ball
+                follow(follower, driveToShoot2, true),
+                combinedShootLogic(),
+
+                // Final move to the park position
+                follow(follower, driveToPark, true)
         );
     }
 
     @Override
     public void runOpMode() {
-        // Init Hardware using HardwareConfig names
+        // Initialize all hardware components
         follower = Constants.createFollower(hardwareMap);
         intake = hardwareMap.get(DcMotor.class, HardwareConfig.INTAKE_MOTOR);
         shooter = (DcMotorEx) hardwareMap.get(DcMotor.class, HardwareConfig.SHOOTER_MOTOR);
@@ -113,7 +146,7 @@ public class SmallBlueSimple extends LinearOpMode {
         sideServo = hardwareMap.get(CRServo.class, HardwareConfig.SIDE_SERVO);
         rangeSensor = hardwareMap.get(DistanceSensor.class, HardwareConfig.RANGE_SENSOR);
 
-        // Motor Setup
+        // Hardware behavior setup
         intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         shooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -123,23 +156,24 @@ public class SmallBlueSimple extends LinearOpMode {
         buildPaths();
         follower.setStartingPose(startPose);
 
-        telemetry.addLine("SmallBlueSimple Ready.");
+        telemetry.addLine("SmallTriRed Ready.");
         telemetry.update();
 
         waitForStart();
 
         if (isStopRequested()) return;
 
+        // Kick off the auto command
         schedule(autoRoutine());
 
         while (opModeIsActive()) {
             follower.update();
             Scheduler.execute();
 
+            // Telemetry updates for the drivers
             telemetry.addData("X", follower.getPose().getX());
             telemetry.addData("Y", follower.getPose().getY());
-            telemetry.addData("Heading", Math.toDegrees(follower.getPose().getHeading()));
-            telemetry.addData("Ball Distance (mm)", rangeSensor.getDistance(DistanceUnit.MM));
+            telemetry.addData("Heading (Deg)", Math.toDegrees(follower.getPose().getHeading()));
             telemetry.update();
         }
     }
