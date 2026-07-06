@@ -43,7 +43,7 @@ public class BigTriRed6Clear extends LinearOpMode {
     private final Pose intakeStart = new Pose(95.014, 81.243, Math.toRadians(0));
     private final Pose intakeEnd = new Pose(125.461, 80.865, Math.toRadians(0));
     private final Pose clearStart = new Pose(118.615, 69.877, Math.toRadians(90));
-    private final Pose clearEnd = new Pose(128.622, 69.010, Math.toRadians(90));
+    private final Pose clearEnd = new Pose(128.098, 69.534, Math.toRadians(90));
     private final Pose scorePose2 = new Pose(82.728, 101.335, Math.toRadians(40));
 
     private PathChain driveToShoot1, driveToIntake, driveToClear, driveToShoot2;
@@ -64,7 +64,7 @@ public class BigTriRed6Clear extends LinearOpMode {
                 .setGlobalDeceleration()
                 .build();
 
-        // Extra path to clear the area
+        // Extra path to let the balls out
         driveToClear = follower.pathBuilder()
                 .addPath(new BezierLine(intakeEnd, clearStart))
                 .setLinearHeadingInterpolation(intakeEnd.getHeading(), clearStart.getHeading())
@@ -83,25 +83,19 @@ public class BigTriRed6Clear extends LinearOpMode {
     // Shoot logic (short range)
     public Command combinedShootLogic() {
         return sequential(
-                // Spin up
                 instant(() -> shooter.setVelocity(ShooterConfig.SHOOTER_VEL_SHORT)),
-                
-                // Stabilize
+
                 waitMs((long)(ShooterConfig.START_WAIT_TIME * 1000)),
-                
-                // Feed ball
+
                 instant(() -> feed.setPower(ShooterConfig.SIDE_POWER)),
 
-                // Wait for clear
                 waitUntil(() -> rangeSensor.getDistance(DistanceUnit.MM) > ShooterConfig.HANDOFF_DISTANCE_MM),
-                
                 // Start reloading
                 parallel(
                         instant(() -> sideServo.setPower(1.0)),
                         instant(() -> intake.setPower(ShooterConfig.INTAKE_POWER))
                 ),
 
-                // 5s settle
                 waitMs(5000),
 
                 // Power down
