@@ -39,10 +39,10 @@ public class SmallTriRed extends LinearOpMode {
 
     // Latest Poses from the Visualizer
     private final Pose startPose = new Pose(86.298, 8.385, Math.toRadians(90));
-    private final Pose scorePose1 = new Pose(82.378, 18.531, Math.toRadians(65));
+    private final Pose scorePose1 = new Pose(82.378, 18.531, Math.toRadians(63));
     private final Pose intakeStart = new Pose(92.326, 33.535, Math.toRadians(0));
     private final Pose intakeEnd = new Pose(132.416, 33.399, Math.toRadians(0));
-    private final Pose scorePose2 = new Pose(82.378, 18.531, Math.toRadians(65));
+    private final Pose scorePose2 = new Pose(82.378, 18.531, Math.toRadians(63));
     private final Pose parkPose = new Pose(105.253, 16.638, Math.toRadians(90));
 
     private PathChain driveToShoot1, driveToIntake, driveToShoot2, driveToPark;
