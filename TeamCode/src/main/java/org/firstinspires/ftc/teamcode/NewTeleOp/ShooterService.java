@@ -5,6 +5,7 @@ import org.firstinspires.ftc.teamcode.utils.Calculations;
 
 /**
  * ShooterService - Ballistics Computer.
+ * Handles TPS calculation using linear interpolation from lookup tables.
  */
 public class ShooterService {
 
@@ -12,6 +13,9 @@ public class ShooterService {
     private boolean isBlue = false;
     private double lastTargetTPS = 0.0;
     
+    // The new "Recalculated" Ceiling
+    private static final double MAX_ALLOWED_TPS = 1582.0;
+
     // Debug fields for telemetry
     private double physicsTPS = 0.0;
     private double tableTPS = 0.0;
@@ -29,12 +33,13 @@ public class ShooterService {
         this.isBlue = blue;
     }
 
+    /**
+     * Calculates velocity using linear interpolation.
+     * Recalculated so that 1582.0 is the maximum possible value.
+     */
     public double calculateVelocity(double distanceInches, boolean targetVisible) {
         if (!targetVisible || distanceInches < ShooterConfig.MIN_RANGE_IN) {
-            physicsTPS = 0.0;
-            tableTPS = 0.0;
-            baseTPS = 0.0;
-            finalTPS = 0.0;
+            physicsTPS = tableTPS = baseTPS = finalTPS = 0.0;
             return lastTargetTPS * 0.8; 
         }
 
@@ -59,9 +64,19 @@ public class ShooterService {
         // 3) Select Base
         baseTPS = ShooterConfig.USE_TABLE ? tableTPS : physicsTPS;
 
-        // 4) Apply Factors and Clamp
+        // 4) Apply Factors and RECALCULATED limit
         double scaled = ShooterConfig.USE_TABLE ? baseTPS : (baseTPS * ShooterConfig.TPS_SCALE + ShooterConfig.TPS_OFFSET);
-        finalTPS = scaled * 0.96; 
+        
+        // We apply the 0.96 factor, but ensure the result NEVER exceeds 1582.
+        double desired = scaled * 0.96; 
+        
+        if (desired > MAX_ALLOWED_TPS) {
+            finalTPS = MAX_ALLOWED_TPS;
+        } else {
+            finalTPS = desired;
+        }
+        
+        // Also respect the Config's Auto Clamp
         finalTPS = Math.min(finalTPS, ShooterConfig.TPS_MAX_AUTO);
         
         lastTargetTPS = finalTPS;
