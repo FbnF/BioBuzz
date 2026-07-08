@@ -9,10 +9,7 @@ import org.firstinspires.ftc.teamcode.configs.ShooterConfig;
 
 import java.util.List;
 
-/**
- * VisionService - The robot's eyes.
- * Handles Limelight detection, distance smoothing, and null delay.
- */
+// Vision logic
 public class VisionService {
 
     private Limelight3A limelight;
@@ -31,23 +28,13 @@ public class VisionService {
     private static VisionService instance = null;
 
     public static VisionService getInstance() {
-        if (instance == null) {
-            instance = new VisionService();
-        }
+        if (instance == null) instance = new VisionService();
         return instance;
     }
 
-    public void setGoalTagId(int id) {
-        this.goalTagId = id;
-    }
-
-    public void setVisionEnabled(boolean enabled) {
-        this.visionEnabled = enabled;
-    }
-
-    public boolean isVisionEnabled() {
-        return visionEnabled;
-    }
+    public void setGoalTagId(int id) { this.goalTagId = id; }
+    public void setVisionEnabled(boolean enabled) { this.visionEnabled = enabled; }
+    public boolean isVisionEnabled() { return visionEnabled; }
 
     public void init(HardwareMap hardwareMap) {
         limelight = hardwareMap.get(Limelight3A.class, "Limelight");
@@ -76,7 +63,7 @@ public class VisionService {
                         if (pose != null) {
                             rawDistance = Math.sqrt(Math.pow(pose.getPosition().x, 2) + Math.pow(pose.getPosition().z, 2)) * 39.3701;
                             
-                            // Apply Smoothing
+                            // Smoothing
                             if (filteredDistance <= 0.0) filteredDistance = rawDistance;
                             double a = ShooterConfig.DIST_SMOOTH_ALPHA;
                             filteredDistance = (1.0 - a) * filteredDistance + a * rawDistance;
@@ -93,7 +80,7 @@ public class VisionService {
             }
         }
 
-        // Apply Null Delay
+        // Null delay buffer
         if (currentlySeeing) {
             targetVisible = true;
         } else {
@@ -128,9 +115,10 @@ public class VisionService {
         double x1 = dists[i+1];
         double t = (x - x0) / (x1 - x0);
 
-        double min = mins[i] + t * (mins[i+1] - mins[i]);
-        double max = maxs[i] + t * (maxs[i+1] - maxs[i]);
-        return new double[]{min, max};
+        return new double[]{
+            mins[i] + t * (mins[i+1] - mins[i]),
+            maxs[i] + t * (maxs[i+1] - maxs[i])
+        };
     }
 
     public double getDistance() { return filteredDistance; }

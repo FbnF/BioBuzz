@@ -9,25 +9,20 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.configs.ShooterConfig;
 import org.firstinspires.ftc.teamcode.utils.PDController;
 
-/**
- * Main Red TeleOp.
- */
+// Main Red TeleOp
 @TeleOp(name = "TeleOpMainRed", group = "TeleOp")
 public class TeleOpMainRed extends LinearOpMode {
 
-    // Services
     private RobotHardware robot = RobotHardware.getInstance();
     private VisionService vision = VisionService.getInstance();
     private ShooterService shooter = ShooterService.getInstance();
     private LedService leds = LedService.getInstance();
     private LoggingService logger = LoggingService.getInstance();
     
-    // Drive & Control
     private Follower follower;
     private PDController alignController;
-    private double speedFactor = 1.2; // Match original RR code
+    private double speedFactor = 1.2; 
     
-    // Modes & States
     private boolean autoShooter = true;
     private boolean autoSpinArmed = true;
     private boolean prevG2DpadUp = false;
@@ -58,7 +53,7 @@ public class TeleOpMainRed extends LinearOpMode {
             leds.update();
             logger.record();
 
-            // ---------------- DRIVE ----------------
+            // Drivetrain
             if (gamepad1.a) speedFactor = 1.35; 
             if (gamepad1.b) speedFactor = 0.4;  
             if (gamepad1.x) speedFactor = 0.7;  
@@ -67,13 +62,13 @@ public class TeleOpMainRed extends LinearOpMode {
             double lateral = -gamepad1.left_stick_x * speedFactor;
             double turn = -gamepad1.right_stick_x * speedFactor;
 
-            // ---------------- VISION TOGGLE ----------------
+            // Vision toggle
             if (gamepad2.dpad_left && !prevG2DpadLeft) {
                 vision.setVisionEnabled(!vision.isVisionEnabled());
             }
             prevG2DpadLeft = gamepad2.dpad_left;
 
-            // ---------------- AUTO ALIGN ----------------
+            // Auto align
             double[] win = vision.getTxWindow();
             double targetTx = (win[0] + win[1]) / 2.0;
             double txError = targetTx - vision.getTx();
@@ -86,19 +81,16 @@ public class TeleOpMainRed extends LinearOpMode {
 
             follower.setTeleOpDrive(axial, lateral, turn, true);
 
-            // ---------------- SHOOTER MODES ----------------
-            // Dpad Up: Toggle Auto/Manual
+            // Shooter modes
             if (gamepad2.dpad_up && !prevG2DpadUp) autoShooter = !autoShooter;
             prevG2DpadUp = gamepad2.dpad_up;
 
-            // Dpad Right: Arm/Disarm (Auto mode only)
             if (gamepad2.dpad_right && !prevG2DpadRight) autoSpinArmed = !autoSpinArmed;
             prevG2DpadRight = gamepad2.dpad_right;
 
             double targetTPS = 0;
 
             if (autoShooter) {
-                // AUTO MODE
                 if (autoSpinArmed) {
                     targetTPS = shooter.calculateVelocity(vision.getDistance(), vision.isTargetVisible());
                     robot.launchMotor.setVelocity(targetTPS);
@@ -106,23 +98,22 @@ public class TeleOpMainRed extends LinearOpMode {
                     robot.launchMotor.setPower(0);
                 }
             } else {
-                // MANUAL MODE (Presets)
-                if (gamepad2.a) targetTPS = ShooterConfig.SHOOTER_VEL_LONG; // Long
-                else if (gamepad2.b) targetTPS = 1500.0;                   // Mid
-                else if (gamepad2.left_bumper) targetTPS = ShooterConfig.SHOOTER_VEL_SHORT; // Short
-                else if (gamepad2.x) targetTPS = 0;                        // Stop
+                // Manual presets
+                if (gamepad2.a) targetTPS = ShooterConfig.SHOOTER_VEL_LONG; 
+                else if (gamepad2.b) targetTPS = 1500.0;                   
+                else if (gamepad2.left_bumper) targetTPS = ShooterConfig.SHOOTER_VEL_SHORT; 
+                else if (gamepad2.x) targetTPS = 0;                        
 
                 if (targetTPS > 0) robot.launchMotor.setVelocity(targetTPS);
                 else robot.launchMotor.setPower(0);
             }
 
-            // ---------------- FEED & INTAKE ----------------
+            // Subsystems
             boolean motorReady = Math.abs(robot.launchMotor.getVelocity() - targetTPS) < ShooterConfig.TPS_TOL;
             boolean isLoaded = robot.rangeSensor.getDistance(DistanceUnit.MM) < 170;
             boolean angleOk = vision.getTx() >= win[0] && vision.getTx() <= win[1];
             boolean noShotZone = vision.isNoShotZone();
             
-            // Firing Gate (Only in Auto mode, or manual fire)
             boolean canShoot = motorReady && (autoShooter ? (autoSpinArmed && vision.isTargetVisible() && angleOk && !noShotZone) : true);
 
             if (gamepad2.y) {
@@ -135,20 +126,16 @@ public class TeleOpMainRed extends LinearOpMode {
                     leds.triggerWarning();
                 }
             } else if (gamepad2.right_trigger > 0) {
-                // Normal Intake
                 robot.intakeMotor.setPower(1.0);
                 robot.sideServo.setPower(1.0);
             } else if (gamepad2.right_bumper) {
-                // Reverse Intake
                 robot.intakeMotor.setPower(-1.0);
                 robot.sideServo.setPower(-1.0);
             } else if (gamepad2.left_bumper && autoShooter && !isEjecting) {
-                // Timed Eject (Shared with Short Preset, but gated by mode)
                 isEjecting = true;
                 ejectStartNs = System.nanoTime();
                 robot.intakeMotor.setPower(-0.7);
             } else if (gamepad2.left_trigger > 0) {
-                // Panic Stop
                 robot.intakeMotor.setPower(0);
                 robot.sideServo.setPower(0);
                 robot.feedServo.setPower(0);
@@ -163,10 +150,9 @@ public class TeleOpMainRed extends LinearOpMode {
                 robot.intakeMotor.setPower(0);
             }
 
-            // ---------------- STATUS ----------------
             leds.setStatus(vision.isTargetVisible(), motorReady, noShotZone);
 
-            // ---------------- TELEMETRY ----------------
+            // Telemetry
             telemetry.addLine("---- Modes ----");
             telemetry.addData("Shooter Mode", autoShooter ? "AUTO" : "MANUAL");
             telemetry.addData("Armed (Auto)", autoSpinArmed);
