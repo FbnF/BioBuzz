@@ -27,8 +27,8 @@ import org.firstinspires.ftc.teamcode.configs.HardwareConfig;
 import org.firstinspires.ftc.teamcode.configs.ShooterConfig;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
-@Autonomous(name = "BigTriBLUE6", group = "Autonomous")
-public class BigTriBlue6 extends LinearOpMode {
+@Autonomous(name = "BigTriBLUE6Clear", group = "Autonomous")
+public class BigTriBlue6Clear extends LinearOpMode {
 
     private Follower follower;
     private DcMotor intake;
@@ -37,14 +37,16 @@ public class BigTriBlue6 extends LinearOpMode {
     private CRServo sideServo;
     private DistanceSensor rangeSensor;
 
-    // Updated poses from visualizer
+    // Latest Poses from visualizer
     private final Pose startPose = new Pose(33.814, 133.428, Math.toRadians(180));
     private final Pose scorePose1 = new Pose(49.362, 91.028, Math.toRadians(135));
     private final Pose intakeStart = new Pose(46.806, 83.648, Math.toRadians(180));
     private final Pose intakeEnd = new Pose(14.537, 84.082, Math.toRadians(180));
+    private final Pose clearStart = new Pose(26.796, 70.959, Math.toRadians(270));
+    private final Pose clearEnd = new Pose(12.486, 70.337, Math.toRadians(270));
     private final Pose scorePose2 = new Pose(58.271, 100.461, Math.toRadians(145));
 
-    private PathChain driveToShoot1, driveToIntake, driveToShoot2;
+    private PathChain driveToShoot1, driveToIntake, driveToClear, driveToShoot2;
 
     // Build paths
     public void buildPaths() {
@@ -62,9 +64,17 @@ public class BigTriBlue6 extends LinearOpMode {
                 .setGlobalDeceleration()
                 .build();
 
+        driveToClear = follower.pathBuilder()
+                .addPath(new BezierLine(intakeEnd, clearStart))
+                .setLinearHeadingInterpolation(intakeEnd.getHeading(), clearStart.getHeading())
+                .addPath(new BezierLine(clearStart, clearEnd))
+                .setConstantHeadingInterpolation(clearStart.getHeading())
+                .setGlobalDeceleration()
+                .build();
+
         driveToShoot2 = follower.pathBuilder()
-                .addPath(new BezierLine(intakeEnd, scorePose2))
-                .setLinearHeadingInterpolation(intakeEnd.getHeading(), scorePose2.getHeading())
+                .addPath(new BezierLine(clearEnd, scorePose2))
+                .setLinearHeadingInterpolation(clearEnd.getHeading(), scorePose2.getHeading())
                 .setGlobalDeceleration()
                 .build();
     }
@@ -119,6 +129,15 @@ public class BigTriBlue6 extends LinearOpMode {
                 ),
                 instant(() -> follower.setMaxPower(1.0)),
 
+                // Clear the bar
+                follow(follower, driveToClear, true),
+
+                // Stop intake for score move
+                instant(() -> {
+                    intake.setPower(0);
+                    sideServo.setPower(0);
+                }),
+
                 // Score second ball
                 follow(follower, driveToShoot2, true),
                 combinedShootLogic()
@@ -145,7 +164,7 @@ public class BigTriBlue6 extends LinearOpMode {
         buildPaths();
         follower.setStartingPose(startPose);
 
-        telemetry.addLine("BigTriBlue6 Ready.");
+        telemetry.addLine("BigTriBlue6Clear Ready.");
         telemetry.update();
 
         waitForStart();
