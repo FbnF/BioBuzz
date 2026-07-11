@@ -37,19 +37,19 @@ public class BigTriRed9 extends LinearOpMode {
     private CRServo sideServo;
     private DistanceSensor rangeSensor;
 
-    // Poses from visualizer (Red Side)
+    // Latest visualizer poses
     private final Pose startPose = new Pose(108.582, 132.904, Math.toRadians(0));
     private final Pose scorePose1 = new Pose(92.510, 91.727, Math.toRadians(45));
     private final Pose intake1Start = new Pose(95.014, 81.243, Math.toRadians(0));
     private final Pose intake1End = new Pose(123.016, 80.865, Math.toRadians(0));
     private final Pose scorePose2 = new Pose(82.728, 101.335, Math.toRadians(35));
-    private final Pose intake2Start = new Pose(96.152, 59.110, Math.toRadians(0));
-    private final Pose intake2End = new Pose(129.796, 58.696, Math.toRadians(0));
+    private final Pose intake2Start = new Pose(95.104, 57.887, Math.toRadians(0));
+    private final Pose intake2End = new Pose(129.446, 57.473, Math.toRadians(0));
     private final Pose scorePose3 = new Pose(82.728, 101.335, Math.toRadians(35));
 
-    private PathChain driveToShoot1, driveToIntake1, driveToShoot2, driveToIntake2, driveToShoot3;
+    private PathChain driveToShoot1, driveToIntake1, driveToShoot2, goToRack2, driveThroughRack2, driveToShoot3;
 
-    // Paths logic with global deceleration
+    // Building paths with global deceleration
     public void buildPaths() {
         driveToShoot1 = follower.pathBuilder()
                 .addPath(new BezierLine(startPose, scorePose1))
@@ -71,9 +71,14 @@ public class BigTriRed9 extends LinearOpMode {
                 .setGlobalDeceleration()
                 .build();
 
-        driveToIntake2 = follower.pathBuilder()
+        // Split paths for Rack 2 to prevent right-bias corner cutting
+        goToRack2 = follower.pathBuilder()
                 .addPath(new BezierLine(scorePose2, intake2Start))
                 .setLinearHeadingInterpolation(scorePose2.getHeading(), intake2Start.getHeading())
+                .setGlobalDeceleration()
+                .build();
+
+        driveThroughRack2 = follower.pathBuilder()
                 .addPath(new BezierLine(intake2Start, intake2End))
                 .setConstantHeadingInterpolation(intake2Start.getHeading())
                 .setGlobalDeceleration()
@@ -89,45 +94,45 @@ public class BigTriRed9 extends LinearOpMode {
     // Shooter and reload logic
     public Command combinedShootLogic() {
         return sequential(
-                // Settle beat after drive
+                // Small beat since we spin while driving
                 waitMs(250),
 
-                // Engage feed using config (currently -1.0)
+                // Engagement using config SIDE_POWER (-1.0)
                 instant(() -> feed.setPower(ShooterConfig.SIDE_POWER)),
 
-                // Wait for ball to fire
+                // Wait for fire
                 waitUntil(() -> rangeSensor.getDistance(DistanceUnit.MM) > ShooterConfig.HANDOFF_DISTANCE_MM),
 
-                // Pull in next ball
+                // Start reload
                 parallel(
                         instant(() -> sideServo.setPower(1.0)),
                         instant(() -> intake.setPower(ShooterConfig.INTAKE_POWER))
                 ),
 
-                // Wait for ball to settle (4.2s target)
+                // 4.2s settled wait
                 waitMs(4200),
 
-                // Idle flywheel at half speed
+                // Idle at half speed
                 instant(() -> {
                     feed.setPower(0);
-                    shooter.setVelocity(600);
+                    shooter.setVelocity(600); 
                     intake.setPower(0);
                     sideServo.setPower(0);
                 })
         );
     }
 
-    // Main routine
+    // Complete auto routine
     public Command autoRoutine() {
         return sequential(
-                // Initial preload
+                // Shot 1 + Early Start
                 parallel(
                         follow(follower, driveToShoot1, true),
                         instant(() -> shooter.setVelocity(ShooterConfig.SHOOTER_VEL_SHORT))
                 ),
                 combinedShootLogic(),
 
-                // First floor pickup (at 0.6 power)
+                // Pickup 1 (at 0.6 power)
                 instant(() -> follower.setMaxPower(0.6)),
                 parallel(
                         follow(follower, driveToIntake1, true),
@@ -136,37 +141,38 @@ public class BigTriRed9 extends LinearOpMode {
                 ),
                 instant(() -> follower.setMaxPower(1.0)),
 
-                // Second shot
+                // Shot 2 + Early Start
                 parallel(
                         follow(follower, driveToShoot2, true),
                         instant(() -> shooter.setVelocity(ShooterConfig.SHOOTER_VEL_SHORT))
                 ),
                 combinedShootLogic(),
 
-                // Second floor pickup (at 0.6 power)
+                // Pickup 2 - Forces snap to start position to fix overshooting right
+                follow(follower, goToRack2, true), 
+                
                 instant(() -> follower.setMaxPower(0.6)),
                 parallel(
-                        follow(follower, driveToIntake2, true),
+                        follow(follower, driveThroughRack2, true),
                         instant(() -> intake.setPower(ShooterConfig.INTAKE_POWER)),
                         instant(() -> sideServo.setPower(1.0))
                 ),
                 instant(() -> follower.setMaxPower(1.0)),
 
-                // Third shot
+                // Shot 3 + Early Start
                 parallel(
                         follow(follower, driveToShoot3, true),
                         instant(() -> shooter.setVelocity(ShooterConfig.SHOOTER_VEL_SHORT))
                 ),
                 combinedShootLogic(),
 
-                // Final match shutdown
+                // Shutdown
                 instant(() -> shooter.setVelocity(0))
         );
     }
 
     @Override
     public void runOpMode() {
-        // Hardware Mapping
         follower = Constants.createFollower(hardwareMap);
         intake = hardwareMap.get(DcMotor.class, HardwareConfig.INTAKE_MOTOR);
         shooter = (DcMotorEx) hardwareMap.get(DcMotor.class, HardwareConfig.SHOOTER_MOTOR);
@@ -187,7 +193,6 @@ public class BigTriRed9 extends LinearOpMode {
         telemetry.update();
 
         waitForStart();
-
         if (isStopRequested()) return;
 
         schedule(autoRoutine());
@@ -195,8 +200,6 @@ public class BigTriRed9 extends LinearOpMode {
         while (opModeIsActive()) {
             follower.update();
             Scheduler.execute();
-
-            // Monitoring
             telemetry.addData("X", follower.getPose().getX());
             telemetry.addData("Y", follower.getPose().getY());
             telemetry.addData("Heading", Math.toDegrees(follower.getPose().getHeading()));
