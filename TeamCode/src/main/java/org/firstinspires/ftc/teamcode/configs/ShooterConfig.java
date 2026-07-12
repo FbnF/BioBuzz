@@ -20,9 +20,9 @@ public final class ShooterConfig {
 
     // Default powers for manual/auto modes
     public static double FEED_DEFAULT = -0.9;
-    public static double SIDE_POWER = -0.145;
+    public static double SIDE_POWER = -1;
     public static double SIDE_DEFAULT = 1.0;
-    public static double INTAKE_POWER = 0.85;
+    public static double INTAKE_POWER = 0.90;
 
     // Timing
     public static double START_WAIT_TIME = 2.0;

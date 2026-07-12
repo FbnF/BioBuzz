@@ -27,8 +27,8 @@ import org.firstinspires.ftc.teamcode.configs.HardwareConfig;
 import org.firstinspires.ftc.teamcode.configs.ShooterConfig;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
-@Autonomous(name = "BigTriBLUE6", group = "Autonomous")
-public class BigTriBlue6 extends LinearOpMode {
+@Autonomous(name = "BigTriRED9", group = "Autonomous")
+public class BigTriRed9 extends LinearOpMode {
 
     private Follower follower;
     private DcMotor intake;
@@ -37,16 +37,19 @@ public class BigTriBlue6 extends LinearOpMode {
     private CRServo sideServo;
     private DistanceSensor rangeSensor;
 
-    // Updated poses from visualizer
-    private final Pose startPose = new Pose(33.814, 133.428, Math.toRadians(180));
-    private final Pose scorePose1 = new Pose(49.362, 91.028, Math.toRadians(135));
-    private final Pose intakeStart = new Pose(46.806, 83.648, Math.toRadians(180));
-    private final Pose intakeEnd = new Pose(14.537, 84.082, Math.toRadians(180));
-    private final Pose scorePose2 = new Pose(58.271, 100.461, Math.toRadians(145));
+    // Latest visualizer poses
+    private final Pose startPose = new Pose(108.582, 132.904, Math.toRadians(0));
+    private final Pose scorePose1 = new Pose(92.510, 91.727, Math.toRadians(45));
+    private final Pose intake1Start = new Pose(95.014, 81.243, Math.toRadians(0));
+    private final Pose intake1End = new Pose(123.016, 80.865, Math.toRadians(0));
+    private final Pose scorePose2 = new Pose(82.728, 101.335, Math.toRadians(35));
+    private final Pose intake2Start = new Pose(95.104, 57.887, Math.toRadians(0));
+    private final Pose intake2End = new Pose(129.446, 57.473, Math.toRadians(0));
+    private final Pose scorePose3 = new Pose(82.728, 101.335, Math.toRadians(35));
 
-    private PathChain driveToShoot1, driveToIntake, driveToShoot2;
+    private PathChain driveToShoot1, driveToIntake1, driveToShoot2, goToRack2, driveThroughRack2, driveToShoot3;
 
-    // Build paths
+    // Building paths with global deceleration
     public void buildPaths() {
         driveToShoot1 = follower.pathBuilder()
                 .addPath(new BezierLine(startPose, scorePose1))
@@ -54,80 +57,122 @@ public class BigTriBlue6 extends LinearOpMode {
                 .setGlobalDeceleration()
                 .build();
 
-        driveToIntake = follower.pathBuilder()
-                .addPath(new BezierLine(scorePose1, intakeStart))
-                .setLinearHeadingInterpolation(scorePose1.getHeading(), intakeStart.getHeading())
-                .addPath(new BezierLine(intakeStart, intakeEnd))
-                .setConstantHeadingInterpolation(intakeStart.getHeading())
+        driveToIntake1 = follower.pathBuilder()
+                .addPath(new BezierLine(scorePose1, intake1Start))
+                .setLinearHeadingInterpolation(scorePose1.getHeading(), intake1Start.getHeading())
+                .addPath(new BezierLine(intake1Start, intake1End))
+                .setConstantHeadingInterpolation(intake1Start.getHeading())
                 .setGlobalDeceleration()
                 .build();
 
         driveToShoot2 = follower.pathBuilder()
-                .addPath(new BezierLine(intakeEnd, scorePose2))
-                .setLinearHeadingInterpolation(intakeEnd.getHeading(), scorePose2.getHeading())
+                .addPath(new BezierLine(intake1End, scorePose2))
+                .setLinearHeadingInterpolation(intake1End.getHeading(), scorePose2.getHeading())
+                .setGlobalDeceleration()
+                .build();
+
+        // Split paths for Rack 2 to prevent right-bias corner cutting
+        goToRack2 = follower.pathBuilder()
+                .addPath(new BezierLine(scorePose2, intake2Start))
+                .setLinearHeadingInterpolation(scorePose2.getHeading(), intake2Start.getHeading())
+                .setGlobalDeceleration()
+                .build();
+
+        driveThroughRack2 = follower.pathBuilder()
+                .addPath(new BezierLine(intake2Start, intake2End))
+                .setConstantHeadingInterpolation(intake2Start.getHeading())
+                .setGlobalDeceleration()
+                .build();
+
+        driveToShoot3 = follower.pathBuilder()
+                .addPath(new BezierLine(intake2End, scorePose3))
+                .setLinearHeadingInterpolation(intake2End.getHeading(), scorePose3.getHeading())
                 .setGlobalDeceleration()
                 .build();
     }
 
-    // Shoot and reload
+    // Shooter and reload logic
     public Command combinedShootLogic() {
         return sequential(
-                // Spin up (short range)
-                instant(() -> shooter.setVelocity(ShooterConfig.SHOOTER_VEL_SHORT)),
+                // Small beat since we spin while driving
+                waitMs(250),
 
-                // Stabilize
-                waitMs((long)(ShooterConfig.START_WAIT_TIME * 1000)),
-
-                // Feed
+                // Engagement using config SIDE_POWER (-1.0)
                 instant(() -> feed.setPower(ShooterConfig.SIDE_POWER)),
 
-                // Wait for sensor clear
+                // Wait for fire
                 waitUntil(() -> rangeSensor.getDistance(DistanceUnit.MM) > ShooterConfig.HANDOFF_DISTANCE_MM),
 
-                // Reload
+                // Start reload
                 parallel(
                         instant(() -> sideServo.setPower(1.0)),
                         instant(() -> intake.setPower(ShooterConfig.INTAKE_POWER))
                 ),
 
-                // 5s settle wait
-                waitMs(5000),
+                // 4.2s settled wait
+                waitMs(4200),
 
-                // Power down
+                // Idle at half speed
                 instant(() -> {
                     feed.setPower(0);
-                    shooter.setVelocity(0);
+                    shooter.setVelocity(600); 
                     intake.setPower(0);
                     sideServo.setPower(0);
                 })
         );
     }
 
-    // Main routine
+    // Complete auto routine
     public Command autoRoutine() {
         return sequential(
-                // Score preload
-                follow(follower, driveToShoot1, true),
+                // Shot 1 + Early Start
+                parallel(
+                        follow(follower, driveToShoot1, true),
+                        instant(() -> shooter.setVelocity(ShooterConfig.SHOOTER_VEL_SHORT))
+                ),
                 combinedShootLogic(),
 
-                // Pickup (50% power)
-                instant(() -> follower.setMaxPower(0.5)),
+                // Pickup 1 (at 0.6 power)
+                instant(() -> follower.setMaxPower(0.6)),
                 parallel(
-                        follow(follower, driveToIntake, true),
+                        follow(follower, driveToIntake1, true),
                         instant(() -> intake.setPower(ShooterConfig.INTAKE_POWER)),
                         instant(() -> sideServo.setPower(1.0))
                 ),
                 instant(() -> follower.setMaxPower(1.0)),
 
-                // Score second ball
-                follow(follower, driveToShoot2, true),
-                combinedShootLogic()
+                // Shot 2 + Early Start
+                parallel(
+                        follow(follower, driveToShoot2, true),
+                        instant(() -> shooter.setVelocity(ShooterConfig.SHOOTER_VEL_SHORT))
+                ),
+                combinedShootLogic(),
+
+                // Pickup 2 - Forces snap to start position to fix overshooting right
+                follow(follower, goToRack2, true), 
+                
+                instant(() -> follower.setMaxPower(0.6)),
+                parallel(
+                        follow(follower, driveThroughRack2, true),
+                        instant(() -> intake.setPower(ShooterConfig.INTAKE_POWER)),
+                        instant(() -> sideServo.setPower(1.0))
+                ),
+                instant(() -> follower.setMaxPower(1.0)),
+
+                // Shot 3 + Early Start
+                parallel(
+                        follow(follower, driveToShoot3, true),
+                        instant(() -> shooter.setVelocity(ShooterConfig.SHOOTER_VEL_SHORT))
+                ),
+                combinedShootLogic(),
+
+                // Shutdown
+                instant(() -> shooter.setVelocity(0))
         );
     }
 
     @Override
     public void runOpMode() {
-        // Init hardware
         follower = Constants.createFollower(hardwareMap);
         intake = hardwareMap.get(DcMotor.class, HardwareConfig.INTAKE_MOTOR);
         shooter = (DcMotorEx) hardwareMap.get(DcMotor.class, HardwareConfig.SHOOTER_MOTOR);
@@ -135,7 +180,6 @@ public class BigTriBlue6 extends LinearOpMode {
         sideServo = hardwareMap.get(CRServo.class, HardwareConfig.SIDE_SERVO);
         rangeSensor = hardwareMap.get(DistanceSensor.class, HardwareConfig.RANGE_SENSOR);
 
-        // Subsystem setup
         intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         shooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -145,21 +189,17 @@ public class BigTriBlue6 extends LinearOpMode {
         buildPaths();
         follower.setStartingPose(startPose);
 
-        telemetry.addLine("BigTriBlue6 Ready.");
+        telemetry.addLine("BigTriRed9 Ready.");
         telemetry.update();
 
         waitForStart();
-
         if (isStopRequested()) return;
 
-        // Schedule auto
         schedule(autoRoutine());
 
         while (opModeIsActive()) {
             follower.update();
             Scheduler.execute();
-
-            // Status
             telemetry.addData("X", follower.getPose().getX());
             telemetry.addData("Y", follower.getPose().getY());
             telemetry.addData("Heading", Math.toDegrees(follower.getPose().getHeading()));
