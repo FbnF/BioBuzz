@@ -27,8 +27,8 @@ import org.firstinspires.ftc.teamcode.configs.HardwareConfig;
 import org.firstinspires.ftc.teamcode.configs.ShooterConfig;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
-@Autonomous(name = "BigTriRED9", group = "Autonomous")
-public class BigTriRed9 extends LinearOpMode {
+@Autonomous(name = "BigTriRED9Clear", group = "Autonomous")
+public class BigTriRed9Clear extends LinearOpMode {
 
     private Follower follower;
     private DcMotor intake;
@@ -41,13 +41,15 @@ public class BigTriRed9 extends LinearOpMode {
     private final Pose startPose = new Pose(108.582, 132.904, Math.toRadians(270));
     private final Pose scorePose1 = new Pose(92.510, 91.727, Math.toRadians(45));
     private final Pose intake1Start = new Pose(95.014, 81.243, Math.toRadians(0));
-    private final Pose intake1End = new Pose(121, 80.865, Math.toRadians(0));
-    private final Pose scorePose2 = new Pose(82.728, 101.335, Math.toRadians(35));
+    private final Pose intake1End = new Pose(123, 80.865, Math.toRadians(0));
+    private final Pose clearStart = new Pose(115, 75, Math.toRadians(90));
+    private final Pose clearEnd = new Pose(126, 73, Math.toRadians(90));
+    private final Pose scorePose2 = new Pose(82.728, 101.335, Math.toRadians(37));
     private final Pose intake2Start = new Pose(95.104, 59, Math.toRadians(7));
     private final Pose intake2End = new Pose(128, 59, Math.toRadians(7));
     private final Pose scorePose3 = new Pose(82.728, 101.335, Math.toRadians(35));
 
-    private PathChain driveToShoot1, driveToIntake1, driveToShoot2, goToRack2, driveThroughRack2, driveToShoot3;
+    private PathChain driveToShoot1, driveToIntake1, driveToClear, driveToShoot2, goToRack2, driveThroughRack2, driveToShoot3;
 
     // Building paths with global deceleration
     public void buildPaths() {
@@ -64,9 +66,16 @@ public class BigTriRed9 extends LinearOpMode {
                 .setConstantHeadingInterpolation(intake1Start.getHeading())
                 .setGlobalDeceleration()
                 .build();
+        driveToClear = follower.pathBuilder()
+                .addPath(new BezierLine(intake1End, clearStart))
+                .setLinearHeadingInterpolation(intake1End.getHeading(), clearStart.getHeading())
+                .addPath(new BezierLine(clearStart, clearEnd))
+                .setConstantHeadingInterpolation(clearStart.getHeading())
+                .setGlobalDeceleration()
+                .build();
 
         driveToShoot2 = follower.pathBuilder()
-                .addPath(new BezierLine(intake1End, scorePose2))
+                .addPath(new BezierLine(clearEnd, scorePose2))
                 .setLinearHeadingInterpolation(intake1End.getHeading(), scorePose2.getHeading())
                 .setGlobalDeceleration()
                 .build();
@@ -140,6 +149,8 @@ public class BigTriRed9 extends LinearOpMode {
                         instant(() -> sideServo.setPower(1.0))
                 ),
                 instant(() -> follower.setMaxPower(1.0)),
+                //clear rack
+                follow(follower, driveToClear, true),
 
                 // Shot 2 + Early Start
                 parallel(
@@ -158,6 +169,8 @@ public class BigTriRed9 extends LinearOpMode {
                         instant(() -> sideServo.setPower(1.0))
                 ),
                 instant(() -> follower.setMaxPower(1.0)),
+
+
 
                 // Shot 3 + Early Start
                 parallel(

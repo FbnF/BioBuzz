@@ -20,16 +20,17 @@ public class Constants {
     public static FollowerConstants followerConstants = new FollowerConstants()
             .mass(15.2)
             .headingPIDFCoefficients(new PIDFCoefficients(1,0,0.00001,0.055))
-            .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.75,0,0.001,0.6,0.1))
+            // replace driveCoefficients with predictive breaking
+            // .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.75,0,0.001,0.6,0.1))
+            .predictiveBrakingCoefficients(new PredictiveBrakingCoefficients(0.1, 0.04, 0.0016))
             .useSecondaryTranslationalPIDF(true)
             .useSecondaryHeadingPIDF(true)
             .useSecondaryDrivePIDF(true)
             .forwardZeroPowerAcceleration(-26.2366605549332)
-            .lateralZeroPowerAcceleration(-60.326310794020785)
-            .centripetalScaling(1)
+            .centripetalScaling(0) // must be zero with predictive breaking to prevent overcompensation
 
             .lateralZeroPowerAcceleration(-60.780323877099995);
-    public static PathConstraints pathConstraints = new PathConstraints(0.99, 100, 1.5, 1.2);
+    public static PathConstraints pathConstraints = new PathConstraints(0.95, 100, 1.5, 1.2);
 
     public static MecanumConstants driveConstants = new MecanumConstants()
             .maxPower(1)
