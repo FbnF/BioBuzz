@@ -38,7 +38,7 @@ public class BigTriBlue6Clear extends LinearOpMode {
     private DistanceSensor rangeSensor;
 
     // Latest Poses from visualizer
-    private final Pose startPose = new Pose(33.814, 133.428, Math.toRadians(180));
+    private final Pose startPose = new Pose(33.814, 133.428, Math.toRadians(270));
     private final Pose scorePose1 = new Pose(49.362, 91.028, Math.toRadians(135));
     private final Pose intakeStart = new Pose(46.806, 83.648, Math.toRadians(180));
     private final Pose intakeEnd = new Pose(14.537, 84.082, Math.toRadians(180));
