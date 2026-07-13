@@ -39,7 +39,7 @@ public class BigTriBlue3 extends LinearOpMode {
     private DistanceSensor rangeSensor;
 
     //poses
-    private final Pose startPose = new Pose(33.814, 133.428, Math.toRadians(180));
+    private final Pose startPose = new Pose(33.814, 133.428, Math.toRadians(270));
     private final Pose scorePose = new Pose(58.271, 100.461, Math.toRadians(145));
 
     private PathChain driveToShoot;
