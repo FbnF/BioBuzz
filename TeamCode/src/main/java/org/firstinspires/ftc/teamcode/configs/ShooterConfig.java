@@ -101,5 +101,5 @@ public final class ShooterConfig {
 
     // Constant Velocities for Auto
     public static double SHOOTER_VEL_LONG = 1582.0;
-    public static double SHOOTER_VEL_SHORT = 1200.0;
+    public static double SHOOTER_VEL_SHORT = 1140.0;
 }

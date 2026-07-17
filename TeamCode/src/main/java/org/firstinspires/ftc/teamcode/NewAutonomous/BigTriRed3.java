@@ -39,7 +39,7 @@ public class BigTriRed3 extends LinearOpMode {
     private DistanceSensor rangeSensor;
 
     // Poses for the BigTriRed routine
-    private final Pose startPose = new Pose(108.582, 132.904, Math.toRadians(0));
+    private final Pose startPose = new Pose(108.582, 132.904, Math.toRadians(270));
     private final Pose scorePose = new Pose(82.728, 101.335, Math.toRadians(40));
 
     private PathChain driveToShoot;

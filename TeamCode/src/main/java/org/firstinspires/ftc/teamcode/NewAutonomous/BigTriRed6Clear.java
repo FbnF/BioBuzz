@@ -38,13 +38,13 @@ public class BigTriRed6Clear extends LinearOpMode {
     private DistanceSensor rangeSensor;
 
     // Poses from visualizer
-    private final Pose startPose = new Pose(108.582, 132.904, Math.toRadians(0));
+    private final Pose startPose = new Pose(108.582, 132.904, Math.toRadians(270));
     private final Pose scorePose1 = new Pose(92.510, 91.727, Math.toRadians(45));
     private final Pose intakeStart = new Pose(95.014, 81.243, Math.toRadians(0));
-    private final Pose intakeEnd = new Pose(125.461, 80.865, Math.toRadians(0));
-    private final Pose clearStart = new Pose(118.615, 69.877, Math.toRadians(90));
-    private final Pose clearEnd = new Pose(128.098, 69.534, Math.toRadians(90));
-    private final Pose scorePose2 = new Pose(82.728, 101.335, Math.toRadians(40));
+    private final Pose intakeEnd = new Pose(123, 80.865, Math.toRadians(0));
+    private final Pose clearStart = new Pose(115, 75, Math.toRadians(90));
+    private final Pose clearEnd = new Pose(126, 73, Math.toRadians(90));
+    private final Pose scorePose2 = new Pose(82.728, 101.335, Math.toRadians(37));
 
     private PathChain driveToShoot1, driveToIntake, driveToClear, driveToShoot2;
 
