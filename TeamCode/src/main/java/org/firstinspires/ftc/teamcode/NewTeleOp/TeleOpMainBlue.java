@@ -58,7 +58,7 @@ public class TeleOpMainBlue extends LinearOpMode {
             if (gamepad1.b) speedFactor = 0.4;  
             if (gamepad1.x) speedFactor = 0.7;  
 
-            double axial = -gamepad1.left_stick_y * speedFactor;
+            double axial = -gamepad1.right_stick_y * speedFactor;
             double lateral = -gamepad1.left_stick_x * speedFactor;
             double turn = -gamepad1.right_stick_x * speedFactor;
 

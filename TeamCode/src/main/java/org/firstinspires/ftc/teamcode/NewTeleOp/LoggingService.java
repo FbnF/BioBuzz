@@ -33,7 +33,7 @@ public class LoggingService {
                 "teleop_new",
                 TinyCsvLoggerFlex.doubleCol("dist_filt", vision::getDistance),
                 TinyCsvLoggerFlex.doubleCol("tx", vision::getTx),
-                TinyCsvLoggerFlex.doubleCol("target_tps", () -> shooter.calculateVelocity(vision.getDistance(), vision.isTargetVisible())),
+                TinyCsvLoggerFlex.doubleCol("target_tps", shooter::getFinalTPS),
                 TinyCsvLoggerFlex.motorEx("launch", robot.launchMotor),
                 TinyCsvLoggerFlex.motorEx("intake", robot.intakeMotor),
                 TinyCsvLoggerFlex.pedroPose("pose", poseSupplier)
