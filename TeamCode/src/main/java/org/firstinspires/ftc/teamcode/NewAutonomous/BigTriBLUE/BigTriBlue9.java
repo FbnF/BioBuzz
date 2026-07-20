@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.NewAutonomous;
+package org.firstinspires.ftc.teamcode.NewAutonomous.BigTriBLUE;
 
 import static com.pedropathing.ivy.Scheduler.schedule;
 import static com.pedropathing.ivy.commands.Commands.instant;
@@ -27,8 +27,8 @@ import org.firstinspires.ftc.teamcode.configs.HardwareConfig;
 import org.firstinspires.ftc.teamcode.configs.ShooterConfig;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
-@Autonomous(name = "BigTriBLUE9Clear", group = "Autonomous")
-public class BigTriBlue9Clear extends LinearOpMode {
+@Autonomous(name = "BigTriBLUE9", group = "Autonomous")
+public class BigTriBlue9 extends LinearOpMode {
 
     //-------------------- Hardware & Follower Constants --------------------
     private Follower follower;
@@ -45,11 +45,6 @@ public class BigTriBlue9Clear extends LinearOpMode {
     private final Pose scorePose1 = new Pose(49.362, 91.028, Math.toRadians(135));
     private final Pose intakeStart1 = new Pose(46.806, 85.046, Math.toRadians(180));
     private final Pose intakeEnd1 = new Pose(16.983, 84.431, Math.toRadians(180));
-    
-    // Clear maneuver poses
-    private final Pose clearStart = new Pose(29.416, 76.200, Math.toRadians(270));
-    private final Pose clearEnd = new Pose(13.797, 76.364, Math.toRadians(270));
-    
     private final Pose scorePose2 = new Pose(58.271, 100.461, Math.toRadians(145));
     private final Pose intakeStart2 = new Pose(47.273, 64.785, Math.toRadians(180));
     private final Pose intakeEnd2 = new Pose(15.293, 64.724, Math.toRadians(180));
@@ -58,7 +53,7 @@ public class BigTriBlue9Clear extends LinearOpMode {
 
 
     //-------------------- Defined Paths --------------------
-    private PathChain driveToShoot1, driveToIntake1, driveToClear, driveToShoot2, driveToIntake2, driveToShoot3;
+    private PathChain driveToShoot1, driveToIntake1, driveToShoot2, driveToIntake2, driveToShoot3;
 
     public void buildPaths() {
         driveToShoot1 = follower.pathBuilder()
@@ -75,17 +70,9 @@ public class BigTriBlue9Clear extends LinearOpMode {
                 .setGlobalDeceleration()
                 .build();
 
-        driveToClear = follower.pathBuilder()
-                .addPath(new BezierLine(intakeEnd1, clearStart))
-                .setLinearHeadingInterpolation(intakeEnd1.getHeading(), clearStart.getHeading())
-                .addPath(new BezierLine(clearStart, clearEnd))
-                .setConstantHeadingInterpolation(clearStart.getHeading())
-                .setGlobalDeceleration()
-                .build();
-
         driveToShoot2 = follower.pathBuilder()
-                .addPath(new BezierLine(clearEnd, scorePose2))
-                .setLinearHeadingInterpolation(clearEnd.getHeading(), scorePose2.getHeading())
+                .addPath(new BezierLine(intakeEnd1, scorePose2))
+                .setLinearHeadingInterpolation(intakeEnd1.getHeading(), scorePose2.getHeading())
                 .setGlobalDeceleration()
                 .build();
 
@@ -156,11 +143,6 @@ public class BigTriBlue9Clear extends LinearOpMode {
                         instant(() -> intake.setPower(ShooterConfig.INTAKE_POWER)),
                         instant(() -> sideServo.setPower(1.0))
                 ),
-                
-                // Clear maneuver
-                follow(follower, driveToClear, true),
-                waitMs(150), // waitSeconds(0.15) from RR
-                
                 instant(() -> follower.setMaxPower(1.0)),
 
                 // Shot 2 + Early Start
@@ -212,7 +194,7 @@ public class BigTriBlue9Clear extends LinearOpMode {
         buildPaths();
         follower.setStartingPose(startPose);
 
-        telemetry.addLine("BigTriBLUE9Clear Ready.");
+        telemetry.addLine("BigTriBLUE9 Ready.");
         telemetry.update();
 
         waitForStart();

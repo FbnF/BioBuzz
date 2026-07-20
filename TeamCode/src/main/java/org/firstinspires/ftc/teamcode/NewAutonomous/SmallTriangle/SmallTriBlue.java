@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.NewAutonomous;
+package org.firstinspires.ftc.teamcode.NewAutonomous.SmallTriangle;
 
 import static com.pedropathing.ivy.Scheduler.schedule;
 import static com.pedropathing.ivy.commands.Commands.instant;
@@ -28,10 +28,9 @@ import org.firstinspires.ftc.teamcode.configs.ShooterConfig;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 
-@Autonomous(name = "BigTriRED3", group = "Autonomous")
-public class BigTriRed3 extends LinearOpMode {
+@Autonomous(name = "SmallTriBlue", group = "Autonomous")
+public class SmallTriBlue extends LinearOpMode {
 
-    //-------------------- Hardware & Follower Constants --------------------
     private Follower follower;
     private DcMotor intake;
     private DcMotorEx shooter;
@@ -39,52 +38,71 @@ public class BigTriRed3 extends LinearOpMode {
     private CRServo sideServo;
     private DistanceSensor rangeSensor;
 
+    // Latest Poses from the Blue Side Visualizer
+    private final Pose startPose = new Pose(55.377, 7.861, Math.toRadians(90));
+    private final Pose scorePose1 = new Pose(58.446, 16.959, Math.toRadians(115));
+    private final Pose intakeStart = new Pose(46.778, 35.749, Math.toRadians(180));
+    private final Pose intakeEnd = new Pose(9.033, 36.260, Math.toRadians(180));
+    private final Pose scorePose2 = new Pose(58.446, 17.959, Math.toRadians(115));
+    private final Pose parkPose = new Pose(36.599, 16.115, Math.toRadians(90));
 
+    private PathChain driveToShoot1, driveToIntake, driveToShoot2, driveToPark;
 
-    //-------------------- POSES --------------------
-    private final Pose startPose = new Pose(108.582, 132.904, Math.toRadians(270));
-    private final Pose scorePose = new Pose(82.728, 101.335, Math.toRadians(40));
-
-
-
-    //-------------------- Defined Paths --------------------
-    private PathChain driveToShoot;
-
+    // Setting up the path chains with global deceleration for smoothness
     public void buildPaths() {
-        driveToShoot = follower.pathBuilder()
-                .addPath(new BezierLine(startPose, scorePose))
-                .setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading())
+        driveToShoot1 = follower.pathBuilder()
+                .addPath(new BezierLine(startPose, scorePose1))
+                .setLinearHeadingInterpolation(startPose.getHeading(), scorePose1.getHeading())
+                .setGlobalDeceleration()
+                .build();
+
+        // Driving towards the wall to grab the floor balls
+        driveToIntake = follower.pathBuilder()
+                .addPath(new BezierLine(scorePose1, intakeStart))
+                .setLinearHeadingInterpolation(scorePose1.getHeading(), intakeStart.getHeading())
+                .addPath(new BezierLine(intakeStart, intakeEnd))
+                .setConstantHeadingInterpolation(intakeStart.getHeading())
+                .setGlobalDeceleration()
+                .build();
+
+        driveToShoot2 = follower.pathBuilder()
+                .addPath(new BezierLine(intakeEnd, scorePose2))
+                .setLinearHeadingInterpolation(intakeEnd.getHeading(), scorePose2.getHeading())
+                .setGlobalDeceleration()
+                .build();
+
+        driveToPark = follower.pathBuilder()
+                .addPath(new BezierLine(scorePose2, parkPose))
+                .setLinearHeadingInterpolation(scorePose2.getHeading(), parkPose.getHeading())
                 .setGlobalDeceleration()
                 .build();
     }
 
-
-
-    //-------------------- Shooter & Reload Logic --------------------
+    // Bundled logic for the shooter and the auto-reload sequence
     public Command combinedShootLogic() {
         return sequential(
-                // Spin up the shooter with the short distance velocity
-                instant(() -> shooter.setVelocity(ShooterConfig.SHOOTER_VEL_SHORT)),
+                // Get the flywheel up to speed
+                instant(() -> shooter.setVelocity(ShooterConfig.SHOOTER_VEL_LONG)),
                 
-                // Let the flywheel stabilize
+                // Stabilization window
                 waitMs((long)(ShooterConfig.START_WAIT_TIME * 1000)),
                 
-                // Kick the ball into the shooter
+                // Kick the ball in
                 instant(() -> feed.setPower(ShooterConfig.SIDE_POWER)),
 
-                // Wait for the ball to clear the sensor
+                // Wait for the handoff to clear
                 waitUntil(() -> rangeSensor.getDistance(DistanceUnit.MM) > ShooterConfig.HANDOFF_DISTANCE_MM),
                 
-                // Start reloading the next ball right away
+                // Immediately start the intake reload
                 parallel(
                         instant(() -> sideServo.setPower(1.0)),
                         instant(() -> intake.setPower(ShooterConfig.INTAKE_POWER))
                 ),
 
-                // Give it 5 seconds to finish up and settle
+                // 5s buffer to ensure everything is settled
                 waitMs(5000),
 
-                // Power down everything to save battery
+                // Cut power to prep for movement
                 instant(() -> {
                     feed.setPower(0);
                     shooter.setVelocity(0);
@@ -94,24 +112,35 @@ public class BigTriRed3 extends LinearOpMode {
         );
     }
 
-
-
-    //-------------------- Auto Routine --------------------
+    // The complete autonomous command structure
     public Command autoRoutine() {
         return sequential(
-                // Drive to the scoring spot and hold position
-                follow(follower, driveToShoot, true),
-                // Fire the payload
-                combinedShootLogic()
+                // Initial shot
+                follow(follower, driveToShoot1, true),
+                combinedShootLogic(),
+
+                // Slow down to 50% power for a clean pickup towards the wall
+                instant(() -> follower.setMaxPower(0.5)),
+                parallel(
+                        follow(follower, driveToIntake, true),
+                        instant(() -> intake.setPower(ShooterConfig.INTAKE_POWER)),
+                        instant(() -> sideServo.setPower(1.0))
+                ),
+                // Back to full power once we have the goods
+                instant(() -> follower.setMaxPower(1.0)),
+
+                // Return and score
+                follow(follower, driveToShoot2, true),
+                combinedShootLogic(),
+
+                // Park it
+                follow(follower, driveToPark, true)
         );
     }
 
-
-
-    //-------------------- OpMode Setup --------------------
     @Override
     public void runOpMode() {
-        // Hardware initialization using our project configs
+        // Initialize hardware using our configs
         follower = Constants.createFollower(hardwareMap);
         intake = hardwareMap.get(DcMotor.class, HardwareConfig.INTAKE_MOTOR);
         shooter = (DcMotorEx) hardwareMap.get(DcMotor.class, HardwareConfig.SHOOTER_MOTOR);
@@ -119,7 +148,7 @@ public class BigTriRed3 extends LinearOpMode {
         sideServo = hardwareMap.get(CRServo.class, HardwareConfig.SIDE_SERVO);
         rangeSensor = hardwareMap.get(DistanceSensor.class, HardwareConfig.RANGE_SENSOR);
 
-        // Subsystem configuration and encoder setup
+        // Subsystem safety and encoder setup
         intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         shooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -129,21 +158,21 @@ public class BigTriRed3 extends LinearOpMode {
         buildPaths();
         follower.setStartingPose(startPose);
 
-        telemetry.addLine("BigTriRED3 Ready.");
+        telemetry.addLine("SmallTriBlue Ready.");
         telemetry.update();
 
         waitForStart();
 
         if (isStopRequested()) return;
 
-        // Start the scheduled routine
+        // Schedule the routine into the Ivy loop
         schedule(autoRoutine());
 
         while (opModeIsActive()) {
             follower.update();
             Scheduler.execute();
 
-            // Telemetry for monitoring on the driver station
+            // Status telemetry for the driver station
             telemetry.addData("X", follower.getPose().getX());
             telemetry.addData("Y", follower.getPose().getY());
             telemetry.addData("Heading (Deg)", Math.toDegrees(follower.getPose().getHeading()));

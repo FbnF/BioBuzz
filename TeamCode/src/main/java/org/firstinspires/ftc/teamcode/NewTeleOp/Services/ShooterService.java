@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.NewTeleOp;
+package org.firstinspires.ftc.teamcode.NewTeleOp.Services;
 
 import org.firstinspires.ftc.teamcode.configs.ShooterConfig;
 import org.firstinspires.ftc.teamcode.utils.Calculations;

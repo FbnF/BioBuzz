@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.NewAutonomous;
+package org.firstinspires.ftc.teamcode.NewAutonomous.BigTriBLUE;
 
 import static com.pedropathing.ivy.Scheduler.schedule;
 import static com.pedropathing.ivy.commands.Commands.instant;
@@ -27,9 +27,8 @@ import org.firstinspires.ftc.teamcode.configs.HardwareConfig;
 import org.firstinspires.ftc.teamcode.configs.ShooterConfig;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
-
-@Autonomous(name = "BigTriBLUE3", group = "Autonomous")
-public class BigTriBlue3 extends LinearOpMode {
+@Autonomous(name = "BigTriBLUE6Clear", group = "Autonomous")
+public class BigTriBlue6Clear extends LinearOpMode {
 
     //-------------------- Hardware & Follower Constants --------------------
     private Follower follower;
@@ -43,17 +42,44 @@ public class BigTriBlue3 extends LinearOpMode {
 
     //-------------------- POSES --------------------
     private final Pose startPose = new Pose(33.814, 133.428, Math.toRadians(270));
-    private final Pose scorePose = new Pose(58.271, 100.461, Math.toRadians(145));
+    private final Pose scorePose1 = new Pose(49.362, 91.028, Math.toRadians(135));
+    private final Pose intakeStart = new Pose(46.806, 83.648, Math.toRadians(180));
+    private final Pose intakeEnd = new Pose(14.537, 84.082, Math.toRadians(180));
+    private final Pose clearStart = new Pose(26.796, 70.959, Math.toRadians(270));
+    private final Pose clearEnd = new Pose(12.486, 70.337, Math.toRadians(270));
+    private final Pose scorePose2 = new Pose(58.271, 100.461, Math.toRadians(145));
 
 
 
     //-------------------- Defined Paths --------------------
-    private PathChain driveToShoot;
+    private PathChain driveToShoot1, driveToIntake, driveToClear, driveToShoot2;
 
     public void buildPaths() {
-        driveToShoot = follower.pathBuilder()
-                .addPath(new BezierLine(startPose, scorePose))
-                .setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading())
+        driveToShoot1 = follower.pathBuilder()
+                .addPath(new BezierLine(startPose, scorePose1))
+                .setLinearHeadingInterpolation(startPose.getHeading(), scorePose1.getHeading())
+                .setGlobalDeceleration()
+                .build();
+
+        driveToIntake = follower.pathBuilder()
+                .addPath(new BezierLine(scorePose1, intakeStart))
+                .setLinearHeadingInterpolation(scorePose1.getHeading(), intakeStart.getHeading())
+                .addPath(new BezierLine(intakeStart, intakeEnd))
+                .setConstantHeadingInterpolation(intakeStart.getHeading())
+                .setGlobalDeceleration()
+                .build();
+
+        driveToClear = follower.pathBuilder()
+                .addPath(new BezierLine(intakeEnd, clearStart))
+                .setLinearHeadingInterpolation(intakeEnd.getHeading(), clearStart.getHeading())
+                .addPath(new BezierLine(clearStart, clearEnd))
+                .setConstantHeadingInterpolation(clearStart.getHeading())
+                .setGlobalDeceleration()
+                .build();
+
+        driveToShoot2 = follower.pathBuilder()
+                .addPath(new BezierLine(clearEnd, scorePose2))
+                .setLinearHeadingInterpolation(clearEnd.getHeading(), scorePose2.getHeading())
                 .setGlobalDeceleration()
                 .build();
     }
@@ -63,25 +89,25 @@ public class BigTriBlue3 extends LinearOpMode {
     //-------------------- Shooter & Reload Logic --------------------
     public Command combinedShootLogic() {
         return sequential(
-                // Spin up
+                // Spin up (short range)
                 instant(() -> shooter.setVelocity(ShooterConfig.SHOOTER_VEL_SHORT)),
-                
+
                 // Stabilize
                 waitMs((long)(ShooterConfig.START_WAIT_TIME * 1000)),
-                
-                // Feed ball
+
+                // Feed
                 instant(() -> feed.setPower(ShooterConfig.SIDE_POWER)),
 
-                // Wait for clear
+                // Wait for sensor clear
                 waitUntil(() -> rangeSensor.getDistance(DistanceUnit.MM) > ShooterConfig.HANDOFF_DISTANCE_MM),
-                
+
                 // Reload
                 parallel(
                         instant(() -> sideServo.setPower(1.0)),
                         instant(() -> intake.setPower(ShooterConfig.INTAKE_POWER))
                 ),
 
-                // 5s settle
+                // 5s settle wait
                 waitMs(5000),
 
                 // Power down
@@ -99,9 +125,30 @@ public class BigTriBlue3 extends LinearOpMode {
     //-------------------- Auto Routine --------------------
     public Command autoRoutine() {
         return sequential(
-                // Move and hold
-                follow(follower, driveToShoot, true),
-                // Shoot
+                // Score preload
+                follow(follower, driveToShoot1, true),
+                combinedShootLogic(),
+
+                // Pickup (50% power)
+                instant(() -> follower.setMaxPower(0.5)),
+                parallel(
+                        follow(follower, driveToIntake, true),
+                        instant(() -> intake.setPower(ShooterConfig.INTAKE_POWER)),
+                        instant(() -> sideServo.setPower(1.0))
+                ),
+                instant(() -> follower.setMaxPower(1.0)),
+
+                // Clear the bar
+                follow(follower, driveToClear, true),
+
+                // Stop intake for score move
+                instant(() -> {
+                    intake.setPower(0);
+                    sideServo.setPower(0);
+                }),
+
+                // Score second ball
+                follow(follower, driveToShoot2, true),
                 combinedShootLogic()
         );
     }
@@ -124,12 +171,12 @@ public class BigTriBlue3 extends LinearOpMode {
         shooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         shooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(500, 3, 0, 4));
-        
+
         Scheduler.reset();
         buildPaths();
         follower.setStartingPose(startPose);
 
-        telemetry.addLine("BigTriBlue3 Ready.");
+        telemetry.addLine("BigTriBlue6Clear Ready.");
         telemetry.update();
 
         waitForStart();
@@ -143,10 +190,10 @@ public class BigTriBlue3 extends LinearOpMode {
             follower.update();
             Scheduler.execute();
 
-            // Telemetry
+            // Status
             telemetry.addData("X", follower.getPose().getX());
             telemetry.addData("Y", follower.getPose().getY());
-            telemetry.addData("Heading (Deg)", Math.toDegrees(follower.getPose().getHeading()));
+            telemetry.addData("Heading", Math.toDegrees(follower.getPose().getHeading()));
             telemetry.update();
         }
     }

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.NewAutonomous;
+package org.firstinspires.ftc.teamcode.NewAutonomous.SmallTriangle;
 
 import static com.pedropathing.ivy.Scheduler.schedule;
 import static com.pedropathing.ivy.commands.Commands.instant;

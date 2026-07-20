@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.NewAutonomous;
+package org.firstinspires.ftc.teamcode.NewAutonomous.BigTriRED;
 
 import static com.pedropathing.ivy.Scheduler.schedule;
 import static com.pedropathing.ivy.commands.Commands.instant;
@@ -27,8 +27,8 @@ import org.firstinspires.ftc.teamcode.configs.HardwareConfig;
 import org.firstinspires.ftc.teamcode.configs.ShooterConfig;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
-@Autonomous(name = "BigTriRED6", group = "Autonomous")
-public class BigTriRed6 extends LinearOpMode {
+@Autonomous(name = "BigTriRED9", group = "Autonomous")
+public class BigTriRed9 extends LinearOpMode {
 
     //-------------------- Hardware & Follower Constants --------------------
     private Follower follower;
@@ -43,14 +43,17 @@ public class BigTriRed6 extends LinearOpMode {
     //-------------------- POSES --------------------
     private final Pose startPose = new Pose(108.582, 132.904, Math.toRadians(270));
     private final Pose scorePose1 = new Pose(92.510, 91.727, Math.toRadians(45));
-    private final Pose intakeStart = new Pose(95.014, 81.243, Math.toRadians(0));
-    private final Pose intakeEnd = new Pose(125.461, 80.865, Math.toRadians(0));
-    private final Pose scorePose2 = new Pose(82.728, 101.335, Math.toRadians(40));
+    private final Pose intakeStart1 = new Pose(95.014, 81.243, Math.toRadians(0));
+    private final Pose intakeEnd1 = new Pose(121, 80.865, Math.toRadians(0));
+    private final Pose scorePose2 = new Pose(82.728, 101.335, Math.toRadians(35));
+    private final Pose intakeStart2 = new Pose(95.104, 59, Math.toRadians(7));
+    private final Pose intakeEnd2 = new Pose(128, 59, Math.toRadians(7));
+    private final Pose scorePose3 = new Pose(82.728, 101.335, Math.toRadians(35));
 
 
 
     //-------------------- Defined Paths --------------------
-    private PathChain driveToShoot1, driveToIntake, driveToShoot2;
+    private PathChain driveToShoot1, driveToIntake1, driveToShoot2, driveToIntake2, driveThroughLine2, driveToShoot3;
 
     public void buildPaths() {
         driveToShoot1 = follower.pathBuilder()
@@ -59,17 +62,36 @@ public class BigTriRed6 extends LinearOpMode {
                 .setGlobalDeceleration()
                 .build();
 
-        driveToIntake = follower.pathBuilder()
-                .addPath(new BezierLine(scorePose1, intakeStart))
-                .setLinearHeadingInterpolation(scorePose1.getHeading(), intakeStart.getHeading())
-                .addPath(new BezierLine(intakeStart, intakeEnd))
-                .setConstantHeadingInterpolation(intakeStart.getHeading())
+        driveToIntake1 = follower.pathBuilder()
+                .addPath(new BezierLine(scorePose1, intakeStart1))
+                .setLinearHeadingInterpolation(scorePose1.getHeading(), intakeStart1.getHeading())
+                .addPath(new BezierLine(intakeStart1, intakeEnd1))
+                .setConstantHeadingInterpolation(intakeStart1.getHeading())
                 .setGlobalDeceleration()
                 .build();
 
         driveToShoot2 = follower.pathBuilder()
-                .addPath(new BezierLine(intakeEnd, scorePose2))
-                .setLinearHeadingInterpolation(intakeEnd.getHeading(), scorePose2.getHeading())
+                .addPath(new BezierLine(intakeEnd1, scorePose2))
+                .setLinearHeadingInterpolation(intakeEnd1.getHeading(), scorePose2.getHeading())
+                .setGlobalDeceleration()
+                .build();
+
+        // Split paths for Rack 2 to prevent right-bias corner cutting
+        driveToIntake2 = follower.pathBuilder()
+                .addPath(new BezierLine(scorePose2, intakeStart2))
+                .setLinearHeadingInterpolation(scorePose2.getHeading(), intakeStart2.getHeading())
+                .setGlobalDeceleration()
+                .build();
+
+        driveThroughLine2 = follower.pathBuilder()
+                .addPath(new BezierLine(intakeStart2, intakeEnd2))
+                .setConstantHeadingInterpolation(intakeStart2.getHeading())
+                .setGlobalDeceleration()
+                .build();
+
+        driveToShoot3 = follower.pathBuilder()
+                .addPath(new BezierLine(intakeEnd2, scorePose3))
+                .setLinearHeadingInterpolation(intakeEnd2.getHeading(), scorePose3.getHeading())
                 .setGlobalDeceleration()
                 .build();
     }
@@ -79,26 +101,79 @@ public class BigTriRed6 extends LinearOpMode {
     //-------------------- Shooter & Reload Logic --------------------
     public Command combinedShootLogic() {
         return sequential(
-                // Spin up
-                instant(() -> shooter.setVelocity(ShooterConfig.SHOOTER_VEL_SHORT)),
-                
-                // Stabilize
-                waitMs((long)(ShooterConfig.START_WAIT_TIME * 1000)),
-                
-                // Feed ball
+                // Small beat since we spin while driving
+                waitMs(250),
+
+                // Engagement using config SIDE_POWER (-1.0)
                 instant(() -> feed.setPower(ShooterConfig.SIDE_POWER)),
 
-                // Wait for clear
+                // Wait for fire
                 waitUntil(() -> rangeSensor.getDistance(DistanceUnit.MM) > ShooterConfig.HANDOFF_DISTANCE_MM),
-                
-                // Reload
+
+                // Start reload
                 parallel(
                         instant(() -> sideServo.setPower(1.0)),
                         instant(() -> intake.setPower(ShooterConfig.INTAKE_POWER))
                 ),
 
-                // 5s settle
-                waitMs(5000),
+                // 4.2s settled wait
+                waitMs(4200),
+
+                // Idle at half speed
+                instant(() -> {
+                    feed.setPower(0);
+                    shooter.setVelocity(600); 
+                    intake.setPower(0);
+                    sideServo.setPower(0);
+                })
+        );
+    }
+
+
+
+    //-------------------- Auto Routine --------------------
+    public Command autoRoutine() {
+        return sequential(
+                // Shot 1 + Early Start
+                parallel(
+                        follow(follower, driveToShoot1, true),
+                        instant(() -> shooter.setVelocity(ShooterConfig.SHOOTER_VEL_SHORT))
+                ),
+                combinedShootLogic(),
+
+                // Pickup 1 (at 0.6 power)
+                instant(() -> follower.setMaxPower(0.6)),
+                parallel(
+                        follow(follower, driveToIntake1, true),
+                        instant(() -> intake.setPower(ShooterConfig.INTAKE_POWER)),
+                        instant(() -> sideServo.setPower(1.0))
+                ),
+                instant(() -> follower.setMaxPower(1.0)),
+
+                // Shot 2 + Early Start
+                parallel(
+                        follow(follower, driveToShoot2, true),
+                        instant(() -> shooter.setVelocity(ShooterConfig.SHOOTER_VEL_SHORT))
+                ),
+                combinedShootLogic(),
+
+                // Pickup 2 - Forces snap to start position to fix overshooting right
+                follow(follower, driveToIntake2, true),
+                
+                instant(() -> follower.setMaxPower(0.6)),
+                parallel(
+                        follow(follower, driveThroughLine2, true),
+                        instant(() -> intake.setPower(ShooterConfig.INTAKE_POWER)),
+                        instant(() -> sideServo.setPower(1.0))
+                ),
+                instant(() -> follower.setMaxPower(1.0)),
+
+                // Shot 3 + Early Start
+                parallel(
+                        follow(follower, driveToShoot3, true),
+                        instant(() -> shooter.setVelocity(ShooterConfig.SHOOTER_VEL_SHORT))
+                ),
+                combinedShootLogic(),
 
                 // Power down
                 instant(() -> {
@@ -112,34 +187,9 @@ public class BigTriRed6 extends LinearOpMode {
 
 
 
-    //-------------------- Auto Routine --------------------
-    public Command autoRoutine() {
-        return sequential(
-                // Score 1
-                follow(follower, driveToShoot1, true),
-                combinedShootLogic(),
-
-                // Intake (50% power)
-                instant(() -> follower.setMaxPower(0.5)),
-                parallel(
-                        follow(follower, driveToIntake, true),
-                        instant(() -> intake.setPower(ShooterConfig.INTAKE_POWER)),
-                        instant(() -> sideServo.setPower(1.0))
-                ),
-                instant(() -> follower.setMaxPower(1.0)),
-
-                // Score 2
-                follow(follower, driveToShoot2, true),
-                combinedShootLogic()
-        );
-    }
-
-
-
     //-------------------- OpMode Setup --------------------
     @Override
     public void runOpMode() {
-        // Init hardware
         follower = Constants.createFollower(hardwareMap);
         intake = hardwareMap.get(DcMotor.class, HardwareConfig.INTAKE_MOTOR);
         shooter = (DcMotorEx) hardwareMap.get(DcMotor.class, HardwareConfig.SHOOTER_MOTOR);
@@ -147,34 +197,29 @@ public class BigTriRed6 extends LinearOpMode {
         sideServo = hardwareMap.get(CRServo.class, HardwareConfig.SIDE_SERVO);
         rangeSensor = hardwareMap.get(DistanceSensor.class, HardwareConfig.RANGE_SENSOR);
 
-        // Subsystem setup
         intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         shooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         shooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(500, 3, 0, 4));
-        
+
         Scheduler.reset();
         buildPaths();
         follower.setStartingPose(startPose);
 
-        telemetry.addLine("BigTriRed6 Ready.");
+        telemetry.addLine("BigTriRed9 Ready.");
         telemetry.update();
 
         waitForStart();
-
         if (isStopRequested()) return;
 
-        // Schedule auto
         schedule(autoRoutine());
 
         while (opModeIsActive()) {
             follower.update();
             Scheduler.execute();
-
-            // Telemetry
             telemetry.addData("X", follower.getPose().getX());
             telemetry.addData("Y", follower.getPose().getY());
-            telemetry.addData("Heading (Deg)", Math.toDegrees(follower.getPose().getHeading()));
+            telemetry.addData("Heading", Math.toDegrees(follower.getPose().getHeading()));
             telemetry.update();
         }
     }

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.NewAutonomous;
+package org.firstinspires.ftc.teamcode.NewAutonomous.SmallTriangle;
 
 import static com.pedropathing.ivy.Scheduler.schedule;
 import static com.pedropathing.ivy.commands.Commands.instant;
@@ -27,10 +27,9 @@ import org.firstinspires.ftc.teamcode.configs.HardwareConfig;
 import org.firstinspires.ftc.teamcode.configs.ShooterConfig;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
-@Autonomous(name = "BigTriRED6Clear", group = "Autonomous")
-public class BigTriRed6Clear extends LinearOpMode {
+@Autonomous(name = "SmallTriRed", group = "Autonomous")
+public class SmallTriRed extends LinearOpMode {
 
-    //-------------------- Hardware & Follower Constants --------------------
     private Follower follower;
     private DcMotor intake;
     private DcMotorEx shooter;
@@ -38,22 +37,17 @@ public class BigTriRed6Clear extends LinearOpMode {
     private CRServo sideServo;
     private DistanceSensor rangeSensor;
 
+    // Latest Poses from the Visualizer
+    private final Pose startPose = new Pose(86.298, 8.385, Math.toRadians(90));
+    private final Pose scorePose1 = new Pose(82.378, 18.531, Math.toRadians(63));
+    private final Pose intakeStart = new Pose(92.326, 33.535, Math.toRadians(0));
+    private final Pose intakeEnd = new Pose(132.416, 33.399, Math.toRadians(0));
+    private final Pose scorePose2 = new Pose(82.378, 18.531, Math.toRadians(63));
+    private final Pose parkPose = new Pose(105.253, 16.638, Math.toRadians(90));
 
+    private PathChain driveToShoot1, driveToIntake, driveToShoot2, driveToPark;
 
-    //-------------------- POSES --------------------
-    private final Pose startPose = new Pose(108.582, 132.904, Math.toRadians(270));
-    private final Pose scorePose1 = new Pose(92.510, 91.727, Math.toRadians(45));
-    private final Pose intakeStart = new Pose(95.014, 81.243, Math.toRadians(0));
-    private final Pose intakeEnd = new Pose(123, 80.865, Math.toRadians(0));
-    private final Pose clearStart = new Pose(115, 75, Math.toRadians(90));
-    private final Pose clearEnd = new Pose(126, 73, Math.toRadians(90));
-    private final Pose scorePose2 = new Pose(82.728, 101.335, Math.toRadians(37));
-
-
-
-    //-------------------- Defined Paths --------------------
-    private PathChain driveToShoot1, driveToIntake, driveToClear, driveToShoot2;
-
+    // Building the paths based on the new visualizer points
     public void buildPaths() {
         driveToShoot1 = follower.pathBuilder()
                 .addPath(new BezierLine(startPose, scorePose1))
@@ -69,43 +63,44 @@ public class BigTriRed6Clear extends LinearOpMode {
                 .setGlobalDeceleration()
                 .build();
 
-        // Extra path to let the balls out
-        driveToClear = follower.pathBuilder()
-                .addPath(new BezierLine(intakeEnd, clearStart))
-                .setLinearHeadingInterpolation(intakeEnd.getHeading(), clearStart.getHeading())
-                .addPath(new BezierLine(clearStart, clearEnd))
-                .setConstantHeadingInterpolation(clearStart.getHeading())
+        driveToShoot2 = follower.pathBuilder()
+                .addPath(new BezierLine(intakeEnd, scorePose2))
+                .setLinearHeadingInterpolation(intakeEnd.getHeading(), scorePose2.getHeading())
                 .setGlobalDeceleration()
                 .build();
 
-        driveToShoot2 = follower.pathBuilder()
-                .addPath(new BezierLine(clearEnd, scorePose2))
-                .setLinearHeadingInterpolation(clearEnd.getHeading(), scorePose2.getHeading())
+        driveToPark = follower.pathBuilder()
+                .addPath(new BezierLine(scorePose2, parkPose))
+                .setLinearHeadingInterpolation(scorePose2.getHeading(), parkPose.getHeading())
                 .setGlobalDeceleration()
                 .build();
     }
 
-
-
-    //-------------------- Shooter & Reload Logic --------------------
+    // Logic for the shooter and reloading the next ball
     public Command combinedShootLogic() {
         return sequential(
-                instant(() -> shooter.setVelocity(ShooterConfig.SHOOTER_VEL_SHORT)),
-
+                // Spin up the shooter flywheel
+                instant(() -> shooter.setVelocity(ShooterConfig.SHOOTER_VEL_LONG)),
+                
+                // Let the motor get to speed
                 waitMs((long)(ShooterConfig.START_WAIT_TIME * 1000)),
-
+                
+                // Fire the ball
                 instant(() -> feed.setPower(ShooterConfig.SIDE_POWER)),
 
+                // Wait for the ball to clear the handoff sensor
                 waitUntil(() -> rangeSensor.getDistance(DistanceUnit.MM) > ShooterConfig.HANDOFF_DISTANCE_MM),
-                // Start reloading
+                
+                // Start pulling in the next ball immediately
                 parallel(
                         instant(() -> sideServo.setPower(1.0)),
                         instant(() -> intake.setPower(ShooterConfig.INTAKE_POWER))
                 ),
 
+                // Short wait to finish the cycle and ensure the ball is secure
                 waitMs(5000),
 
-                // Power down
+                // Shut down to prep for driving
                 instant(() -> {
                     feed.setPower(0);
                     shooter.setVelocity(0);
@@ -115,16 +110,15 @@ public class BigTriRed6Clear extends LinearOpMode {
         );
     }
 
-
-
-    //-------------------- Auto Routine --------------------
+    // The full autonomous sequence
     public Command autoRoutine() {
         return sequential(
-                // Score 1
+                // Score the preload
                 follow(follower, driveToShoot1, true),
                 combinedShootLogic(),
 
-                // Intake (50% power)
+                // Drive through the intake zone and start grabbing balls immediately
+                // We slow down to 50% power for accuracy while picking up, then speed back up
                 instant(() -> follower.setMaxPower(0.5)),
                 parallel(
                         follow(follower, driveToIntake, true),
@@ -133,34 +127,18 @@ public class BigTriRed6Clear extends LinearOpMode {
                 ),
                 instant(() -> follower.setMaxPower(1.0)),
 
-                // Clear the area
-                follow(follower, driveToClear, true),
-
-                // Stop intake for score move
-                instant(() -> {
-                    intake.setPower(0);
-                    sideServo.setPower(0);
-                }),
-
-                // Score 2
+                // Score the second ball
                 follow(follower, driveToShoot2, true),
                 combinedShootLogic(),
-                // Power down
-                instant(() -> {
-                    feed.setPower(0);
-                    shooter.setVelocity(0);
-                    intake.setPower(0);
-                    sideServo.setPower(0);
-                })
+
+                // Final move to the park position
+                follow(follower, driveToPark, true)
         );
     }
 
-
-
-    //-------------------- OpMode Setup --------------------
     @Override
     public void runOpMode() {
-        // Init hardware
+        // Initialize all hardware components
         follower = Constants.createFollower(hardwareMap);
         intake = hardwareMap.get(DcMotor.class, HardwareConfig.INTAKE_MOTOR);
         shooter = (DcMotorEx) hardwareMap.get(DcMotor.class, HardwareConfig.SHOOTER_MOTOR);
@@ -168,7 +146,7 @@ public class BigTriRed6Clear extends LinearOpMode {
         sideServo = hardwareMap.get(CRServo.class, HardwareConfig.SIDE_SERVO);
         rangeSensor = hardwareMap.get(DistanceSensor.class, HardwareConfig.RANGE_SENSOR);
 
-        // Subsystem setup
+        // Hardware behavior setup
         intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         shooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -178,21 +156,21 @@ public class BigTriRed6Clear extends LinearOpMode {
         buildPaths();
         follower.setStartingPose(startPose);
 
-        telemetry.addLine("BigTriRed6Clear Ready.");
+        telemetry.addLine("SmallTriRed Ready.");
         telemetry.update();
 
         waitForStart();
 
         if (isStopRequested()) return;
 
-        // Schedule auto
+        // Kick off the auto command
         schedule(autoRoutine());
 
         while (opModeIsActive()) {
             follower.update();
             Scheduler.execute();
 
-            // Telemetry
+            // Telemetry updates for the drivers
             telemetry.addData("X", follower.getPose().getX());
             telemetry.addData("Y", follower.getPose().getY());
             telemetry.addData("Heading (Deg)", Math.toDegrees(follower.getPose().getHeading()));
