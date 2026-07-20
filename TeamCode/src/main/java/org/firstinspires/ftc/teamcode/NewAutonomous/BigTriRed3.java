@@ -31,6 +31,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 @Autonomous(name = "BigTriRED3", group = "Autonomous")
 public class BigTriRed3 extends LinearOpMode {
 
+    //-------------------- Hardware & Follower Constants --------------------
     private Follower follower;
     private DcMotor intake;
     private DcMotorEx shooter;
@@ -38,13 +39,17 @@ public class BigTriRed3 extends LinearOpMode {
     private CRServo sideServo;
     private DistanceSensor rangeSensor;
 
-    // Poses for the BigTriRed routine
+
+
+    //-------------------- POSES --------------------
     private final Pose startPose = new Pose(108.582, 132.904, Math.toRadians(270));
     private final Pose scorePose = new Pose(82.728, 101.335, Math.toRadians(40));
 
+
+
+    //-------------------- Defined Paths --------------------
     private PathChain driveToShoot;
 
-    // Building our paths using global deceleration
     public void buildPaths() {
         driveToShoot = follower.pathBuilder()
                 .addPath(new BezierLine(startPose, scorePose))
@@ -53,7 +58,9 @@ public class BigTriRed3 extends LinearOpMode {
                 .build();
     }
 
-    // short range velocity shooter logic
+
+
+    //-------------------- Shooter & Reload Logic --------------------
     public Command combinedShootLogic() {
         return sequential(
                 // Spin up the shooter with the short distance velocity
@@ -87,7 +94,9 @@ public class BigTriRed3 extends LinearOpMode {
         );
     }
 
-    // Putting it all together into the main sequence
+
+
+    //-------------------- Auto Routine --------------------
     public Command autoRoutine() {
         return sequential(
                 // Drive to the scoring spot and hold position
@@ -97,6 +106,9 @@ public class BigTriRed3 extends LinearOpMode {
         );
     }
 
+
+
+    //-------------------- OpMode Setup --------------------
     @Override
     public void runOpMode() {
         // Hardware initialization using our project configs

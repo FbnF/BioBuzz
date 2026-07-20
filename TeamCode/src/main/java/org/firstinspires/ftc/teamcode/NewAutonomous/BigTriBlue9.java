@@ -31,6 +31,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 @Autonomous(name = "BigTriBLUE9", group = "Autonomous")
 public class BigTriBlue9 extends LinearOpMode {
 
+    //-------------------- Hardware & Follower Constants --------------------
     private Follower follower;
     private DcMotor intake;
     private DcMotorEx shooter;
@@ -38,7 +39,9 @@ public class BigTriBlue9 extends LinearOpMode {
     private CRServo sideServo;
     private DistanceSensor rangeSensor;
 
-    // Poses from Pedro Visualizer
+
+
+    //-------------------- POSES --------------------
     private final Pose startPose = new Pose(33.814, 133.428, Math.toRadians(270));
     private final Pose scorePose1 = new Pose(49.362, 91.028, Math.toRadians(135));
     private final Pose intakeStart1 = new Pose(46.806, 85.046, Math.toRadians(180));
@@ -48,6 +51,9 @@ public class BigTriBlue9 extends LinearOpMode {
     private final Pose intakeEnd2 = new Pose(15.293, 64.724, Math.toRadians(180));
     private final Pose scorePose3 = new Pose(58.271, 100.461, Math.toRadians(145));
 
+
+
+    //-------------------- Defined Paths --------------------
     private PathChain driveToShoot1, driveToIntake1, driveToShoot2, driveToIntake2, driveToShoot3;
 
     public void buildPaths() {
@@ -86,7 +92,9 @@ public class BigTriBlue9 extends LinearOpMode {
                 .build();
     }
 
-    // Shoot and reload logic
+
+
+    //-------------------- Shooter & Reload Logic --------------------
     public Command combinedShootLogic() {
         return sequential(
                 // Small beat since we spin while driving
@@ -117,7 +125,9 @@ public class BigTriBlue9 extends LinearOpMode {
         );
     }
 
-    // Main autonomous routine
+
+
+    //-------------------- Auto Routine --------------------
     public Command autoRoutine() {
         return sequential(
                 // Shot 1 + Early Start
@@ -164,6 +174,9 @@ public class BigTriBlue9 extends LinearOpMode {
         );
     }
 
+
+
+    //-------------------- OpMode Setup --------------------
     @Override
     public void runOpMode() {
         follower = Constants.createFollower(hardwareMap);

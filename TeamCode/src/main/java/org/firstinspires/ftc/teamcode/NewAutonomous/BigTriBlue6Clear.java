@@ -30,6 +30,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 @Autonomous(name = "BigTriBLUE6Clear", group = "Autonomous")
 public class BigTriBlue6Clear extends LinearOpMode {
 
+    //-------------------- Hardware & Follower Constants --------------------
     private Follower follower;
     private DcMotor intake;
     private DcMotorEx shooter;
@@ -37,7 +38,9 @@ public class BigTriBlue6Clear extends LinearOpMode {
     private CRServo sideServo;
     private DistanceSensor rangeSensor;
 
-    // Latest Poses from visualizer
+
+
+    //-------------------- POSES --------------------
     private final Pose startPose = new Pose(33.814, 133.428, Math.toRadians(270));
     private final Pose scorePose1 = new Pose(49.362, 91.028, Math.toRadians(135));
     private final Pose intakeStart = new Pose(46.806, 83.648, Math.toRadians(180));
@@ -46,9 +49,11 @@ public class BigTriBlue6Clear extends LinearOpMode {
     private final Pose clearEnd = new Pose(12.486, 70.337, Math.toRadians(270));
     private final Pose scorePose2 = new Pose(58.271, 100.461, Math.toRadians(145));
 
+
+
+    //-------------------- Defined Paths --------------------
     private PathChain driveToShoot1, driveToIntake, driveToClear, driveToShoot2;
 
-    // Build paths
     public void buildPaths() {
         driveToShoot1 = follower.pathBuilder()
                 .addPath(new BezierLine(startPose, scorePose1))
@@ -79,7 +84,9 @@ public class BigTriBlue6Clear extends LinearOpMode {
                 .build();
     }
 
-    // Shoot and reload
+
+
+    //-------------------- Shooter & Reload Logic --------------------
     public Command combinedShootLogic() {
         return sequential(
                 // Spin up (short range)
@@ -113,7 +120,9 @@ public class BigTriBlue6Clear extends LinearOpMode {
         );
     }
 
-    // Main routine
+
+
+    //-------------------- Auto Routine --------------------
     public Command autoRoutine() {
         return sequential(
                 // Score preload
@@ -144,6 +153,9 @@ public class BigTriBlue6Clear extends LinearOpMode {
         );
     }
 
+
+
+    //-------------------- OpMode Setup --------------------
     @Override
     public void runOpMode() {
         // Init hardware

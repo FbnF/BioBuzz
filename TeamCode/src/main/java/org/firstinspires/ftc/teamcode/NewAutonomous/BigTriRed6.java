@@ -30,6 +30,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 @Autonomous(name = "BigTriRED6", group = "Autonomous")
 public class BigTriRed6 extends LinearOpMode {
 
+    //-------------------- Hardware & Follower Constants --------------------
     private Follower follower;
     private DcMotor intake;
     private DcMotorEx shooter;
@@ -37,16 +38,20 @@ public class BigTriRed6 extends LinearOpMode {
     private CRServo sideServo;
     private DistanceSensor rangeSensor;
 
-    // Poses from visualizer
+
+
+    //-------------------- POSES --------------------
     private final Pose startPose = new Pose(108.582, 132.904, Math.toRadians(270));
     private final Pose scorePose1 = new Pose(92.510, 91.727, Math.toRadians(45));
     private final Pose intakeStart = new Pose(95.014, 81.243, Math.toRadians(0));
     private final Pose intakeEnd = new Pose(125.461, 80.865, Math.toRadians(0));
     private final Pose scorePose2 = new Pose(82.728, 101.335, Math.toRadians(40));
 
+
+
+    //-------------------- Defined Paths --------------------
     private PathChain driveToShoot1, driveToIntake, driveToShoot2;
 
-    // Build paths
     public void buildPaths() {
         driveToShoot1 = follower.pathBuilder()
                 .addPath(new BezierLine(startPose, scorePose1))
@@ -69,7 +74,9 @@ public class BigTriRed6 extends LinearOpMode {
                 .build();
     }
 
-    // Shoot logic (short range)
+
+
+    //-------------------- Shooter & Reload Logic --------------------
     public Command combinedShootLogic() {
         return sequential(
                 // Spin up
@@ -103,7 +110,9 @@ public class BigTriRed6 extends LinearOpMode {
         );
     }
 
-    // Auto routine
+
+
+    //-------------------- Auto Routine --------------------
     public Command autoRoutine() {
         return sequential(
                 // Score 1
@@ -125,6 +134,9 @@ public class BigTriRed6 extends LinearOpMode {
         );
     }
 
+
+
+    //-------------------- OpMode Setup --------------------
     @Override
     public void runOpMode() {
         // Init hardware

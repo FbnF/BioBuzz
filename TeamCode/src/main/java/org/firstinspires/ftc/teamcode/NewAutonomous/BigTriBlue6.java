@@ -30,6 +30,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 @Autonomous(name = "BigTriBLUE6", group = "Autonomous")
 public class BigTriBlue6 extends LinearOpMode {
 
+    //-------------------- Hardware & Follower Constants --------------------
     private Follower follower;
     private DcMotor intake;
     private DcMotorEx shooter;
@@ -37,16 +38,20 @@ public class BigTriBlue6 extends LinearOpMode {
     private CRServo sideServo;
     private DistanceSensor rangeSensor;
 
-    // Updated poses from visualizer
+
+
+    //-------------------- POSES --------------------
     private final Pose startPose = new Pose(33.814, 133.428, Math.toRadians(270));
     private final Pose scorePose1 = new Pose(49.362, 91.028, Math.toRadians(135));
     private final Pose intakeStart = new Pose(46.806, 83.648, Math.toRadians(180));
     private final Pose intakeEnd = new Pose(14.537, 84.082, Math.toRadians(180));
     private final Pose scorePose2 = new Pose(58.271, 100.461, Math.toRadians(145));
 
+
+
+    //-------------------- Defined Paths --------------------
     private PathChain driveToShoot1, driveToIntake, driveToShoot2;
 
-    // Build paths
     public void buildPaths() {
         driveToShoot1 = follower.pathBuilder()
                 .addPath(new BezierLine(startPose, scorePose1))
@@ -69,7 +74,9 @@ public class BigTriBlue6 extends LinearOpMode {
                 .build();
     }
 
-    // Shoot and reload
+
+
+    //-------------------- Shooter & Reload Logic --------------------
     public Command combinedShootLogic() {
         return sequential(
                 // Spin up (short range)
@@ -103,7 +110,9 @@ public class BigTriBlue6 extends LinearOpMode {
         );
     }
 
-    // Main routine
+
+
+    //-------------------- Auto Routine --------------------
     public Command autoRoutine() {
         return sequential(
                 // Score preload
@@ -125,6 +134,9 @@ public class BigTriBlue6 extends LinearOpMode {
         );
     }
 
+
+
+    //-------------------- OpMode Setup --------------------
     @Override
     public void runOpMode() {
         // Init hardware

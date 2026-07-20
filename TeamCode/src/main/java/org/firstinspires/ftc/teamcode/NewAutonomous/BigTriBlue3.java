@@ -31,6 +31,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 @Autonomous(name = "BigTriBLUE3", group = "Autonomous")
 public class BigTriBlue3 extends LinearOpMode {
 
+    //-------------------- Hardware & Follower Constants --------------------
     private Follower follower;
     private DcMotor intake;
     private DcMotorEx shooter;
@@ -38,13 +39,17 @@ public class BigTriBlue3 extends LinearOpMode {
     private CRServo sideServo;
     private DistanceSensor rangeSensor;
 
-    //poses
+
+
+    //-------------------- POSES --------------------
     private final Pose startPose = new Pose(33.814, 133.428, Math.toRadians(270));
     private final Pose scorePose = new Pose(58.271, 100.461, Math.toRadians(145));
 
+
+
+    //-------------------- Defined Paths --------------------
     private PathChain driveToShoot;
 
-    // Build paths
     public void buildPaths() {
         driveToShoot = follower.pathBuilder()
                 .addPath(new BezierLine(startPose, scorePose))
@@ -53,7 +58,9 @@ public class BigTriBlue3 extends LinearOpMode {
                 .build();
     }
 
-    // Shoot logic (short range)
+
+
+    //-------------------- Shooter & Reload Logic --------------------
     public Command combinedShootLogic() {
         return sequential(
                 // Spin up
@@ -87,7 +94,9 @@ public class BigTriBlue3 extends LinearOpMode {
         );
     }
 
-    // Auto routine
+
+
+    //-------------------- Auto Routine --------------------
     public Command autoRoutine() {
         return sequential(
                 // Move and hold
@@ -97,6 +106,9 @@ public class BigTriBlue3 extends LinearOpMode {
         );
     }
 
+
+
+    //-------------------- OpMode Setup --------------------
     @Override
     public void runOpMode() {
         // Init hardware
