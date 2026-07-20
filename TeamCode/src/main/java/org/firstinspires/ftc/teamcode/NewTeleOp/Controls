@@ -1,0 +1,53 @@
+/*
+============================================================
+ TELEOP CONTROL MAP
+============================================================
+
+GAMEPAD 1  (DRIVER)
+------------------------------------------------------------
+ Right Stick (Y)                    Drive Forward / Backward
+ Left Stick (X)                     Strafe Left / Right
+ Right Stick (X)                    Rotate (Turn)
+ A Button                           High Speed Mode (0.95)
+ B Button                           Low Speed Mode  (0.40)
+ X Button                           Normal Speed Mode (0.70)
+ Y Button                           Extreme Speed Mode 1.25
+ D-Pad Down                         Unused
+ D-Pad (Up, Left, Right)            Unused
+ Right Trigger/Bumper               Unused
+ Left Trigger                       Unused
+ Left Bumper                        Auto Align
+
+------------------------------------------------------------
+GAMEPAD 2  (OPERATOR)
+------------------------------------------------------------
+ D-Pad Up                           Switch to AUTO shooter mode
+ D-Pad Down                      unused
+ D-Pad Right                      Toggle Vision(on/off) toggle
+ D-Pad Left                         activate/deactivate(on/off) toggle
+
+ A Button                           unused
+ B Button                          unused
+ Left Bumper                     eject the ball for intake(not continuously) turn on for 0.02 quick eject reverse for a small amount time
+ X Button                           turn feed servo off(should be automatic. Not really used)
+ Y Button                           turn feed servo on
+
+ Right Trigger                      Intake on intaking only turns on but just requires a single press not holding
+ Left Trigger                       Stop intake same single press
+ Right Bumper                       Reverse intake and even once u let go itll keep reversing
+
+------------------------------------------------------------
+AUTOMATIC LOGIC
+------------------------------------------------------------
+ - Shooter only spins in AUTO mode if armed (D-Pad Right).
+ - Servo feed (Y) works only when flywheel is at target velocity.
+ - LED Status:
+       Off (BLACK)  -> Vision disabled OR not in AUTO mode
+       Red          -> AUTO mode: no or incorrect tag detected
+       Yellow       -> AUTO mode: correct tag detected, not at speed / not armed
+       Green        -> AUTO mode: correct tag detected, flywheel ready
+       Flash Yellow -> Driver pressed Y too early
+ - Alliance goal tag hardcoded via GOAL_TAG_ID (20 = blue, 24 = red)
+ - Logging toggle via LOG_ENABLED boolean
+============================================================
+*/

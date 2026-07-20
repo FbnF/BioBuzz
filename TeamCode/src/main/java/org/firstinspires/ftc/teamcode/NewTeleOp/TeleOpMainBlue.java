@@ -21,15 +21,21 @@ public class TeleOpMainBlue extends LinearOpMode {
     
     private Follower follower;
     private PDController alignController;
-    private double speedFactor = 1.2; 
+    private double speedFactor = 0.70; 
     
     private boolean autoShooter = true;
     private boolean autoSpinArmed = true;
     private boolean prevG2DpadUp = false;
     private boolean prevG2DpadRight = false;
     private boolean prevG2DpadLeft = false;
+    private boolean prevG2RT = false;
+    private boolean prevG2LT = false;
+    private boolean prevG2RB = false;
+    private boolean prevG2LB = false;
+
     private boolean isEjecting = false;
     private long ejectStartNs = 0;
+    private double currentIntakePower = 0;
 
     @Override
     public void runOpMode() {
@@ -40,7 +46,7 @@ public class TeleOpMainBlue extends LinearOpMode {
         
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(new Pose(0,0,0));
-        follower.startTeleopDrive();
+        follower.startTeleopDrive(true);
 
         logger.init(hardwareMap, follower::getPose);
         alignController = new PDController(ShooterConfig.ALIGN_KP, ShooterConfig.ALIGN_KD);
@@ -53,39 +59,51 @@ public class TeleOpMainBlue extends LinearOpMode {
             leds.update();
             logger.record();
 
-            // Drivetrain
-            if (gamepad1.a) speedFactor = 1.35; 
-            if (gamepad1.b) speedFactor = 0.4;  
-            if (gamepad1.x) speedFactor = 0.7;  
+            // Drivetrain (GP1)
+            if (gamepad1.a) speedFactor = 0.95; 
+            if (gamepad1.b) speedFactor = 0.40;  
+            if (gamepad1.x) speedFactor = 0.70;
+            if (gamepad1.y) speedFactor = 1.25;
 
             double axial = -gamepad1.right_stick_y * speedFactor;
             double lateral = -gamepad1.left_stick_x * speedFactor;
             double turn = -gamepad1.right_stick_x * speedFactor;
 
-            // Vision toggle
-            if (gamepad2.dpad_left && !prevG2DpadLeft) {
-                vision.setVisionEnabled(!vision.isVisionEnabled());
-            }
-            prevG2DpadLeft = gamepad2.dpad_left;
-
-            // Auto align
+            // Auto align (GP1)
             double[] win = vision.getTxWindow();
-            double targetTx = (win[0] + win[1]) / 2.0;
-            double txError = targetTx - vision.getTx();
+            double txMin = win[0];
+            double txMax = win[1];
+            double tx = vision.getTx();
+            double targetTx;
+
+            if (tx < txMin || tx > txMax) {
+                targetTx = (txMin + txMax) / 2.0;
+            } else {
+                targetTx = tx; // Already in window, set error to 0
+            }
+
+            double txError = (targetTx - tx) - ShooterConfig.BLUE_ALIGN_OFFSET;
 
             if (gamepad1.left_bumper && vision.isTargetVisible()) {
-                turn = alignController.update(txError);
+                if (Math.abs(txError) <= ShooterConfig.ALIGN_ERR_DEADBAND_DEG) {
+                    turn = 0;
+                } else {
+                    turn = alignController.update(txError);
+                }
             } else {
                 alignController.reset();
             }
 
             follower.setTeleOpDrive(axial, lateral, turn, true);
 
-            // Shooter modes
-            if (gamepad2.dpad_up && !prevG2DpadUp) autoShooter = !autoShooter;
+            // Shooter modes (GP2)
+            if (gamepad2.dpad_up && !prevG2DpadUp) autoShooter = true;
             prevG2DpadUp = gamepad2.dpad_up;
 
-            if (gamepad2.dpad_right && !prevG2DpadRight) autoSpinArmed = !autoSpinArmed;
+            if (gamepad2.dpad_left && !prevG2DpadLeft) autoSpinArmed = !autoSpinArmed;
+            prevG2DpadLeft = gamepad2.dpad_left;
+
+            if (gamepad2.dpad_right && !prevG2DpadRight) vision.setVisionEnabled(!vision.isVisionEnabled());
             prevG2DpadRight = gamepad2.dpad_right;
 
             double targetTPS = 0;
@@ -98,14 +116,8 @@ public class TeleOpMainBlue extends LinearOpMode {
                     robot.launchMotor.setPower(0);
                 }
             } else {
-                // Manual presets
-                if (gamepad2.a) targetTPS = ShooterConfig.SHOOTER_VEL_LONG; 
-                else if (gamepad2.b) targetTPS = 1500.0;                   
-                else if (gamepad2.left_bumper) targetTPS = ShooterConfig.SHOOTER_VEL_SHORT; 
-                else if (gamepad2.x) targetTPS = 0;                        
-
-                if (targetTPS > 0) robot.launchMotor.setVelocity(targetTPS);
-                else robot.launchMotor.setPower(0);
+                // Manual presets removed as per new specs
+                robot.launchMotor.setPower(0);
             }
 
             // Subsystems
@@ -114,54 +126,59 @@ public class TeleOpMainBlue extends LinearOpMode {
             boolean angleOk = vision.getTx() >= win[0] && vision.getTx() <= win[1];
             boolean noShotZone = vision.isNoShotZone();
             
-            boolean canShoot = motorReady && (autoShooter ? (autoSpinArmed && vision.isTargetVisible() && angleOk && !noShotZone) : true);
+            // Intake Latching logic (GP2)
+            boolean rtPressed = gamepad2.right_trigger > 0.5;
+            if (rtPressed && !prevG2RT) {
+                currentIntakePower = 1.0;
+            }
+            prevG2RT = rtPressed;
 
-            if (gamepad2.y) {
-                if (canShoot) {
-                    double dist = vision.getDistance();
-                    robot.feedServo.setPower(shooter.getFeedPower(dist));
-                    robot.intakeMotor.setPower(1.0);
-                    robot.sideServo.setPower(shooter.getSidePower(dist));
-                } else {
-                    leds.triggerWarning();
+            boolean ltPressed = gamepad2.left_trigger > 0.5;
+            if (ltPressed && !prevG2LT) {
+                currentIntakePower = 0.0;
+            }
+            prevG2LT = ltPressed;
+
+            if (gamepad2.right_bumper && !prevG2RB) {
+                currentIntakePower = -1.0;
+            }
+            prevG2RB = gamepad2.right_bumper;
+
+            // Quick Eject burst (GP2)
+            if (gamepad2.left_bumper && !prevG2LB && !isEjecting) {
+                isEjecting = true;
+                ejectStartNs = System.nanoTime();
+                robot.intakeMotor.setPower(-0.7);
+            }
+            prevG2LB = gamepad2.left_bumper;
+
+            if (isEjecting) {
+                double elapsed = (System.nanoTime() - ejectStartNs) / 1e9;
+                if (elapsed >= 0.2) {
+                    isEjecting = false;
+                    robot.intakeMotor.setPower(currentIntakePower);
                 }
-            } else if (gamepad2.right_trigger > 0) {
-                robot.intakeMotor.setPower(1.0);
-                robot.sideServo.setPower(1.0);
-            } else if (gamepad2.right_bumper) {
-                robot.intakeMotor.setPower(-1.0);
-                robot.sideServo.setPower(-1.0);
-            } else if (gamepad2.left_bumper && autoShooter && !isEjecting) {
-                isEjecting = true;
-                ejectStartNs = System.nanoTime();
-                robot.intakeMotor.setPower(-0.7);
-            } else if (gamepad2.dpad_down && !isEjecting) {
-                // Special Blue ejection mode
-                isEjecting = true;
-                ejectStartNs = System.nanoTime();
-                robot.intakeMotor.setPower(-0.7);
-                robot.sideServo.setPower(-0.7);
-            } else if (gamepad2.left_trigger > 0) {
-                robot.intakeMotor.setPower(0);
-                robot.sideServo.setPower(0);
-                robot.feedServo.setPower(0);
-            } else if (!isEjecting) {
-                robot.intakeMotor.setPower(0);
-                robot.sideServo.setPower(0);
-                if (!motorReady && !isLoaded) robot.feedServo.setPower(0);
+            } else {
+                robot.intakeMotor.setPower(currentIntakePower);
+                robot.sideServo.setPower(currentIntakePower);
             }
 
-            if (isEjecting && (System.nanoTime() - ejectStartNs) / 1e9 >= 0.25) {
-                isEjecting = false;
-                robot.intakeMotor.setPower(0);
-                robot.sideServo.setPower(0);
+            // Feed Servo overrides (GP2)
+            if (gamepad2.y) {
+                robot.feedServo.setPower(shooter.getFeedPower(vision.getDistance()));
+            } else if (gamepad2.x) {
+                robot.feedServo.setPower(0);
+            } else if (!isEjecting) {
+                // Auto feed behavior preserved from previous logic if needed, 
+                // but user said X is Off, Y is On. I'll stick to explicit controls for now.
+                if (!motorReady && !isLoaded) robot.feedServo.setPower(0);
             }
 
             leds.setStatus(vision.isTargetVisible(), motorReady, noShotZone);
 
             // Telemetry
             telemetry.addLine("---- Modes ----");
-            telemetry.addData("Shooter Mode", autoShooter ? "AUTO" : "MANUAL");
+            telemetry.addData("Shooter Mode", autoShooter ? "AUTO" : "OFF");
             telemetry.addData("Armed (Auto)", autoSpinArmed);
             telemetry.addData("Speed Factor", speedFactor);
 

@@ -9,7 +9,7 @@ public final class ShooterConfig {
     // ---------------- Controls / Limits ----------------
     public static double MIN_RANGE_IN = 10.0;    // ignore ranges under this (inches)
     public static double TPS_MIN_AUTO = 800.0;   // below this, AUTO stays off
-    public static double TPS_TOL = 50.0;
+    public static double TPS_TOL = 15.0;
 
     public static double TPS_MAX_MECH = 2800.0;  // absolute safety limit
     public static double TPS_MAX_AUTO = 2400.0;  // clamp used by AUTO
@@ -64,7 +64,7 @@ public final class ShooterConfig {
             45.2, 46.12, 54.4, 56.2, 60.2, 69.7, 80.5, 127.4, 133.47, 139.24
     };
     public static double[] TPS_AT_DIST_BLUE = new double[] {
-            1203, 1211, 1203, 1329, 1255, 1292, 1400, 1583, 1620, 1670
+            1110, 1120, 1110, 1299, 1225, 1262, 1370, 1553, 1590, 1640
     };
     public static double[] MIN_ANGLE_BLUE = new double[] {
             0.4688, 0.4688, 0.4688, 0.4688, 0.4688, 0.4688, 0.4688, 0.4688, 0.4688, 0.5688
@@ -84,7 +84,7 @@ public final class ShooterConfig {
             45.82, 48.78, 51.15, 58.22, 62.8, 69.09, 81.5, 130.9, 136, 138.6
     };
     public static double[] TPS_AT_DIST_RED = new double[] {
-            1203, 1331, 1359, 1260, 1255, 1292, 1361, 1583, 1610, 1670
+            1140, 1250, 1260, 1260, 1255, 1292, 1361, 1583, 1610, 1670
     };
     public static double[] MIN_ANGLE_RED = new double[] {
             -5.06, -10, -4.35, -6.759, -4.42, -6.759, -6.759, -6.759, -5.2, -6.4
@@ -101,5 +101,11 @@ public final class ShooterConfig {
 
     // Constant Velocities for Auto
     public static double SHOOTER_VEL_LONG = 1582.0;
-    public static double SHOOTER_VEL_SHORT = 1175.0;
+    public static double SHOOTER_VEL_SHORT = 1165.0;
+
+    // Red-specific offsets
+    public static double RED_ALIGN_OFFSET = 1.0;
+
+    // Blue-specific offsets
+    public static double BLUE_ALIGN_OFFSET = 1.0;
 }

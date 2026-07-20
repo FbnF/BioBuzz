@@ -41,11 +41,11 @@ public class BigTriBlue9 extends LinearOpMode {
     // Poses from Pedro Visualizer
     private final Pose startPose = new Pose(33.814, 133.428, Math.toRadians(270));
     private final Pose scorePose1 = new Pose(49.362, 91.028, Math.toRadians(135));
-    private final Pose intakeStart1 = new Pose(46.806, 83.648, Math.toRadians(180));
-    private final Pose intakeEnd1 = new Pose(16.983, 83.733, Math.toRadians(180));
+    private final Pose intakeStart1 = new Pose(46.806, 85.046, Math.toRadians(180));
+    private final Pose intakeEnd1 = new Pose(16.983, 84.431, Math.toRadians(180));
     private final Pose scorePose2 = new Pose(58.271, 100.461, Math.toRadians(145));
-    private final Pose intakeStart2 = new Pose(46.924, 60.767, Math.toRadians(180));
-    private final Pose intakeEnd2 = new Pose(16.866, 60.531, Math.toRadians(180));
+    private final Pose intakeStart2 = new Pose(47.273, 64.785, Math.toRadians(180));
+    private final Pose intakeEnd2 = new Pose(15.293, 64.724, Math.toRadians(180));
     private final Pose scorePose3 = new Pose(58.271, 100.461, Math.toRadians(145));
 
     private PathChain driveToShoot1, driveToIntake1, driveToShoot2, driveToIntake2, driveToShoot3;
