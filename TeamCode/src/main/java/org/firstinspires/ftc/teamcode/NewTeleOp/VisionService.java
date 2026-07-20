@@ -23,7 +23,9 @@ public class VisionService {
     private boolean visionEnabled = true;
     
     private long lastSeenNs = 0;
-    private static final long NULL_DELAY_NS = 1_000_000_000L; 
+    private static final long NULL_DELAY_NS = 1_000_000_000L;
+
+    private static boolean currentlySeeing;
 
     private static VisionService instance = null;
 
@@ -51,7 +53,7 @@ public class VisionService {
         }
 
         LLResult result = limelight.getLatestResult();
-        boolean currentlySeeing = false;
+        currentlySeeing = false;
         hasGoalTag = false;
 
         if (result != null && result.isValid() && result.getStaleness() < 100) {
@@ -127,5 +129,6 @@ public class VisionService {
     public boolean hasGoalTag() { return hasGoalTag; }
     public double getTx() { return tx; }
     public double getTy() { return ty; }
+    public boolean isCurrentlySeeing() { return currentlySeeing; }
     public int getGoalTagId() { return goalTagId; }
 }

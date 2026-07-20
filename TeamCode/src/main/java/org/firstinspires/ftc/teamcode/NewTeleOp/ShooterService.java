@@ -24,10 +24,16 @@ public class ShooterService {
 
     public void setIsBlue(boolean blue) { this.isBlue = blue; }
 
-    public double calculateVelocity(double distanceInches, boolean targetVisible) {
+    public double calculateVelocity(double distanceInches, boolean targetVisible, boolean currentlySeeing) {
         if (!targetVisible || distanceInches < ShooterConfig.MIN_RANGE_IN) {
             physicsTPS = tableTPS = baseTPS = finalTPS = 0.0;
             return lastTargetTPS * 0.8; 
+        }
+
+        // HOLD logic: If we have vision buffer but aren't TRULY seeing the tag right now,
+        // hold the last calculated speed to prevent varying/hunting.
+        if (!currentlySeeing) {
+            return lastTargetTPS;
         }
 
         // Physics TPS

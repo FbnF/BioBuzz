@@ -110,7 +110,7 @@ public class TeleOpMainBlue extends LinearOpMode {
 
             if (autoShooter) {
                 if (autoSpinArmed) {
-                    targetTPS = shooter.calculateVelocity(vision.getDistance(), vision.isTargetVisible());
+                    targetTPS = shooter.calculateVelocity(vision.getDistance(), vision.isTargetVisible(), vision.isCurrentlySeeing());
                     robot.launchMotor.setVelocity(targetTPS);
                 } else {
                     robot.launchMotor.setPower(0);
@@ -149,6 +149,7 @@ public class TeleOpMainBlue extends LinearOpMode {
                 isEjecting = true;
                 ejectStartNs = System.nanoTime();
                 robot.intakeMotor.setPower(-0.7);
+                robot.sideServo.setPower(0); // OUTTAKING: only intake motor runs
             }
             prevG2LB = gamepad2.left_bumper;
 
@@ -157,10 +158,13 @@ public class TeleOpMainBlue extends LinearOpMode {
                 if (elapsed >= 0.2) {
                     isEjecting = false;
                     robot.intakeMotor.setPower(currentIntakePower);
+                    // Sync side servo only for forward intake
+                    robot.sideServo.setPower(currentIntakePower > 0 ? currentIntakePower : 0);
                 }
             } else {
                 robot.intakeMotor.setPower(currentIntakePower);
-                robot.sideServo.setPower(currentIntakePower);
+                // Sync side servo only for forward intake (clears fourth ball in reverse)
+                robot.sideServo.setPower(currentIntakePower > 0 ? currentIntakePower : 0);
             }
 
             // Feed Servo overrides (GP2)
