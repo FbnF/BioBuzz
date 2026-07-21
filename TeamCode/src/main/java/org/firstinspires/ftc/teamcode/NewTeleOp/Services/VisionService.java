@@ -25,7 +25,7 @@ public class VisionService {
     private long lastSeenNs = 0;
     private static final long NULL_DELAY_NS = 1_000_000_000L;
 
-    private static boolean currentlySeeing;
+    private boolean currentlySeeing = false;
 
     private static VisionService instance = null;
 
