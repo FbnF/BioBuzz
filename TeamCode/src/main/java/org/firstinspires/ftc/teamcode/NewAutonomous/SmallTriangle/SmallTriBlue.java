@@ -40,10 +40,10 @@ public class SmallTriBlue extends LinearOpMode {
 
     // Latest Poses from the Blue Side Visualizer
     private final Pose startPose = new Pose(55.377, 7.861, Math.toRadians(90));
-    private final Pose scorePose1 = new Pose(58.446, 16.959, Math.toRadians(115));
+    private final Pose scorePose1 = new Pose(58.446, 16.959, Math.toRadians(109));
     private final Pose intakeStart = new Pose(46.778, 35.749, Math.toRadians(180));
-    private final Pose intakeEnd = new Pose(9.033, 36.260, Math.toRadians(180));
-    private final Pose scorePose2 = new Pose(58.446, 17.959, Math.toRadians(115));
+    private final Pose intakeEnd = new Pose(14.798, 36.435, Math.toRadians(180));
+    private final Pose scorePose2 = new Pose(58.446, 16.959, Math.toRadians(112));
     private final Pose parkPose = new Pose(36.599, 16.115, Math.toRadians(90));
 
     private PathChain driveToShoot1, driveToIntake, driveToShoot2, driveToPark;
@@ -81,14 +81,11 @@ public class SmallTriBlue extends LinearOpMode {
     // Bundled logic for the shooter and the auto-reload sequence
     public Command combinedShootLogic() {
         return sequential(
-                // Get the flywheel up to speed
-                instant(() -> shooter.setVelocity(ShooterConfig.SHOOTER_VEL_LONG)),
-                
-                // Stabilization window
-                waitMs((long)(ShooterConfig.START_WAIT_TIME * 1000)),
+                // Wait until the flywheel is at target speed
+                waitUntil(() -> Math.abs(shooter.getVelocity() - ShooterConfig.SHOOTER_VEL_LONG) < ShooterConfig.TPS_TOL),
                 
                 // Kick the ball in
-                instant(() -> feed.setPower(ShooterConfig.SIDE_POWER)),
+                instant(() -> feed.setPower(ShooterConfig.SIDE_POWER_LONG)),
 
                 // Wait for the handoff to clear
                 waitUntil(() -> rangeSensor.getDistance(DistanceUnit.MM) > ShooterConfig.HANDOFF_DISTANCE_MM),
@@ -99,13 +96,13 @@ public class SmallTriBlue extends LinearOpMode {
                         instant(() -> intake.setPower(ShooterConfig.INTAKE_POWER))
                 ),
 
-                // 5s buffer to ensure everything is settled
-                waitMs(5000),
+                // 4s buffer to ensure everything is settled
+                waitMs(4000),
 
-                // Cut power to prep for movement
+                // Idle at half speed
                 instant(() -> {
                     feed.setPower(0);
-                    shooter.setVelocity(0);
+                    shooter.setVelocity(600);
                     intake.setPower(0);
                     sideServo.setPower(0);
                 })
@@ -116,7 +113,10 @@ public class SmallTriBlue extends LinearOpMode {
     public Command autoRoutine() {
         return sequential(
                 // Initial shot
-                follow(follower, driveToShoot1, true),
+                parallel(
+                        follow(follower, driveToShoot1, true),
+                        instant(() -> shooter.setVelocity(ShooterConfig.SHOOTER_VEL_LONG))
+                ),
                 combinedShootLogic(),
 
                 // Slow down to 50% power for a clean pickup towards the wall
@@ -130,11 +130,17 @@ public class SmallTriBlue extends LinearOpMode {
                 instant(() -> follower.setMaxPower(1.0)),
 
                 // Return and score
-                follow(follower, driveToShoot2, true),
+                parallel(
+                        follow(follower, driveToShoot2, true),
+                        instant(() -> shooter.setVelocity(ShooterConfig.SHOOTER_VEL_LONG))
+                ),
                 combinedShootLogic(),
 
                 // Park it
-                follow(follower, driveToPark, true)
+                follow(follower, driveToPark, true),
+
+                // Shutdown
+                instant(() -> shooter.setVelocity(0))
         );
     }
 

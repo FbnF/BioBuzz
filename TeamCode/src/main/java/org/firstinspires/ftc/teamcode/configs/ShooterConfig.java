@@ -21,6 +21,7 @@ public final class ShooterConfig {
     // Default powers for manual/auto modes
     public static double FEED_DEFAULT = -0.9;
     public static double SIDE_POWER = -1;
+    public static double SIDE_POWER_LONG = -0.6;
     public static double SIDE_DEFAULT = 1.0;
     public static double INTAKE_POWER = 0.90;
 
@@ -100,8 +101,8 @@ public final class ShooterConfig {
     };
 
     // Constant Velocities for Auto
-    public static double SHOOTER_VEL_LONG = 1582.0;
-    public static double SHOOTER_VEL_SHORT = 1165.0;
+    public static double SHOOTER_VEL_LONG = 1550.0;
+    public static double SHOOTER_VEL_SHORT = 1175.0;
 
     // Red-specific offsets
     public static double RED_ALIGN_OFFSET = 1.0;

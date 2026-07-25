@@ -41,7 +41,7 @@ public class SmallTriRed extends LinearOpMode {
     private final Pose startPose = new Pose(86.298, 8.385, Math.toRadians(90));
     private final Pose scorePose1 = new Pose(82.378, 18.531, Math.toRadians(63));
     private final Pose intakeStart = new Pose(92.326, 33.535, Math.toRadians(0));
-    private final Pose intakeEnd = new Pose(132.416, 33.399, Math.toRadians(0));
+    private final Pose intakeEnd = new Pose(127.525, 33.366, Math.toRadians(0));
     private final Pose scorePose2 = new Pose(82.378, 18.531, Math.toRadians(63));
     private final Pose parkPose = new Pose(105.253, 16.638, Math.toRadians(90));
 
@@ -79,14 +79,11 @@ public class SmallTriRed extends LinearOpMode {
     // Logic for the shooter and reloading the next ball
     public Command combinedShootLogic() {
         return sequential(
-                // Spin up the shooter flywheel
-                instant(() -> shooter.setVelocity(ShooterConfig.SHOOTER_VEL_LONG)),
-                
-                // Let the motor get to speed
-                waitMs((long)(ShooterConfig.START_WAIT_TIME * 1000)),
+                // Wait until the flywheel is at target speed
+                waitUntil(() -> Math.abs(shooter.getVelocity() - ShooterConfig.SHOOTER_VEL_LONG) < ShooterConfig.TPS_TOL),
                 
                 // Fire the ball
-                instant(() -> feed.setPower(ShooterConfig.SIDE_POWER)),
+                instant(() -> feed.setPower(ShooterConfig.SIDE_POWER_LONG)),
 
                 // Wait for the ball to clear the handoff sensor
                 waitUntil(() -> rangeSensor.getDistance(DistanceUnit.MM) > ShooterConfig.HANDOFF_DISTANCE_MM),
@@ -97,13 +94,13 @@ public class SmallTriRed extends LinearOpMode {
                         instant(() -> intake.setPower(ShooterConfig.INTAKE_POWER))
                 ),
 
-                // Short wait to finish the cycle and ensure the ball is secure
-                waitMs(5000),
+                // 4s settled wait
+                waitMs(4000),
 
-                // Shut down to prep for driving
+                // Idle at half speed
                 instant(() -> {
                     feed.setPower(0);
-                    shooter.setVelocity(0);
+                    shooter.setVelocity(600);
                     intake.setPower(0);
                     sideServo.setPower(0);
                 })
@@ -114,7 +111,10 @@ public class SmallTriRed extends LinearOpMode {
     public Command autoRoutine() {
         return sequential(
                 // Score the preload
-                follow(follower, driveToShoot1, true),
+                parallel(
+                        follow(follower, driveToShoot1, true),
+                        instant(() -> shooter.setVelocity(ShooterConfig.SHOOTER_VEL_LONG))
+                ),
                 combinedShootLogic(),
 
                 // Drive through the intake zone and start grabbing balls immediately
@@ -128,11 +128,17 @@ public class SmallTriRed extends LinearOpMode {
                 instant(() -> follower.setMaxPower(1.0)),
 
                 // Score the second ball
-                follow(follower, driveToShoot2, true),
+                parallel(
+                        follow(follower, driveToShoot2, true),
+                        instant(() -> shooter.setVelocity(ShooterConfig.SHOOTER_VEL_LONG))
+                ),
                 combinedShootLogic(),
 
                 // Final move to the park position
-                follow(follower, driveToPark, true)
+                follow(follower, driveToPark, true),
+
+                // Shutdown
+                instant(() -> shooter.setVelocity(0))
         );
     }
 
