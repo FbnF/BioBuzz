@@ -42,10 +42,10 @@ public class BigTriBlue6 extends LinearOpMode {
 
     //-------------------- POSES --------------------
     private final Pose startPose = new Pose(33.814, 133.428, Math.toRadians(270));
-    private final Pose scorePose1 = new Pose(49.362, 91.028, Math.toRadians(135));
+    private final Pose scorePose1 = new Pose(49.362, 91.028, Math.toRadians(125));
     private final Pose intakeStart = new Pose(46.806, 85.046, Math.toRadians(180));
     private final Pose intakeEnd = new Pose(16.983, 84.431, Math.toRadians(180));
-    private final Pose scorePose2 = new Pose(58.271, 100.461, Math.toRadians(145));
+    private final Pose scorePose2 = new Pose(57.572, 98.889, Math.toRadians(145));
 
 
 
@@ -79,11 +79,8 @@ public class BigTriBlue6 extends LinearOpMode {
     //-------------------- Shooter & Reload Logic --------------------
     public Command combinedShootLogic() {
         return sequential(
-                // Spin up (short range)
-                instant(() -> shooter.setVelocity(ShooterConfig.SHOOTER_VEL_SHORT)),
-
-                // Stabilize
-                waitMs((long)(ShooterConfig.START_WAIT_TIME * 1000)),
+                // Wait until the flywheel is at target speed
+                waitUntil(() -> Math.abs(shooter.getVelocity() - ShooterConfig.SHOOTER_VEL_SHORT) < ShooterConfig.TPS_TOL),
 
                 // Feed
                 instant(() -> feed.setPower(ShooterConfig.SIDE_POWER)),
@@ -97,13 +94,13 @@ public class BigTriBlue6 extends LinearOpMode {
                         instant(() -> intake.setPower(ShooterConfig.INTAKE_POWER))
                 ),
 
-                // 5s settle wait
-                waitMs(5000),
+                // 4.2s settled wait
+                waitMs(3000),
 
-                // Power down
+                // Idle at half speed
                 instant(() -> {
                     feed.setPower(0);
-                    shooter.setVelocity(0);
+                    shooter.setVelocity(600);
                     intake.setPower(0);
                     sideServo.setPower(0);
                 })
@@ -116,7 +113,10 @@ public class BigTriBlue6 extends LinearOpMode {
     public Command autoRoutine() {
         return sequential(
                 // Score preload
-                follow(follower, driveToShoot1, true),
+                parallel(
+                        follow(follower, driveToShoot1, true),
+                        instant(() -> shooter.setVelocity(ShooterConfig.SHOOTER_VEL_SHORT))
+                ),
                 combinedShootLogic(),
 
                 // Pickup (50% power)
@@ -129,8 +129,14 @@ public class BigTriBlue6 extends LinearOpMode {
                 instant(() -> follower.setMaxPower(1.0)),
 
                 // Score second ball
-                follow(follower, driveToShoot2, true),
-                combinedShootLogic()
+                parallel(
+                        follow(follower, driveToShoot2, true),
+                        instant(() -> shooter.setVelocity(ShooterConfig.SHOOTER_VEL_SHORT))
+                ),
+                combinedShootLogic(),
+
+                // Shutdown
+                instant(() -> shooter.setVelocity(0))
         );
     }
 

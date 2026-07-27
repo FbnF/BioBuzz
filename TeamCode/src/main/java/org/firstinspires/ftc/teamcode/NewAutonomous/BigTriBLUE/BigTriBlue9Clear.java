@@ -42,18 +42,18 @@ public class BigTriBlue9Clear extends LinearOpMode {
 
     //-------------------- POSES --------------------
     private final Pose startPose = new Pose(33.814, 133.428, Math.toRadians(270));
-    private final Pose scorePose1 = new Pose(49.362, 91.028, Math.toRadians(135));
+    private final Pose scorePose1 = new Pose(49.362, 91.028, Math.toRadians(125));
     private final Pose intakeStart1 = new Pose(46.806, 85.046, Math.toRadians(180));
     private final Pose intakeEnd1 = new Pose(16.983, 84.431, Math.toRadians(180));
     
     // Clear maneuver poses
-    private final Pose clearStart = new Pose(29.416, 76.200, Math.toRadians(270));
-    private final Pose clearEnd = new Pose(13.797, 76.364, Math.toRadians(270));
+    private final Pose clearStart = new Pose(22.079, 74.278, Math.toRadians(180));
+    private final Pose clearEnd = new Pose(12.574, 73.918, Math.toRadians(180));
     
-    private final Pose scorePose2 = new Pose(58.271, 100.461, Math.toRadians(145));
+    private final Pose scorePose2 = new Pose(57.572, 98.889, Math.toRadians(145));
     private final Pose intakeStart2 = new Pose(47.273, 64.785, Math.toRadians(180));
-    private final Pose intakeEnd2 = new Pose(15.293, 64.724, Math.toRadians(180));
-    private final Pose scorePose3 = new Pose(58.271, 100.461, Math.toRadians(145));
+    private final Pose intakeEnd2 = new Pose(19.136, 64.899, Math.toRadians(180));
+    private final Pose scorePose3 = new Pose(57.398, 98.889, Math.toRadians(145));
 
 
 
@@ -109,8 +109,8 @@ public class BigTriBlue9Clear extends LinearOpMode {
     //-------------------- Shooter & Reload Logic --------------------
     public Command combinedShootLogic() {
         return sequential(
-                // Small beat since we spin while driving
-                waitMs(250),
+                // Wait until the flywheel is at target speed
+                waitUntil(() -> Math.abs(shooter.getVelocity() - ShooterConfig.SHOOTER_VEL_SHORT) < ShooterConfig.TPS_TOL),
 
                 // Engagement using config SIDE_POWER (-1.0)
                 instant(() -> feed.setPower(ShooterConfig.SIDE_POWER)),
