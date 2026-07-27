@@ -46,11 +46,14 @@ public class BigTriRed12 extends LinearOpMode {
     private final Pose scorePose1 = new Pose(92.510, 91.727, Math.toRadians(45));
     private final Pose intakeStart1 = new Pose(95.014, 81.243, Math.toRadians(0));
     private final Pose intakeEnd1 = new Pose(123, 80.865, Math.toRadians(0));
-    private final Pose clearPose = new Pose(127.00171789185484, 72.73129783641637, Math.toRadians(0));
-    private final Pose scorePose2and3 = new Pose(96.78083109919571, 87.97184986595173, Math.toRadians(47));
+    private final Pose clearPose = new Pose(127.00171789185484, 75, Math.toRadians(0));
+    private final Pose scorePose2 = new Pose(96.78083109919571, 87.97184986595173, Math.toRadians(52));
     private final Pose intakeStart2 = new Pose(95.104, 59, Math.toRadians(7));
     private final Pose intakeEnd2 = new Pose(128, 59, Math.toRadians(7));
-    private final Pose clearAndCollect = new Pose(129.48234872521886,60.04886482014283, Math.toRadians(38));
+    private final Pose scorePose3 = new Pose(96.78083109919571, 87.97184986595173, Math.toRadians(55));
+    private final Pose clearAndCollect = new Pose(129.12416107382552,59.931543624161066, Math.toRadians(28));
+    private final Pose clearAndCollect2 = new Pose(130,63, Math.toRadians(28));
+
     private final Pose scorePose4 = new Pose(82.728, 101.335, Math.toRadians(35));
 
 
@@ -79,15 +82,15 @@ public class BigTriRed12 extends LinearOpMode {
                 .build();
 
         driveToShoot2 = follower.pathBuilder()
-                .addPath(new BezierLine(clearPose, scorePose2and3))
-                .setLinearHeadingInterpolation(clearPose.getHeading(), scorePose2and3.getHeading())
+                .addPath(new BezierLine(clearPose, scorePose2))
+                .setLinearHeadingInterpolation(clearPose.getHeading(), scorePose2.getHeading())
                 .setGlobalDeceleration()
                 .build();
 
         // Split paths for line 2 to prevent right-bias corner cutting
         driveToIntake2 = follower.pathBuilder()
-                .addPath(new BezierLine(scorePose2and3, intakeStart2))
-                .setLinearHeadingInterpolation(scorePose2and3.getHeading(), intakeStart2.getHeading())
+                .addPath(new BezierLine(scorePose2, intakeStart2))
+                .setLinearHeadingInterpolation(scorePose2.getHeading(), intakeStart2.getHeading())
                 .setGlobalDeceleration()
                 .build();
 
@@ -98,13 +101,15 @@ public class BigTriRed12 extends LinearOpMode {
                 .build();
 
         driveToShoot3 = follower.pathBuilder()
-                .addPath(new BezierLine(intakeEnd2, scorePose2and3))
-                .setLinearHeadingInterpolation(intakeEnd2.getHeading(), scorePose4.getHeading())
+                .addPath(new BezierLine(intakeEnd2, scorePose2))
+                .setLinearHeadingInterpolation(intakeEnd2.getHeading(), scorePose2.getHeading())
                 .setGlobalDeceleration()
                 .build();
         driveToIntake3 = follower.pathBuilder()
-                .addPath(new BezierLine(scorePose2and3,clearAndCollect))
-                .setLinearHeadingInterpolation(scorePose2and3.getHeading(),clearAndCollect.getHeading())
+                .addPath(new BezierLine(scorePose2,clearAndCollect))
+                .setLinearHeadingInterpolation(scorePose2.getHeading(),clearAndCollect.getHeading())
+                .addPath(new BezierLine(clearAndCollect,clearAndCollect2))
+                .setLinearHeadingInterpolation(clearAndCollect.getHeading(),clearAndCollect2.getHeading())
                 .setGlobalDeceleration()
                 .build();
         driveToShoot4 = follower.pathBuilder()
@@ -135,7 +140,7 @@ public class BigTriRed12 extends LinearOpMode {
                 ),
 
                 // 2.8s settled wait
-                waitMs(2800),
+                waitMs(2500),
 
                 // Idle at half speed
                 instant(() -> {
@@ -192,6 +197,10 @@ public class BigTriRed12 extends LinearOpMode {
                         instant(() -> shooter.setVelocity(ShooterConfig.SHOOTER_VEL_SHORT))
                 ),
                 combinedShootLogic(),
+                instant(() -> {
+                    intake.setPower(1.0);
+                    sideServo.setPower(1.0);
+                }),
 
                 //clears and collects 3 artifacts
                 follow(follower, driveToIntake3, true),
