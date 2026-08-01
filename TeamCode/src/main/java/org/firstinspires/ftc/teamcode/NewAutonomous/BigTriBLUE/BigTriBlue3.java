@@ -43,7 +43,7 @@ public class BigTriBlue3 extends LinearOpMode {
 
     //-------------------- POSES --------------------
     private final Pose startPose = new Pose(33.814, 133.428, Math.toRadians(270));
-    private final Pose scorePose = new Pose(58.271, 100.461, Math.toRadians(145));
+    private final Pose scorePose = new Pose(49.362, 91.028, Math.toRadians(130));
 
 
 

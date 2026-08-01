@@ -42,7 +42,7 @@ public class BigTriBlue6 extends LinearOpMode {
 
     //-------------------- POSES --------------------
     private final Pose startPose = new Pose(33.814, 133.428, Math.toRadians(270));
-    private final Pose scorePose1 = new Pose(49.362, 91.028, Math.toRadians(125));
+    private final Pose scorePose1 = new Pose(49.362, 91.028, Math.toRadians(130));
     private final Pose intakeStart = new Pose(46.806, 85.046, Math.toRadians(180));
     private final Pose intakeEnd = new Pose(16.983, 84.431, Math.toRadians(180));
     private final Pose scorePose2 = new Pose(57.572, 98.889, Math.toRadians(145));
@@ -82,13 +82,13 @@ public class BigTriBlue6 extends LinearOpMode {
                 // Wait until the flywheel is at target speed
                 waitUntil(() -> Math.abs(shooter.getVelocity() - ShooterConfig.SHOOTER_VEL_SHORT) < ShooterConfig.TPS_TOL),
 
-                // Feed
+                // Engagement using config SIDE_POWER (-1.0)
                 instant(() -> feed.setPower(ShooterConfig.SIDE_POWER)),
 
-                // Wait for sensor clear
+                // Wait for fire
                 waitUntil(() -> rangeSensor.getDistance(DistanceUnit.MM) > ShooterConfig.HANDOFF_DISTANCE_MM),
 
-                // Reload
+                // Start reload
                 parallel(
                         instant(() -> sideServo.setPower(1.0)),
                         instant(() -> intake.setPower(ShooterConfig.INTAKE_POWER))
@@ -97,10 +97,10 @@ public class BigTriBlue6 extends LinearOpMode {
                 // 4.2s settled wait
                 waitMs(3000),
 
-                // Idle at half speed
+                // Idle (Shut off for intake safety)
                 instant(() -> {
                     feed.setPower(0);
-                    shooter.setVelocity(600);
+                    shooter.setVelocity(0);
                     intake.setPower(0);
                     sideServo.setPower(0);
                 })

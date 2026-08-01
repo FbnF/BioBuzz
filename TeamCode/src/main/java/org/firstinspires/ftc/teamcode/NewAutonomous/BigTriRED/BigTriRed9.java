@@ -44,11 +44,11 @@ public class BigTriRed9 extends LinearOpMode {
     private final Pose startPose = new Pose(108.582, 132.904, Math.toRadians(270));
     private final Pose scorePose1 = new Pose(92.510, 91.727, Math.toRadians(45));
     private final Pose intakeStart1 = new Pose(95.014, 81.243, Math.toRadians(0));
-    private final Pose intakeEnd1 = new Pose(121, 80.865, Math.toRadians(0));
-    private final Pose scorePose2 = new Pose(82.728, 101.335, Math.toRadians(35));
-    private final Pose intakeStart2 = new Pose(95.104, 59, Math.toRadians(7));
-    private final Pose intakeEnd2 = new Pose(128, 59, Math.toRadians(7));
-    private final Pose scorePose3 = new Pose(82.728, 101.335, Math.toRadians(35));
+    private final Pose intakeEnd1 = new Pose(125.461, 80.865, Math.toRadians(0));
+    private final Pose scorePose2 = new Pose(82.728, 101.335, Math.toRadians(34));
+    private final Pose intakeStart2 = new Pose(95.104, 59, Math.toRadians(0));
+    private final Pose intakeEnd2 = new Pose(129, 59, Math.toRadians(0));
+    private final Pose scorePose3 = new Pose(82.728, 101.335, Math.toRadians(34));
 
 
 
@@ -101,8 +101,8 @@ public class BigTriRed9 extends LinearOpMode {
     //-------------------- Shooter & Reload Logic --------------------
     public Command combinedShootLogic() {
         return sequential(
-                // Small beat since we spin while driving
-                waitMs(250),
+                // Wait until the flywheel is at target speed
+                waitUntil(() -> Math.abs(shooter.getVelocity() - ShooterConfig.SHOOTER_VEL_SHORT) < ShooterConfig.TPS_TOL),
 
                 // Engagement using config SIDE_POWER (-1.0)
                 instant(() -> feed.setPower(ShooterConfig.SIDE_POWER)),

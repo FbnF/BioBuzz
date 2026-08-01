@@ -45,9 +45,9 @@ public class BigTriRed6Clear extends LinearOpMode {
     private final Pose scorePose1 = new Pose(92.510, 91.727, Math.toRadians(45));
     private final Pose intakeStart = new Pose(95.014, 81.243, Math.toRadians(0));
     private final Pose intakeEnd = new Pose(123, 80.865, Math.toRadians(0));
-    private final Pose clearStart = new Pose(115, 75, Math.toRadians(90));
-    private final Pose clearEnd = new Pose(126, 73, Math.toRadians(90));
-    private final Pose scorePose2 = new Pose(82.728, 101.335, Math.toRadians(37));
+    private final Pose clearStart = new Pose(121.921, 74.278, Math.toRadians(90));
+    private final Pose clearEnd = new Pose(129.0, 73.918, Math.toRadians(90));
+    private final Pose scorePose2 = new Pose(82.728, 101.335, Math.toRadians(34));
 
 
 
@@ -90,22 +90,25 @@ public class BigTriRed6Clear extends LinearOpMode {
     //-------------------- Shooter & Reload Logic --------------------
     public Command combinedShootLogic() {
         return sequential(
-                instant(() -> shooter.setVelocity(ShooterConfig.SHOOTER_VEL_SHORT)),
+                // Wait until the flywheel is at target speed
+                waitUntil(() -> Math.abs(shooter.getVelocity() - ShooterConfig.SHOOTER_VEL_SHORT) < ShooterConfig.TPS_TOL),
 
-                waitMs((long)(ShooterConfig.START_WAIT_TIME * 1000)),
-
+                // Engagement using config SIDE_POWER (-1.0)
                 instant(() -> feed.setPower(ShooterConfig.SIDE_POWER)),
 
+                // Wait for fire
                 waitUntil(() -> rangeSensor.getDistance(DistanceUnit.MM) > ShooterConfig.HANDOFF_DISTANCE_MM),
-                // Start reloading
+
+                // Start reload
                 parallel(
                         instant(() -> sideServo.setPower(1.0)),
                         instant(() -> intake.setPower(ShooterConfig.INTAKE_POWER))
                 ),
 
-                waitMs(5000),
+                // 4.2s settled wait
+                waitMs(4200),
 
-                // Power down
+                // Idle (Shut off for intake safety)
                 instant(() -> {
                     feed.setPower(0);
                     shooter.setVelocity(0);
@@ -121,7 +124,10 @@ public class BigTriRed6Clear extends LinearOpMode {
     public Command autoRoutine() {
         return sequential(
                 // Score 1
-                follow(follower, driveToShoot1, true),
+                parallel(
+                        follow(follower, driveToShoot1, true),
+                        instant(() -> shooter.setVelocity(ShooterConfig.SHOOTER_VEL_SHORT))
+                ),
                 combinedShootLogic(),
 
                 // Intake (50% power)
@@ -135,6 +141,7 @@ public class BigTriRed6Clear extends LinearOpMode {
 
                 // Clear the area
                 follow(follower, driveToClear, true),
+                waitMs(250),
 
                 // Stop intake for score move
                 instant(() -> {
@@ -143,7 +150,10 @@ public class BigTriRed6Clear extends LinearOpMode {
                 }),
 
                 // Score 2
-                follow(follower, driveToShoot2, true),
+                parallel(
+                        follow(follower, driveToShoot2, true),
+                        instant(() -> shooter.setVelocity(ShooterConfig.SHOOTER_VEL_SHORT))
+                ),
                 combinedShootLogic(),
                 // Power down
                 instant(() -> {

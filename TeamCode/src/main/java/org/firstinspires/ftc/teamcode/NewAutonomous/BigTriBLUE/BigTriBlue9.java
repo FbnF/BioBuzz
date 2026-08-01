@@ -42,7 +42,7 @@ public class BigTriBlue9 extends LinearOpMode {
 
     //-------------------- POSES --------------------
     private final Pose startPose = new Pose(33.814, 133.428, Math.toRadians(270));
-    private final Pose scorePose1 = new Pose(49.362, 91.028, Math.toRadians(137));
+    private final Pose scorePose1 = new Pose(49.362, 91.028, Math.toRadians(130));
     private final Pose intakeStart1 = new Pose(46.806, 85.046, Math.toRadians(180));
     private final Pose intakeEnd1 = new Pose(16.983, 84.431, Math.toRadians(180));
     private final Pose scorePose2 = new Pose(58.271, 100.461, Math.toRadians(145));
@@ -153,7 +153,7 @@ public class BigTriBlue9 extends LinearOpMode {
                 combinedShootLogic(),
 
                 // Cycle 2
-                instant(() -> follower.setMaxPower(0.5)),
+                instant(() -> follower.setMaxPower(0.4)),
                 parallel(
                         follow(follower, driveToIntake2, true),
                         instant(() -> intake.setPower(ShooterConfig.INTAKE_POWER)),
