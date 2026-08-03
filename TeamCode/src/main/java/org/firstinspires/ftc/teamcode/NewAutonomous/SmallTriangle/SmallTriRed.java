@@ -4,7 +4,9 @@ import static com.pedropathing.ivy.Scheduler.schedule;
 import static com.pedropathing.ivy.commands.Commands.instant;
 import static com.pedropathing.ivy.commands.Commands.waitMs;
 import static com.pedropathing.ivy.commands.Commands.waitUntil;
+import static com.pedropathing.ivy.groups.Groups.deadline;
 import static com.pedropathing.ivy.groups.Groups.parallel;
+import static com.pedropathing.ivy.groups.Groups.repeat;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 
@@ -76,26 +78,40 @@ public class SmallTriRed extends LinearOpMode {
                 .build();
     }
 
-    // Logic for the shooter and reloading the next ball
-    public Command combinedShootLogic() {
+    // Single ball fire and recovery sequence
+    public Command singleShot() {
         return sequential(
-                // Wait until the flywheel is at target speed
+                // 1. Wait for recovery
                 waitUntil(() -> Math.abs(shooter.getVelocity() - ShooterConfig.SHOOTER_VEL_LONG) < ShooterConfig.TPS_TOL),
-                
-                // Fire the ball
+                // 2. Fire
                 instant(() -> feed.setPower(ShooterConfig.SIDE_POWER_LONG)),
-
-                // Wait for the ball to clear the handoff sensor
+                // 3. Wait for clear
                 waitUntil(() -> rangeSensor.getDistance(DistanceUnit.MM) > ShooterConfig.HANDOFF_DISTANCE_MM),
-                
-                // Start pulling in the next ball immediately
-                parallel(
-                        instant(() -> sideServo.setPower(1.0)),
-                        instant(() -> intake.setPower(ShooterConfig.INTAKE_POWER))
-                ),
+                // 4. Stop feed
+                instant(() -> feed.setPower(0)),
+                // 5. Pull next ball up to sensor (1s safety timeout)
+                deadline(
+                        waitUntil(() -> rangeSensor.getDistance(DistanceUnit.MM) < ShooterConfig.HANDOFF_DISTANCE_MM),
+                        parallel(
+                                instant(() -> sideServo.setPower(1.0)),
+                                instant(() -> intake.setPower(ShooterConfig.INTAKE_POWER))
+                        )
+                ).raceWith(waitMs(1000)),
+                // 6. Stop pull
+                instant(() -> {
+                    sideServo.setPower(0);
+                    intake.setPower(0);
+                })
+        );
+    }
 
-                // 4s settled wait
-                waitMs(4000),
+    // Refined logic to handle multiple balls individually
+    public Command combinedShootLogic(int ballCount) {
+        return sequential(
+                repeat(singleShot(), ballCount),
+
+                // 5s settled wait for long distance shots
+                waitMs(5000),
 
                 // Idle at half speed
                 instant(() -> {
@@ -115,7 +131,7 @@ public class SmallTriRed extends LinearOpMode {
                         follow(follower, driveToShoot1, true),
                         instant(() -> shooter.setVelocity(ShooterConfig.SHOOTER_VEL_LONG))
                 ),
-                combinedShootLogic(),
+                combinedShootLogic(3),
 
                 // Drive through the intake zone and start grabbing balls immediately
                 // We slow down to 50% power for accuracy while picking up, then speed back up
@@ -127,12 +143,12 @@ public class SmallTriRed extends LinearOpMode {
                 ),
                 instant(() -> follower.setMaxPower(1.0)),
 
-                // Score the second ball
+                // Score the second cycle (3 balls)
                 parallel(
                         follow(follower, driveToShoot2, true),
                         instant(() -> shooter.setVelocity(ShooterConfig.SHOOTER_VEL_LONG))
                 ),
-                combinedShootLogic(),
+                combinedShootLogic(3),
 
                 // Final move to the park position
                 follow(follower, driveToPark, true),
@@ -177,6 +193,8 @@ public class SmallTriRed extends LinearOpMode {
             Scheduler.execute();
 
             // Telemetry updates for the drivers
+            telemetry.addData("Target TPS", ShooterConfig.SHOOTER_VEL_LONG);
+            telemetry.addData("Actual TPS", shooter.getVelocity());
             telemetry.addData("X", follower.getPose().getX());
             telemetry.addData("Y", follower.getPose().getY());
             telemetry.addData("Heading (Deg)", Math.toDegrees(follower.getPose().getHeading()));

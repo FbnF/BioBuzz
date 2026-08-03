@@ -62,14 +62,11 @@ public class SmallBlueSimple extends LinearOpMode {
     //Shooter and feeder combined into one code action
     public Command combinedShootLogic() {
         return sequential(
-                // Spin up the shooter with the long distance velocity
-                instant(() -> shooter.setVelocity(ShooterConfig.SHOOTER_VEL_LONG)),
+                // Wait until the flywheel is at target speed
+                waitUntil(() -> Math.abs(shooter.getVelocity() - ShooterConfig.SHOOTER_VEL_LONG) < ShooterConfig.TPS_TOL),
                 
-                // Give it a second to get up to speed
-                waitMs((long)(ShooterConfig.START_WAIT_TIME * 1000)),
-                
-                // Start feeding the ball into the shooter
-                instant(() -> feed.setPower(ShooterConfig.SIDE_POWER)),
+                // Start feeding the ball into the shooter using side power long for stability
+                instant(() -> feed.setPower(ShooterConfig.SIDE_POWER_LONG)),
 
                 // Wait for the range sensor to tell us the ball is gone
                 // Then kick on the intake and side servo to grab the next one
@@ -79,13 +76,13 @@ public class SmallBlueSimple extends LinearOpMode {
                         instant(() -> intake.setPower(ShooterConfig.INTAKE_POWER))
                 ),
 
-                // Keep everything running for the full shot time
-                waitMs((long)((ShooterConfig.WAIT_TIME - ShooterConfig.START_WAIT_TIME) * 1000)),
+                // 4s settled wait for long distance shots
+                waitMs(4000),
 
-                // Shut it all down
+                // Idle at half speed
                 instant(() -> {
                     feed.setPower(0);
-                    shooter.setVelocity(0);
+                    shooter.setVelocity(600);
                     intake.setPower(0);
                     sideServo.setPower(0);
                 })
@@ -95,9 +92,15 @@ public class SmallBlueSimple extends LinearOpMode {
     // The main auto routine
     public Command autoRoutine() {
         return sequential(
-                follow(follower, driveToShoot, true), // Hold ground while shooting
+                // Early spin up while driving to score
+                parallel(
+                        follow(follower, driveToShoot, true),
+                        instant(() -> shooter.setVelocity(ShooterConfig.SHOOTER_VEL_LONG))
+                ),
                 combinedShootLogic(),           
-                follow(follower, driveToPark, true)   // Hold ground in the park
+                follow(follower, driveToPark, true),
+                // Final shutdown
+                instant(() -> shooter.setVelocity(0))
         );
     }
 

@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @Disabled
-@TeleOp(name = "Arvin Servo", group = "MotorTests")
+@TeleOp(name = "Servo Test", group = "MotorTests")
 
 public class ArvinServo extends LinearOpMode {
     Servo myServo;

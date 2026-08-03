@@ -40,7 +40,7 @@ public class SmallTriBlue extends LinearOpMode {
 
     // Latest Poses from the Blue Side Visualizer
     private final Pose startPose = new Pose(55.377, 7.861, Math.toRadians(90));
-    private final Pose scorePose1 = new Pose(58.446, 16.959, Math.toRadians(109));
+    private final Pose scorePose1 = new Pose(58.446, 16.959, Math.toRadians(111));
     private final Pose intakeStart = new Pose(46.778, 35.749, Math.toRadians(180));
     private final Pose intakeEnd = new Pose(14.798, 36.435, Math.toRadians(180));
     private final Pose scorePose2 = new Pose(58.446, 16.959, Math.toRadians(112));
@@ -84,7 +84,7 @@ public class SmallTriBlue extends LinearOpMode {
                 // Wait until the flywheel is at target speed
                 waitUntil(() -> Math.abs(shooter.getVelocity() - ShooterConfig.SHOOTER_VEL_LONG) < ShooterConfig.TPS_TOL),
                 
-                // Kick the ball in
+                // Start feeding the ball into the shooter using side power long for stability
                 instant(() -> feed.setPower(ShooterConfig.SIDE_POWER_LONG)),
 
                 // Wait for the handoff to clear
@@ -96,7 +96,7 @@ public class SmallTriBlue extends LinearOpMode {
                         instant(() -> intake.setPower(ShooterConfig.INTAKE_POWER))
                 ),
 
-                // 4s buffer to ensure everything is settled
+                // 4s settled wait for long distance shots
                 waitMs(4000),
 
                 // Idle at half speed

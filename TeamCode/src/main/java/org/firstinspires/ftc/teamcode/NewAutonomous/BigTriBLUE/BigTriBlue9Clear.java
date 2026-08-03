@@ -48,11 +48,11 @@ public class BigTriBlue9Clear extends LinearOpMode {
     
     // Clear maneuver poses
     private final Pose clearStart = new Pose(22.079, 74.278, Math.toRadians(180));
-    private final Pose clearEnd = new Pose(13.6, 73.918, Math.toRadians(180));
+    private final Pose clearEnd = new Pose(13, 73.918, Math.toRadians(180));
     
     private final Pose scorePose2 = new Pose(57.572, 98.889, Math.toRadians(145));
     private final Pose intakeStart2 = new Pose(47.273, 64.785, Math.toRadians(180));
-    private final Pose intakeEnd2 = new Pose(19.136, 64.785, Math.toRadians(180));
+    private final Pose intakeEnd2 = new Pose(19, 63.785, Math.toRadians(180));
     private final Pose scorePose3 = new Pose(57.398, 98.889, Math.toRadians(145));
 
 

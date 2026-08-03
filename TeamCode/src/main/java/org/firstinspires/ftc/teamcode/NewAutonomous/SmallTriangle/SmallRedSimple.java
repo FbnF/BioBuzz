@@ -61,30 +61,27 @@ public class SmallRedSimple extends LinearOpMode {
     //Shooter and feeder combined into one code action
     public Command combinedShootLogic() {
         return sequential(
-                //Spin up shooter using config value
-                instant(() -> shooter.setVelocity(ShooterConfig.SHOOTER_VEL_LONG)),
+                // Wait until the flywheel is at target speed
+                waitUntil(() -> Math.abs(shooter.getVelocity() - ShooterConfig.SHOOTER_VEL_LONG) < ShooterConfig.TPS_TOL),
                 
-                //Wait for motor to reach speed (START_WAIT_TIME)
-                waitMs((long)(ShooterConfig.START_WAIT_TIME * 1000)),
-                
-                //Start feeding the ball using SIDE_POWER config
-                instant(() -> feed.setPower(ShooterConfig.SIDE_POWER)),
+                // Start feeding the ball into the shooter using side power long for stability
+                instant(() -> feed.setPower(ShooterConfig.SIDE_POWER_LONG)),
 
-                // Wait for ball to clear (HANDOFF_DISTANCE_MM)
-                // When ball leaves, kick on intake and side servo to reload
+                // Wait for the ball to clear the handoff sensor
+                // Then kick on the intake and side servo to reload
                 waitUntil(() -> rangeSensor.getDistance(DistanceUnit.MM) > ShooterConfig.HANDOFF_DISTANCE_MM),
                 parallel(
                         instant(() -> sideServo.setPower(1.0)),
                         instant(() -> intake.setPower(ShooterConfig.INTAKE_POWER))
                 ),
 
-                // Wait for the remainder of the shot duration (WAIT_TIME)
-                waitMs((long)((ShooterConfig.WAIT_TIME - ShooterConfig.START_WAIT_TIME) * 1000)),
+                // 4s settled wait for long distance shots
+                waitMs(4000),
 
-                // Stop all motors
+                // Idle at half speed
                 instant(() -> {
                     feed.setPower(0);
-                    shooter.setVelocity(0);
+                    shooter.setVelocity(600);
                     intake.setPower(0);
                     sideServo.setPower(0);
                 })
@@ -93,9 +90,15 @@ public class SmallRedSimple extends LinearOpMode {
 
     public Command autoRoutine() {
         return sequential(
-                follow(follower, driveToShoot, true),
+                // Early spin up while driving to score
+                parallel(
+                        follow(follower, driveToShoot, true),
+                        instant(() -> shooter.setVelocity(ShooterConfig.SHOOTER_VEL_LONG))
+                ),
                 combinedShootLogic(),
-                follow(follower, driveToPark, true)
+                follow(follower, driveToPark, true),
+                // Final shutdown
+                instant(() -> shooter.setVelocity(0))
         );
     }
 
