@@ -9,7 +9,7 @@ public final class ShooterConfig {
     // ---------------- Controls / Limits ----------------
     public static double MIN_RANGE_IN = 10.0;    // ignore ranges under this (inches)
     public static double TPS_MIN_AUTO = 800.0;   // below this, AUTO stays off
-    public static double TPS_TOL = 15.0;
+    public static double TPS_TOL = 50.0;
 
     public static double TPS_MAX_MECH = 2800.0;  // absolute safety limit
     public static double TPS_MAX_AUTO = 2400.0;  // clamp used by AUTO
@@ -37,7 +37,7 @@ public final class ShooterConfig {
     public static double NO_SHOT_UNDER_IN = 0.0; 
 
     // Smoothing (0 = off, 1 = heavy)
-    public static double DIST_SMOOTH_ALPHA = 0.20;
+    public static double DIST_SMOOTH_ALPHA = 0.15;
 
     // Physics model params
     public static double G = 9.81;
@@ -54,9 +54,9 @@ public final class ShooterConfig {
     // Auto Align Config
     public static boolean AUTO_ALIGN_ENABLED = true;
     public static double ALIGN_KP = 0.02;
-    public static double ALIGN_KD = 0.00045;
+    public static double ALIGN_KD = 0.0008;
     public static double ALIGN_MAX_TURN = 0.7;
-    public static double ALIGN_MIN_TURN = 0.08;
+    public static double ALIGN_MIN_TURN = 0.06;
     public static double ALIGN_ERR_DEADBAND_DEG = 0.25;
     public static double ALIGN_MAX_STALE_MS = 100;
 
@@ -65,7 +65,7 @@ public final class ShooterConfig {
             45.2, 46.12, 54.4, 56.2, 60.2, 69.7, 80.5, 127.4, 133.47, 139.24
     };
     public static double[] TPS_AT_DIST_BLUE = new double[] {
-            1080, 1090, 1080, 1269, 1195, 1232, 1340, 1523, 1560, 1610
+            1090, 1100, 1090, 1279, 1205, 1242, 1350, 1533, 1570, 1620
     };
     public static double[] MIN_ANGLE_BLUE = new double[] {
             0.4688, 0.4688, 0.4688, 0.4688, 0.4688, 0.4688, 0.4688, 0.4688, 0.4688, 0.5688
@@ -85,7 +85,7 @@ public final class ShooterConfig {
             45.82, 48.78, 51.15, 58.22, 62.8, 69.09, 81.5, 130.9, 136, 138.6
     };
     public static double[] TPS_AT_DIST_RED = new double[] {
-            1140, 1250, 1260, 1260, 1255, 1292, 1361, 1583, 1610, 1670
+            1140, 1250, 1280, 1260, 1255, 1292, 1361, 1583, 1620, 1670
     };
     public static double[] MIN_ANGLE_RED = new double[] {
             -5.06, -10, -4.35, -6.759, -4.42, -6.759, -6.759, -6.759, -5.2, -6.4
@@ -108,5 +108,5 @@ public final class ShooterConfig {
     public static double RED_ALIGN_OFFSET = 1.0;
 
     // Blue-specific offsets
-    public static double BLUE_ALIGN_OFFSET = 1.0;
+    public static double BLUE_ALIGN_OFFSET = 0.0;
 }

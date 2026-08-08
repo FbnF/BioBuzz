@@ -23,7 +23,7 @@ public class VisionService {
     private boolean visionEnabled = true;
     
     private long lastSeenNs = 0;
-    private static final long NULL_DELAY_NS = 1_000_000_000L;
+    private static final long NULL_DELAY_NS = 1_500_000_000L;
 
     private boolean currentlySeeing = false;
 
@@ -37,6 +37,14 @@ public class VisionService {
     public void setGoalTagId(int id) { this.goalTagId = id; }
     public void setVisionEnabled(boolean enabled) { this.visionEnabled = enabled; }
     public boolean isVisionEnabled() { return visionEnabled; }
+
+    public void reset() {
+        filteredDistance = 0.0;
+        rawDistance = 0.0;
+        lastSeenNs = 0;
+        currentlySeeing = false;
+        targetVisible = false;
+    }
 
     public void init(HardwareMap hardwareMap) {
         limelight = hardwareMap.get(Limelight3A.class, "Limelight");

@@ -94,6 +94,10 @@ public class TeleOpMainBlue extends LinearOpMode {
                     turn = 0;
                 } else {
                     turn = alignController.update(txError);
+                    // Apply minimum turn power to overcome static friction and lock onto target
+                    if (Math.abs(turn) > 0 && Math.abs(turn) < ShooterConfig.ALIGN_MIN_TURN) {
+                        turn = Math.copySign(ShooterConfig.ALIGN_MIN_TURN, turn);
+                    }
                 }
             } else {
                 alignController.reset();
