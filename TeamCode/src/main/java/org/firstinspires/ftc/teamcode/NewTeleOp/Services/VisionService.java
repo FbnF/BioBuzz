@@ -41,9 +41,13 @@ public class VisionService {
     public void reset() {
         filteredDistance = 0.0;
         rawDistance = 0.0;
+        tx = 0.0;
+        ty = 0.0;
         lastSeenNs = 0;
         currentlySeeing = false;
         targetVisible = false;
+        hasGoalTag = false;
+        visionEnabled = true;
     }
 
     public void init(HardwareMap hardwareMap) {
@@ -54,7 +58,7 @@ public class VisionService {
     }
 
     public void update() {
-        if (!visionEnabled) {
+        if (!visionEnabled || limelight == null) {
             targetVisible = false;
             hasGoalTag = false;
             return;
@@ -64,7 +68,9 @@ public class VisionService {
         currentlySeeing = false;
         hasGoalTag = false;
 
-        if (result != null && result.isValid() && result.getStaleness() < 100) {
+
+        if (result != null && result.isValid() && result.getStaleness() < 250) {
+
             List<LLResultTypes.FiducialResult> fiducials = result.getFiducialResults();
             if (fiducials != null) {
                 for (LLResultTypes.FiducialResult f : fiducials) {

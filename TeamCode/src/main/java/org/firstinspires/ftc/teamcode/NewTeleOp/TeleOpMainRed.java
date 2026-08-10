@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.NewTeleOp;
 
+import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.pedropathing.follower.Follower;
@@ -15,6 +16,7 @@ import org.firstinspires.ftc.teamcode.configs.ShooterConfig;
 import org.firstinspires.ftc.teamcode.utils.PDController;
 
 // Main Red TeleOp
+@Configurable
 @TeleOp(name = "TeleOpMainRed", group = "TeleOp")
 public class TeleOpMainRed extends LinearOpMode {
 
@@ -28,7 +30,7 @@ public class TeleOpMainRed extends LinearOpMode {
     private PDController alignController;
     private double speedFactor = 0.70; 
 
-    private boolean autoShooter = true;
+    public static boolean autoShooter = true;
     private boolean autoSpinArmed = true;
     private boolean prevG2DpadUp = false;
     private boolean prevG2DpadRight = false;
