@@ -54,9 +54,9 @@ public final class ShooterConfig {
     // Auto Align Config
     public static boolean AUTO_ALIGN_ENABLED = true;
     public static double ALIGN_KP = 0.02;
-    public static double ALIGN_KD = 0.0008;
+    public static double ALIGN_KD = 0.00045;
     public static double ALIGN_MAX_TURN = 0.7;
-    public static double ALIGN_MIN_TURN = 0.06;
+    public static double ALIGN_MIN_TURN = 0.08;
     public static double ALIGN_ERR_DEADBAND_DEG = 0.25;
     public static double ALIGN_MAX_STALE_MS = 100;
 
@@ -105,7 +105,7 @@ public final class ShooterConfig {
     public static double SHOOTER_VEL_SHORT = 1175.0;
 
     // Red-specific offsets
-    public static double RED_ALIGN_OFFSET = 1.0;
+    public static double RED_ALIGN_OFFSET = 0.0;
 
     // Blue-specific offsets
     public static double BLUE_ALIGN_OFFSET = 0.0;

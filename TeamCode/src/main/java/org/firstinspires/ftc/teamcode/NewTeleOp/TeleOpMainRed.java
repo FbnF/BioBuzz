@@ -92,7 +92,8 @@ public class TeleOpMainRed extends LinearOpMode {
 
             double txError = (targetTx - tx) - ShooterConfig.RED_ALIGN_OFFSET;
 
-            if (gamepad1.left_bumper && vision.isTargetVisible()) {
+            if (ShooterConfig.AUTO_ALIGN_ENABLED && gamepad1.left_bumper
+                    && vision.isVisionEnabled() && vision.isCurrentlySeeing()) {
                 if (Math.abs(txError) <= ShooterConfig.ALIGN_ERR_DEADBAND_DEG) {
                     turn = 0;
                 } else {
