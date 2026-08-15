@@ -68,10 +68,10 @@ public final class ShooterConfig {
             1203, 1211, 1203, 1329, 1255, 1292, 1400, 1583, 1620, 1670
     };
     public static double[] MIN_ANGLE_BLUE = new double[] {
-            0.4688, 0.4688, 0.4688, 0.4688, 0.4688, 0.4688, 0.4688, 0.4688, 0.4688, 0.5688
+            0.4688, 0.4688, 0.4688, 0.4688, 0.4688, 0.4688, 0.4688, 0.4688, 0.4988, 0.5988
     };
     public static double[] MAX_ANGLE_BLUE = new double[] {
-            0.4688, 0.4688, 0.4688, 0.4688, 0.4688, 0.4688, 0.4688, 0.4688, 0.4688, 0.5688
+            0.4688, 0.4688, 0.4688, 0.4688, 0.4688, 0.4688, 0.4688, 0.4688, 0.5688, 0.6688
     };
     public static double[] FEED_POWER_BLUE = new double[] {
             -0.9, -0.9, -0.4, -0.49, -0.6, -0.4, -0.2, -0.17, -0.15, -0.15
@@ -105,8 +105,8 @@ public final class ShooterConfig {
     public static double SHOOTER_VEL_SHORT = 1175.0;
 
     // Red-specific offsets
-    public static double RED_ALIGN_OFFSET = 0.0;
+    public static double RED_ALIGN_OFFSET = 1.0;
 
     // Blue-specific offsets
-    public static double BLUE_ALIGN_OFFSET = 0.0;
+    public static double BLUE_ALIGN_OFFSET = 1.0;
 }

@@ -5,6 +5,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.NewTeleOp.Services.LedService;
 import org.firstinspires.ftc.teamcode.NewTeleOp.Services.LoggingService;
@@ -51,7 +54,7 @@ public class TeleOpMainBlue extends LinearOpMode {
         vision.reset();
         vision.setGoalTagId(20); 
         shooter.setIsBlue(true);
-        
+        //shooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(500, 3, 0, 4));
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(new Pose(0,0,0));
         follower.startTeleopDrive(true);

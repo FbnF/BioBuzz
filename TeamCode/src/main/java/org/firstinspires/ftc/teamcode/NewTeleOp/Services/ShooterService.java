@@ -9,7 +9,7 @@ public class ShooterService {
     private static ShooterService instance = null;
     private boolean isBlue = false;
     private double lastTargetTPS = 0.0;
-    private static final double MAX_ALLOWED_TPS = 1582.0;
+    private static final double MAX_ALLOWED_TPS = 1690.0;
 
     // Telemetry fields
     private double physicsTPS = 0.0;
