@@ -69,6 +69,7 @@ public class VisionService {
         hasGoalTag = false;
 
 
+
         if (result != null && result.isValid() && result.getStaleness() < 250) {
 
             List<LLResultTypes.FiducialResult> fiducials = result.getFiducialResults();

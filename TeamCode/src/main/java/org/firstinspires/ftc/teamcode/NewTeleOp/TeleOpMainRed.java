@@ -45,6 +45,7 @@ public class TeleOpMainRed extends LinearOpMode {
     private boolean isEjecting = false;
     private long ejectStartNs = 0;
     private double currentIntakePower = 0;
+    private double currentOffset = ShooterConfig.RED_ALIGN_OFFSET;
 
     @Override
     public void runOpMode() {
@@ -93,7 +94,7 @@ public class TeleOpMainRed extends LinearOpMode {
                 targetTx = tx; // Already in window, set error to 0
             }
 
-            double txError = (targetTx - tx) - ShooterConfig.RED_ALIGN_OFFSET;
+            double txError = (targetTx - tx) - currentOffset;
 
             if (ShooterConfig.AUTO_ALIGN_ENABLED && gamepad1.left_bumper
                     && vision.isVisionEnabled() && vision.isCurrentlySeeing()) {
@@ -132,6 +133,7 @@ public class TeleOpMainRed extends LinearOpMode {
                     robot.launchMotor.setPower(0);
                 }
             } else {
+                // Manual presets removed as per new specs
                 robot.launchMotor.setPower(0);
             }
 
@@ -140,6 +142,12 @@ public class TeleOpMainRed extends LinearOpMode {
             boolean isLoaded = robot.rangeSensor.getDistance(DistanceUnit.MM) < 170;
             boolean angleOk = vision.getTx() >= win[0] && vision.getTx() <= win[1];
             boolean noShotZone = vision.isNoShotZone();
+            //Switching offsets
+            if(vision.getDistance() >= ShooterConfig.DISTANCE_TO_SWITCH_TO_FAR){
+                currentOffset = ShooterConfig.RED_ALIGN_FAR_OFFSET;
+            } else{
+                currentOffset = ShooterConfig.RED_ALIGN_OFFSET;
+            }
             
             // Intake Latching logic (GP2)
             boolean rtPressed = gamepad2.right_trigger > 0.5;
