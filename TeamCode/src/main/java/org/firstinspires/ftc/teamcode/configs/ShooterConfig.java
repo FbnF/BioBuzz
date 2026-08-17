@@ -109,11 +109,11 @@ public final class ShooterConfig {
     public static double DISTANCE_TO_SWITCH_TO_FAR = 70;
     // Red-specific offsets
     public static double RED_ALIGN_OFFSET = 1.0;
-    public static double RED_ALIGN_FAR_OFFSET;
+    public static double RED_ALIGN_FAR_OFFSET = 1.0;
 
     // Blue-specific offsets
     public static double BLUE_ALIGN_OFFSET = 1.0;
-    public static double BLUE_ALIGN_FAR_OFFSET;
+    public static double BLUE_ALIGN_FAR_OFFSET = 1.0;
 
 
 }
