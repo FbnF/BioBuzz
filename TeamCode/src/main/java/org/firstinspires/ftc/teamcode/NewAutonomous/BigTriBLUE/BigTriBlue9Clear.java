@@ -157,9 +157,9 @@ public class BigTriBlue9Clear extends LinearOpMode {
                         instant(() -> sideServo.setPower(1.0))
                 ),
                 
-                // Clear maneuver
-                follow(follower, driveToClear, true),
-                waitMs(250), // waitSeconds(0.15) from RR
+                // Clear maneuver (with 1s timeout to prevent getting stuck at the gate)
+                follow(follower, driveToClear, true).raceWith(waitMs(2000)),
+                waitMs(250),
                 
                 instant(() -> follower.setMaxPower(1.0)),
 

@@ -97,7 +97,7 @@ public class SmallTriBlue extends LinearOpMode {
                 ),
 
                 // 4s settled wait for long distance shots
-                waitMs(4000),
+                waitMs(5000),
 
                 // Idle at half speed
                 instant(() -> {
