@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.NewTeleOp.Services;
 
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -50,5 +51,14 @@ public class RobotHardware {
         feedServo.setPower(0.0);
         sideServo.setPower(0.0);
         puckLight.setPosition(0.0);
+
+        // Bulk caching: without this, every getVelocity()/getDistance()/etc. call in the
+        // TeleOp loop is a separate blocking I2C transaction to the hub, which slows the
+        // loop down and causes noticeable input lag. AUTO mode caches hub reads and clears
+        // the cache automatically the next time hardware is read, so no explicit per-loop
+        // call is required.
+        for (LynxModule hub : hardwareMap.getAll(LynxModule.class)) {
+            hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
+        }
     }
 }
