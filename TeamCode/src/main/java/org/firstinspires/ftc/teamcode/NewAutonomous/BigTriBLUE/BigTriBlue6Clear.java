@@ -46,7 +46,7 @@ public class BigTriBlue6Clear extends LinearOpMode {
     private final Pose intakeStart = new Pose(46.806, 85.046, Math.toRadians(180));
     private final Pose intakeEnd = new Pose(16.983, 84.431, Math.toRadians(180));
     private final Pose clearStart = new Pose(22.079, 74.278, Math.toRadians(180));
-    private final Pose clearEnd = new Pose(14.5, 73.918, Math.toRadians(180));
+    private final Pose clearEnd = new Pose(13, 73.918, Math.toRadians(180));
     private final Pose scorePose2 = new Pose(57.572, 98.889, Math.toRadians(145));
 
 

@@ -38,6 +38,8 @@ public class BigTriBlue9Clear extends LinearOpMode {
     private CRServo sideServo;
     private DistanceSensor rangeSensor;
 
+    private double shooter_Vel = 1160.0;
+
 
 
     //-------------------- POSES --------------------
@@ -52,7 +54,7 @@ public class BigTriBlue9Clear extends LinearOpMode {
     
     private final Pose scorePose2 = new Pose(57.572, 98.889, Math.toRadians(145));
     private final Pose intakeStart2 = new Pose(47.273, 64.785, Math.toRadians(180));
-    private final Pose intakeEnd2 = new Pose(19, 63.785, Math.toRadians(180));
+    private final Pose intakeEnd2 = new Pose(19.136, 62.899, Math.toRadians(180));
     private final Pose scorePose3 = new Pose(57.398, 98.889, Math.toRadians(145));
 
 
@@ -110,10 +112,10 @@ public class BigTriBlue9Clear extends LinearOpMode {
     public Command combinedShootLogic() {
         return sequential(
                 // Wait until the flywheel is at target speed
-                waitUntil(() -> Math.abs(shooter.getVelocity() - ShooterConfig.SHOOTER_VEL_SHORT) < ShooterConfig.TPS_TOL),
+                waitUntil(() -> Math.abs(shooter.getVelocity() - shooter_Vel) < ShooterConfig.TPS_TOL),
 
                 // Engagement using config SIDE_POWER (-1.0)
-                instant(() -> feed.setPower(ShooterConfig.SIDE_POWER)),
+                instant(() -> feed.setPower(-0.9)),
 
                 // Wait for fire
                 waitUntil(() -> rangeSensor.getDistance(DistanceUnit.MM) > ShooterConfig.HANDOFF_DISTANCE_MM),
@@ -125,7 +127,7 @@ public class BigTriBlue9Clear extends LinearOpMode {
                 ),
 
                 // 4.2s settled wait
-                waitMs(3000),
+                waitMs(3500),
 
                 // Idle (Shut off for intake safety)
                 instant(() -> {
