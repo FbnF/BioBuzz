@@ -159,7 +159,7 @@ public class BigTriRed9Clear extends LinearOpMode {
                 ),
                 instant(() -> follower.setMaxPower(1.0)),
                 //clear rack
-                follow(follower, driveToClear, true),
+                follow(follower, driveToClear, true).raceWith(waitMs(2000)),
                 waitMs(250),
 
                 // Shot 2 + Early Start
