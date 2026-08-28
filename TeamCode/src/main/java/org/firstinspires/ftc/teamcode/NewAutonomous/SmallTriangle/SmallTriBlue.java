@@ -59,7 +59,7 @@ public class SmallTriBlue extends LinearOpMode {
 
     public static double scorePose2X = 58.446;
     public static double scorePose2Y = 16.959;
-    public static double scorePose2Rotation = 112;
+    public static double scorePose2Rotation = 115;
 
     public static double parkPoseX = 36.599;
     public static double parkPoseY = 16.115;

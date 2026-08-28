@@ -43,13 +43,7 @@ public class BigTriBlue6 extends LinearOpMode {
 
 
     //-------------------- POSES --------------------
-<<<<<<< Updated upstream
-    private final Pose startPose = new Pose(33.814, 133.428, Math.toRadians(270));
-    private final Pose scorePose1 = new Pose(49.362, 91.028, Math.toRadians(130));
-    private final Pose intakeStart = new Pose(46.806, 85.046, Math.toRadians(180));
-    private final Pose intakeEnd = new Pose(16.983, 84.431, Math.toRadians(180));
-    private final Pose scorePose2 = new Pose(57.572, 100, Math.toRadians(145));
-=======
+
     public static double startPoseX = 33.814;
     public static double startPoseY = 133.428;
     public static double startPoseRotation = 270;
@@ -75,7 +69,6 @@ public class BigTriBlue6 extends LinearOpMode {
     private final Pose intakeStart = new Pose(intakeStartX, intakeStartY, Math.toRadians(intakeStartRotation));
     private final Pose intakeEnd = new Pose(intakeEndX, intakeEndY, Math.toRadians(intakeEndRotation));
     private final Pose scorePose2 = new Pose(scorePose2X, scorePose2Y, Math.toRadians(scorePose2Rotation));
->>>>>>> Stashed changes
 
 
 

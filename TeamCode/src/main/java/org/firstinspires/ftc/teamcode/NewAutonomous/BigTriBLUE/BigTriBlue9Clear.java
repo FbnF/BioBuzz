@@ -63,19 +63,14 @@ public class BigTriBlue9Clear extends LinearOpMode {
     
     // Clear maneuver poses
     public static double clearStartX = 22.079;
-    public static double clearStartY = 74.278;
+    public static double clearStartY = 76;
     public static double clearStartRotation = 180;
 
     public static double clearEndX = 13;
-    public static double clearEndY = 73.918;
+    public static double clearEndY = 76;
     public static double clearEndRotation = 180;
     
-<<<<<<< Updated upstream
-    private final Pose scorePose2 = new Pose(57.572, 98.889, Math.toRadians(145));
-    private final Pose intakeStart2 = new Pose(47.273, 64.785, Math.toRadians(180));
-    private final Pose intakeEnd2 = new Pose(19.136, 62.899, Math.toRadians(180));
-    private final Pose scorePose3 = new Pose(57.398, 98.889, Math.toRadians(145));
-=======
+
     public static double scorePose2X = 57.572;
     public static double scorePose2Y = 98.889;
     public static double scorePose2Rotation = 145;
@@ -105,7 +100,7 @@ public class BigTriBlue9Clear extends LinearOpMode {
     private final Pose intakeStart2 = new Pose(intakeStart2X, intakeStart2Y, Math.toRadians(intakeStart2Rotation));
     private final Pose intakeEnd2 = new Pose(intakeEnd2X, intakeEnd2Y, Math.toRadians(intakeEnd2Rotation));
     private final Pose scorePose3 = new Pose(scorePose3X, scorePose3Y, Math.toRadians(scorePose3Rotation));
->>>>>>> Stashed changes
+
 
 
 

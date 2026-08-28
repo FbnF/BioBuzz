@@ -46,7 +46,7 @@ public class SmallTriRed extends LinearOpMode {
 
     public static double scorePose1X = 82.378;
     public static double scorePose1Y = 18.531;
-    public static double scorePose1Rotation = 63;
+    public static double scorePose1Rotation = 66;
 
     public static double intakeStartX = 92.326;
     public static double intakeStartY = 33.535;
@@ -58,7 +58,7 @@ public class SmallTriRed extends LinearOpMode {
 
     public static double scorePose2X = 82.378;
     public static double scorePose2Y = 18.531;
-    public static double scorePose2Rotation = 63;
+    public static double scorePose2Rotation = 66;
 
     public static double parkPoseX = 105.253;
     public static double parkPoseY = 16.638;

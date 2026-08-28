@@ -43,15 +43,7 @@ public class BigTriBlue6Clear extends LinearOpMode {
 
 
     //-------------------- POSES --------------------
-<<<<<<< Updated upstream
-    private final Pose startPose = new Pose(33.814, 133.428, Math.toRadians(270));
-    private final Pose scorePose1 = new Pose(49.362, 91.028, Math.toRadians(130));
-    private final Pose intakeStart = new Pose(46.806, 85.046, Math.toRadians(180));
-    private final Pose intakeEnd = new Pose(16.983, 84.431, Math.toRadians(180));
-    private final Pose clearStart = new Pose(22.079, 74.278, Math.toRadians(180));
-    private final Pose clearEnd = new Pose(13, 73.918, Math.toRadians(180));
-    private final Pose scorePose2 = new Pose(57.572, 98.889, Math.toRadians(145));
-=======
+
     public static double startPoseX = 33.814;
     public static double startPoseY = 133.428;
     public static double startPoseRotation = 270;
@@ -69,11 +61,11 @@ public class BigTriBlue6Clear extends LinearOpMode {
     public static double intakeEndRotation = 180;
 
     public static double clearStartX = 22.079;
-    public static double clearStartY = 74.278;
+    public static double clearStartY = 76;
     public static double clearStartRotation = 180;
 
     public static double clearEndX = 14.5;
-    public static double clearEndY = 73.918;
+    public static double clearEndY = 76;
     public static double clearEndRotation = 180;
 
     public static double scorePose2X = 57.572;
@@ -87,7 +79,6 @@ public class BigTriBlue6Clear extends LinearOpMode {
     private final Pose clearStart = new Pose(clearStartX, clearStartY, Math.toRadians(clearStartRotation));
     private final Pose clearEnd = new Pose(clearEndX, clearEndY, Math.toRadians(clearEndRotation));
     private final Pose scorePose2 = new Pose(scorePose2X, scorePose2Y, Math.toRadians(scorePose2Rotation));
->>>>>>> Stashed changes
 
 
 
