@@ -8,6 +8,7 @@ import static com.pedropathing.ivy.groups.Groups.parallel;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 
+import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
@@ -28,6 +29,7 @@ import org.firstinspires.ftc.teamcode.configs.HardwareConfig;
 import org.firstinspires.ftc.teamcode.configs.ShooterConfig;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
+@Configurable
 @Autonomous(name = "BigTriRED12", group = "Autonomous")
 public class BigTriRed12 extends LinearOpMode {
 
@@ -42,19 +44,67 @@ public class BigTriRed12 extends LinearOpMode {
 
 
     //-------------------- POSES --------------------
-    private final Pose startPose = new Pose(108.582, 132.904, Math.toRadians(270));
-    private final Pose scorePose1 = new Pose(92.510, 91.727, Math.toRadians(45));
-    private final Pose intakeStart1 = new Pose(95.014, 81.243, Math.toRadians(0));
-    private final Pose intakeEnd1 = new Pose(123, 80.865, Math.toRadians(0));
-    private final Pose clearPose = new Pose(127.00171789185484, 75, Math.toRadians(0));
-    private final Pose scorePose2 = new Pose(96.78083109919571, 87.97184986595173, Math.toRadians(52));
-    private final Pose intakeStart2 = new Pose(95.104, 59, Math.toRadians(7));
-    private final Pose intakeEnd2 = new Pose(128, 59, Math.toRadians(7));
-    private final Pose scorePose3 = new Pose(96.78083109919571, 87.97184986595173, Math.toRadians(55));
-    private final Pose clearAndCollect = new Pose(129.12416107382552,59.931543624161066, Math.toRadians(28));
-    private final Pose clearAndCollect2 = new Pose(130,63, Math.toRadians(28));
+    public static double startPoseX = 108.582;
+    public static double startPoseY = 132.904;
+    public static double startPoseRotation = 270;
 
-    private final Pose scorePose4 = new Pose(82.728, 101.335, Math.toRadians(35));
+    public static double scorePose1X = 92.510;
+    public static double scorePose1Y = 91.727;
+    public static double scorePose1Rotation = 45;
+
+    public static double intakeStart1X = 95.014;
+    public static double intakeStart1Y = 81.243;
+    public static double intakeStart1Rotation = 0;
+
+    public static double intakeEnd1X = 123;
+    public static double intakeEnd1Y = 80.865;
+    public static double intakeEnd1Rotation = 0;
+
+    public static double clearPoseX = 127.00171789185484;
+    public static double clearPoseY = 75;
+    public static double clearPoseRotation = 0;
+
+    public static double scorePose2X = 96.78083109919571;
+    public static double scorePose2Y = 87.97184986595173;
+    public static double scorePose2Rotation = 52;
+
+    public static double intakeStart2X = 95.104;
+    public static double intakeStart2Y = 59;
+    public static double intakeStart2Rotation = 7;
+
+    public static double intakeEnd2X = 128;
+    public static double intakeEnd2Y = 59;
+    public static double intakeEnd2Rotation = 7;
+
+    public static double scorePose3X = 96.78083109919571;
+    public static double scorePose3Y = 87.97184986595173;
+    public static double scorePose3Rotation = 55;
+
+    public static double clearAndCollectX = 129.12416107382552;
+    public static double clearAndCollectY = 59.931543624161066;
+    public static double clearAndCollectRotation = 28;
+
+    public static double clearAndCollect2X = 130;
+    public static double clearAndCollect2Y = 63;
+    public static double clearAndCollect2Rotation = 28;
+
+    public static double scorePose4X = 82.728;
+    public static double scorePose4Y = 101.335;
+    public static double scorePose4Rotation = 35;
+
+    private final Pose startPose = new Pose(startPoseX, startPoseY, Math.toRadians(startPoseRotation));
+    private final Pose scorePose1 = new Pose(scorePose1X, scorePose1Y, Math.toRadians(scorePose1Rotation));
+    private final Pose intakeStart1 = new Pose(intakeStart1X, intakeStart1Y, Math.toRadians(intakeStart1Rotation));
+    private final Pose intakeEnd1 = new Pose(intakeEnd1X, intakeEnd1Y, Math.toRadians(intakeEnd1Rotation));
+    private final Pose clearPose = new Pose(clearPoseX, clearPoseY, Math.toRadians(clearPoseRotation));
+    private final Pose scorePose2 = new Pose(scorePose2X, scorePose2Y, Math.toRadians(scorePose2Rotation));
+    private final Pose intakeStart2 = new Pose(intakeStart2X, intakeStart2Y, Math.toRadians(intakeStart2Rotation));
+    private final Pose intakeEnd2 = new Pose(intakeEnd2X, intakeEnd2Y, Math.toRadians(intakeEnd2Rotation));
+    private final Pose scorePose3 = new Pose(scorePose3X, scorePose3Y, Math.toRadians(scorePose3Rotation));
+    private final Pose clearAndCollect = new Pose(clearAndCollectX, clearAndCollectY, Math.toRadians(clearAndCollectRotation));
+    private final Pose clearAndCollect2 = new Pose(clearAndCollect2X, clearAndCollect2Y, Math.toRadians(clearAndCollect2Rotation));
+
+    private final Pose scorePose4 = new Pose(scorePose4X, scorePose4Y, Math.toRadians(scorePose4Rotation));
 
 
 

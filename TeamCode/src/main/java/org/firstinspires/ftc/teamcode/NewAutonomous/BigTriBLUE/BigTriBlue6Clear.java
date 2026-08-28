@@ -8,6 +8,7 @@ import static com.pedropathing.ivy.groups.Groups.parallel;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 
+import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
@@ -27,6 +28,7 @@ import org.firstinspires.ftc.teamcode.configs.HardwareConfig;
 import org.firstinspires.ftc.teamcode.configs.ShooterConfig;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
+@Configurable
 @Autonomous(name = "BigTriBLUE6Clear", group = "Autonomous")
 public class BigTriBlue6Clear extends LinearOpMode {
 
@@ -41,6 +43,7 @@ public class BigTriBlue6Clear extends LinearOpMode {
 
 
     //-------------------- POSES --------------------
+<<<<<<< Updated upstream
     private final Pose startPose = new Pose(33.814, 133.428, Math.toRadians(270));
     private final Pose scorePose1 = new Pose(49.362, 91.028, Math.toRadians(130));
     private final Pose intakeStart = new Pose(46.806, 85.046, Math.toRadians(180));
@@ -48,6 +51,43 @@ public class BigTriBlue6Clear extends LinearOpMode {
     private final Pose clearStart = new Pose(22.079, 74.278, Math.toRadians(180));
     private final Pose clearEnd = new Pose(13, 73.918, Math.toRadians(180));
     private final Pose scorePose2 = new Pose(57.572, 98.889, Math.toRadians(145));
+=======
+    public static double startPoseX = 33.814;
+    public static double startPoseY = 133.428;
+    public static double startPoseRotation = 270;
+
+    public static double scorePose1X = 49.362;
+    public static double scorePose1Y = 91.028;
+    public static double scorePose1Rotation = 130;
+
+    public static double intakeStartX = 46.806;
+    public static double intakeStartY = 85.046;
+    public static double intakeStartRotation = 180;
+
+    public static double intakeEndX = 16.983;
+    public static double intakeEndY = 84.431;
+    public static double intakeEndRotation = 180;
+
+    public static double clearStartX = 22.079;
+    public static double clearStartY = 74.278;
+    public static double clearStartRotation = 180;
+
+    public static double clearEndX = 14.5;
+    public static double clearEndY = 73.918;
+    public static double clearEndRotation = 180;
+
+    public static double scorePose2X = 57.572;
+    public static double scorePose2Y = 98.889;
+    public static double scorePose2Rotation = 145;
+
+    private final Pose startPose = new Pose(startPoseX, startPoseY, Math.toRadians(startPoseRotation));
+    private final Pose scorePose1 = new Pose(scorePose1X, scorePose1Y, Math.toRadians(scorePose1Rotation));
+    private final Pose intakeStart = new Pose(intakeStartX, intakeStartY, Math.toRadians(intakeStartRotation));
+    private final Pose intakeEnd = new Pose(intakeEndX, intakeEndY, Math.toRadians(intakeEndRotation));
+    private final Pose clearStart = new Pose(clearStartX, clearStartY, Math.toRadians(clearStartRotation));
+    private final Pose clearEnd = new Pose(clearEndX, clearEndY, Math.toRadians(clearEndRotation));
+    private final Pose scorePose2 = new Pose(scorePose2X, scorePose2Y, Math.toRadians(scorePose2Rotation));
+>>>>>>> Stashed changes
 
 
 

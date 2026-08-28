@@ -8,6 +8,7 @@ import static com.pedropathing.ivy.groups.Groups.parallel;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 
+import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
@@ -27,6 +28,7 @@ import org.firstinspires.ftc.teamcode.configs.HardwareConfig;
 import org.firstinspires.ftc.teamcode.configs.ShooterConfig;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
+@Configurable
 @Autonomous(name = "SmallBlueSimple", group = "Autonomous")
 public class SmallBlueSimple extends LinearOpMode {
 
@@ -37,10 +39,22 @@ public class SmallBlueSimple extends LinearOpMode {
     private CRServo sideServo;
     private DistanceSensor rangeSensor;
 
-    // Poses derived from the visualizer
-    private final Pose startPose = new Pose(55.377, 7.861, Math.toRadians(90));
-    private final Pose scorePose = new Pose(58.446, 16.959, Math.toRadians(110));
-    private final Pose parkPose = new Pose(35.726, 16.464, Math.toRadians(90));
+    public static double startPoseX = 55.377;
+    public static double startPoseY = 7.861;
+    public static double startPoseRotation = 90;
+
+    public static double scorePoseX = 58.446;
+    public static double scorePoseY = 16.959;
+    public static double scorePoseRotation = 110;
+
+    public static double parkPoseX = 35.726;
+    public static double parkPoseY = 16.464;
+    public static double parkPoseRotation = 90;
+
+
+    private final Pose startPose = new Pose(startPoseX, startPoseY, Math.toRadians(startPoseRotation));
+    private final Pose scorePose = new Pose(scorePoseX, scorePoseY, Math.toRadians(scorePoseRotation));
+    private final Pose parkPose = new Pose(parkPoseX, parkPoseY, Math.toRadians(parkPoseRotation));
 
     private PathChain driveToShoot, driveToPark;
 

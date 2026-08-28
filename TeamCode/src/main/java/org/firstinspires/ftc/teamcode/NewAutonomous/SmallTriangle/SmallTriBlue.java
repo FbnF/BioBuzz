@@ -8,6 +8,7 @@ import static com.pedropathing.ivy.groups.Groups.parallel;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 
+import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
@@ -28,6 +29,7 @@ import org.firstinspires.ftc.teamcode.configs.ShooterConfig;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 
+@Configurable
 @Autonomous(name = "SmallTriBlue", group = "Autonomous")
 public class SmallTriBlue extends LinearOpMode {
 
@@ -39,12 +41,37 @@ public class SmallTriBlue extends LinearOpMode {
     private DistanceSensor rangeSensor;
 
     // Latest Poses from the Blue Side Visualizer
-    private final Pose startPose = new Pose(55.377, 7.861, Math.toRadians(90));
-    private final Pose scorePose1 = new Pose(58.446, 16.959, Math.toRadians(111));
-    private final Pose intakeStart = new Pose(46.778, 35.749, Math.toRadians(180));
-    private final Pose intakeEnd = new Pose(14.798, 36.435, Math.toRadians(180));
-    private final Pose scorePose2 = new Pose(58.446, 16.959, Math.toRadians(112));
-    private final Pose parkPose = new Pose(36.599, 16.115, Math.toRadians(90));
+    public static double startPoseX = 55.377;
+    public static double startPoseY = 7.861;
+    public static double startPoseRotation = 90;
+
+    public static double scorePose1X = 58.446;
+    public static double scorePose1Y = 16.959;
+    public static double scorePose1Rotation = 111;
+
+    public static double intakeStartX = 46.778;
+    public static double intakeStartY = 35.749;
+    public static double intakeStartRotation = 180;
+
+    public static double intakeEndX = 14.798;
+    public static double intakeEndY = 36.435;
+    public static double intakeEndRotation = 180;
+
+    public static double scorePose2X = 58.446;
+    public static double scorePose2Y = 16.959;
+    public static double scorePose2Rotation = 112;
+
+    public static double parkPoseX = 36.599;
+    public static double parkPoseY = 16.115;
+    public static double parkPoseRotation = 90;
+
+    // Latest Poses from the Blue Side Visualizer
+    private final Pose startPose = new Pose(startPoseX, startPoseY, Math.toRadians(startPoseRotation));
+    private final Pose scorePose1 = new Pose(scorePose1X, scorePose1Y, Math.toRadians(scorePose1Rotation));
+    private final Pose intakeStart = new Pose(intakeStartX, intakeStartY, Math.toRadians(intakeStartRotation));
+    private final Pose intakeEnd = new Pose(intakeEndX, intakeEndY, Math.toRadians(intakeEndRotation));
+    private final Pose scorePose2 = new Pose(scorePose2X, scorePose2Y, Math.toRadians(scorePose2Rotation));
+    private final Pose parkPose = new Pose(parkPoseX, parkPoseY, Math.toRadians(parkPoseRotation));
 
     private PathChain driveToShoot1, driveToIntake, driveToShoot2, driveToPark;
 

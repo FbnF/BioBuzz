@@ -8,6 +8,7 @@ import static com.pedropathing.ivy.groups.Groups.parallel;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 
+import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
@@ -28,6 +29,7 @@ import org.firstinspires.ftc.teamcode.configs.ShooterConfig;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 
+@Configurable
 @Autonomous(name = "BigTriRED3", group = "Autonomous")
 public class BigTriRed3 extends LinearOpMode {
 
@@ -42,8 +44,16 @@ public class BigTriRed3 extends LinearOpMode {
 
 
     //-------------------- POSES --------------------
-    private final Pose startPose = new Pose(108.582, 132.904, Math.toRadians(270));
-    private final Pose scorePose = new Pose(82.728, 101.335, Math.toRadians(40));
+    public static double startPoseX = 108.582;
+    public static double startPoseY = 132.904;
+    public static double startPoseRotation = 270;
+
+    public static double scorePoseX = 82.728;
+    public static double scorePoseY = 101.335;
+    public static double scorePoseRotation = 40;
+
+    private final Pose startPose = new Pose(startPoseX, startPoseY, Math.toRadians(startPoseRotation));
+    private final Pose scorePose = new Pose(scorePoseX, scorePoseY, Math.toRadians(scorePoseRotation));
 
 
 
