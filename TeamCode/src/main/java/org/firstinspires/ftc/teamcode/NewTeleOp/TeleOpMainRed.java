@@ -30,7 +30,7 @@ public class TeleOpMainRed extends LinearOpMode {
     
     private Follower follower;
     private PDController alignController;
-    private double speedFactor = 0.70; 
+    private double speedFactor = 0.95; 
 
     public static boolean autoShooter = true;
     private boolean autoSpinArmed = true;
