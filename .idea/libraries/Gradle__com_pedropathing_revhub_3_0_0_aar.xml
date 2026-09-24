@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="Gradle: com.pedropathing:revhub:3.0.0@aar" external-system-id="GRADLE">
+    <CLASSES>
+      <root url="file://$USER_HOME$/.gradle/caches/8.9/transforms/009af275903e3bbe372cdd297d5c2c31/transformed/revhub-3.0.0/AndroidManifest.xml" />
+      <root url="jar://$USER_HOME$/.gradle/caches/8.9/transforms/009af275903e3bbe372cdd297d5c2c31/transformed/revhub-3.0.0/jars/classes.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.pedropathing/revhub/3.0.0/ea7a064798b63c1828e3d0b64c9cd0f9aa11380e/revhub-3.0.0-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.pedropathing/revhub/3.0.0/8dc065e07425602b464cf19cb52a03fccd110757/revhub-3.0.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
