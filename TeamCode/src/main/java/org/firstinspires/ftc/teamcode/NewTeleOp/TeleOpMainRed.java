@@ -52,7 +52,7 @@ public class TeleOpMainRed extends LinearOpMode {
         robot.init(hardwareMap);
         vision.init(hardwareMap);
         vision.reset();
-        vision.setGoalTagId(24); 
+        vision.setGoalTagIds(35, 31); // Replace with your two red goal tag IDs
         shooter.setIsBlue(false);
         robot.launchMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(500, 3, 0, 4));
         

@@ -53,7 +53,7 @@ public class TeleOpMainBlue extends LinearOpMode {
         robot.init(hardwareMap);
         vision.init(hardwareMap);
         vision.reset();
-        vision.setGoalTagId(20); 
+        vision.setGoalTagIds(39, 43); // Replace with your two blue goal tag IDs
         shooter.setIsBlue(true);
         robot.launchMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(500, 3, 0, 4));
         follower = Constants.createFollower(hardwareMap);

@@ -19,7 +19,8 @@ public class VisionService {
     private boolean hasGoalTag = false;
     private double tx = 0.0;
     private double ty = 0.0;
-    private int goalTagId = 24;
+    private int[] goalTagIds = new int[]{24};
+    private boolean isBlue = false;
     private boolean visionEnabled = true;
     
     private long lastSeenNs = 0;
@@ -34,7 +35,9 @@ public class VisionService {
         return instance;
     }
 
-    public void setGoalTagId(int id) { this.goalTagId = id; }
+    public void setGoalTagIds(int... ids) { this.goalTagIds = ids != null ? ids : new int[0]; }
+    public void setGoalTagId(int id) { this.goalTagIds = new int[]{id}; }
+    public void setIsBlue(boolean blue) { this.isBlue = blue; }
     public void setVisionEnabled(boolean enabled) { this.visionEnabled = enabled; }
     public boolean isVisionEnabled() { return visionEnabled; }
 
@@ -68,29 +71,35 @@ public class VisionService {
         currentlySeeing = false;
         hasGoalTag = false;
 
-
-
         if (result != null && result.isValid() && result.getStaleness() < 250) {
-
             List<LLResultTypes.FiducialResult> fiducials = result.getFiducialResults();
             if (fiducials != null) {
                 for (LLResultTypes.FiducialResult f : fiducials) {
-                    if (f != null && f.getFiducialId() == goalTagId) {
-                        Pose3D pose = f.getCameraPoseTargetSpace();
-                        if (pose != null) {
-                            rawDistance = Math.sqrt(Math.pow(pose.getPosition().x, 2) + Math.pow(pose.getPosition().z, 2)) * 39.3701;
-                            
-                            // Smoothing
-                            if (filteredDistance <= 0.0) filteredDistance = rawDistance;
-                            double a = ShooterConfig.DIST_SMOOTH_ALPHA;
-                            filteredDistance = (1.0 - a) * filteredDistance + a * rawDistance;
+                    if (f != null) {
+                        boolean matches = false;
+                        for (int id : goalTagIds) {
+                            if (f.getFiducialId() == id) {
+                                matches = true;
+                                break;
+                            }
+                        }
+                        if (matches) {
+                            Pose3D pose = f.getCameraPoseTargetSpace();
+                            if (pose != null) {
+                                rawDistance = Math.sqrt(Math.pow(pose.getPosition().x, 2) + Math.pow(pose.getPosition().z, 2)) * 39.3701;
+                                
+                                // Smoothing
+                                if (filteredDistance <= 0.0) filteredDistance = rawDistance;
+                                double a = ShooterConfig.DIST_SMOOTH_ALPHA;
+                                filteredDistance = (1.0 - a) * filteredDistance + a * rawDistance;
 
-                            tx = f.getTargetXDegrees();
-                            ty = f.getTargetYDegrees();
-                            currentlySeeing = true;
-                            hasGoalTag = true;
-                            lastSeenNs = System.nanoTime();
-                            break;
+                                tx = f.getTargetXDegrees();
+                                ty = f.getTargetYDegrees();
+                                currentlySeeing = true;
+                                hasGoalTag = true;
+                                lastSeenNs = System.nanoTime();
+                                break;
+                            }
                         }
                     }
                 }
@@ -110,7 +119,7 @@ public class VisionService {
     }
 
     public double[] getTxWindow() {
-        if (goalTagId == 20) { // Blue
+        if (isBlue) { // Blue
             return interpolateWindow(filteredDistance, ShooterConfig.DIST_IN_BLUE, ShooterConfig.MIN_ANGLE_BLUE, ShooterConfig.MAX_ANGLE_BLUE);
         } else { // Red
             return interpolateWindow(filteredDistance, ShooterConfig.DIST_IN_RED, ShooterConfig.MIN_ANGLE_RED, ShooterConfig.MAX_ANGLE_RED);
@@ -145,5 +154,5 @@ public class VisionService {
     public double getTx() { return tx; }
     public double getTy() { return ty; }
     public boolean isCurrentlySeeing() { return currentlySeeing; }
-    public int getGoalTagId() { return goalTagId; }
+    public int[] getGoalTagIds() { return goalTagIds; }
 }
