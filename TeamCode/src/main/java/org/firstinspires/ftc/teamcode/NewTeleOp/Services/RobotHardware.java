@@ -21,6 +21,7 @@ public class RobotHardware {
     public DistanceSensor rangeSensor;
     public VoltageSensor battery;
     public Servo puckLight;
+    public Servo blockServo;
 
     private static RobotHardware instance = null;
 
@@ -37,6 +38,7 @@ public class RobotHardware {
         sideServo = hardwareMap.get(CRServo.class, HardwareConfig.SIDE_SERVO);
         rangeSensor = hardwareMap.get(DistanceSensor.class, HardwareConfig.RANGE_SENSOR);
         puckLight = hardwareMap.get(Servo.class, "PuckLight");
+        blockServo = hardwareMap.get(Servo.class, HardwareConfig.BLOCK_SERVO);
         battery = hardwareMap.voltageSensor.iterator().next();
 
         // Motor behavior
@@ -51,6 +53,7 @@ public class RobotHardware {
         feedServo.setPower(0.0);
         sideServo.setPower(0.0);
         puckLight.setPosition(0.0);
+        blockServo.setPosition(0.15);
 
         // Bulk caching: without this, every getVelocity()/getDistance()/etc. call in the
         // TeleOp loop is a separate blocking I2C transaction to the hub, which slows the

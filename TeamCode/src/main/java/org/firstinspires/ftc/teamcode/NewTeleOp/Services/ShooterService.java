@@ -49,17 +49,18 @@ public class ShooterService {
         );
         if (!Double.isFinite(physicsTPS)) physicsTPS = 0.0;
 
-        // Table TPS
-        double[] distTable = isBlue ? ShooterConfig.DIST_IN_BLUE : ShooterConfig.DIST_IN_RED;
-        double[] tpsTable = isBlue ? ShooterConfig.TPS_AT_DIST_BLUE : ShooterConfig.TPS_AT_DIST_RED;
+        // Table TPS (Look up by Tag Group A vs Group B)
+        int tagId = VisionService.getInstance().getCurrentTagId();
+        boolean isGroupB = ShooterConfig.isGroupB(tagId);
+        double[] distTable = isGroupB ? ShooterConfig.DIST_IN_GROUP_B : ShooterConfig.DIST_IN_GROUP_A;
+        double[] tpsTable = isGroupB ? ShooterConfig.TPS_AT_DIST_GROUP_B : ShooterConfig.TPS_AT_DIST_GROUP_A;
         tableTPS = interpolate(distanceInches, distTable, tpsTable);
 
         // Select and scale
         baseTPS = ShooterConfig.USE_TABLE ? tableTPS : physicsTPS;
         double scaled = ShooterConfig.USE_TABLE ? baseTPS : (baseTPS * ShooterConfig.TPS_SCALE + ShooterConfig.TPS_OFFSET);
         
-        // Safety cap at 1582
-        double desired = scaled * 0.96; 
+        double desired = scaled; 
         finalTPS = Math.min(desired, MAX_ALLOWED_TPS);
         finalTPS = Math.min(finalTPS, ShooterConfig.TPS_MAX_AUTO);
         
@@ -68,14 +69,18 @@ public class ShooterService {
     }
 
     public double getFeedPower(double distanceInches) {
-        double[] distTable = isBlue ? ShooterConfig.DIST_IN_BLUE : ShooterConfig.DIST_IN_RED;
-        double[] pwrTable = isBlue ? ShooterConfig.FEED_POWER_BLUE : ShooterConfig.FEED_POWER_RED;
+        int tagId = VisionService.getInstance().getCurrentTagId();
+        boolean isGroupB = ShooterConfig.isGroupB(tagId);
+        double[] distTable = isGroupB ? ShooterConfig.DIST_IN_GROUP_B : ShooterConfig.DIST_IN_GROUP_A;
+        double[] pwrTable = isGroupB ? ShooterConfig.FEED_POWER_GROUP_B : ShooterConfig.FEED_POWER_GROUP_A;
         return interpolate(distanceInches, distTable, pwrTable);
     }
 
     public double getSidePower(double distanceInches) {
-        double[] distTable = isBlue ? ShooterConfig.DIST_IN_BLUE : ShooterConfig.DIST_IN_RED;
-        double[] pwrTable = isBlue ? ShooterConfig.SIDE_POWER_BLUE : ShooterConfig.SIDE_POWER_RED;
+        int tagId = VisionService.getInstance().getCurrentTagId();
+        boolean isGroupB = ShooterConfig.isGroupB(tagId);
+        double[] distTable = isGroupB ? ShooterConfig.DIST_IN_GROUP_B : ShooterConfig.DIST_IN_GROUP_A;
+        double[] pwrTable = isGroupB ? ShooterConfig.SIDE_POWER_GROUP_B : ShooterConfig.SIDE_POWER_GROUP_A;
         return interpolate(distanceInches, distTable, pwrTable);
     }
 

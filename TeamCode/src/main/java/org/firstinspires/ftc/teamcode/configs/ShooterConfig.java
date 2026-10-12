@@ -60,60 +60,81 @@ public final class ShooterConfig {
     public static double ALIGN_ERR_DEADBAND_DEG = 0.25;
     public static double ALIGN_MAX_STALE_MS = 100;
 
-    // ---------------- Blue Side Tables ----------------
-    public static double[] DIST_IN_BLUE = new double[] {
-            45.2, 46.12, 54.4, 56.2, 60.2, 69.7, 80.5, 127.4, 133.47, 139.24
+    // ---------------- Tag Group A Tables (IDs: 38..41 [Blue], 30..33 [Red]) ----------------
+    public static double[] DIST_IN_GROUP_A = new double[] {
+            70.0, 75.0, 80.0, 85.0, 90.0, 95.0, 100.0
     };
-    public static double[] TPS_AT_DIST_BLUE = new double[] {
-            1203, 1211, 1203, 1329, 1255, 1292, 1400, 1583, 1620, 1670
+    public static double[] TPS_AT_DIST_GROUP_A = new double[] {
+            1195.0, 1165.0, 1185.0, 1190.0, 1195.0, 1205.0, 1205.0
     };
-    public static double[] MIN_ANGLE_BLUE = new double[] {
-            0.4688, 0.4688, 0.4688, 0.4688, 0.4688, 0.4688, 0.4688, 0.4688, 0.4988, 0.5988
+    public static double[] MIN_ANGLE_GROUP_A = new double[] {
+            -0.5, 0.2, -0.5, -1.2, 0.2, -0.5, 0.2
     };
-    public static double[] MAX_ANGLE_BLUE = new double[] {
-            0.4688, 0.4688, 0.4688, 0.4688, 0.4688, 0.4688, 0.4688, 0.4688, 0.5688, 0.6688
+    public static double[] MAX_ANGLE_GROUP_A = new double[] {
+            0.5, 1.2, 0.5, -0.2, 1.2, 0.5, 1.2
     };
-    public static double[] FEED_POWER_BLUE = new double[] {
-            -0.9, -0.9, -0.4, -0.49, -0.6, -0.4, -0.2, -0.17, -0.15, -0.15
+    public static double[] FEED_POWER_GROUP_A = new double[] {
+            -0.9, -0.9, -0.9, -0.9, -0.9, -0.9, -0.9
     };
-    public static double[] SIDE_POWER_BLUE = new double[] {
-            1.0, 1.0, 0.7, 1.0, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5
+    public static double[] SIDE_POWER_GROUP_A = new double[] {
+            1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0
     };
 
-    // ---------------- Red Side Tables ----------------
-    public static double[] DIST_IN_RED = new double[] {
-            45.82, 48.78, 51.15, 58.22, 62.8, 69.09, 81.5, 130.9, 136, 138.6
+    // ---------------- Tag Group B Tables (IDs: 42..45 [Blue], 34..37 [Red]) ----------------
+    public static double[] DIST_IN_GROUP_B = new double[] {
+            70.0, 75.0, 80.0, 85.0, 90.0, 95.0, 100.0
     };
-    public static double[] TPS_AT_DIST_RED = new double[] {
-            1203, 1331, 1359, 1260, 1255, 1292, 1361, 1583, 1610, 1670
+    public static double[] TPS_AT_DIST_GROUP_B = new double[] {
+            1195.0, 1165.0, 1185.0, 1190.0, 1195.0, 1205.0, 1205.0
     };
-    public static double[] MIN_ANGLE_RED = new double[] {
-            -5.06, -10, -4.35, -6.759, -4.42, -6.759, -6.759, -6.759, -5.2, -6.4
+    public static double[] MIN_ANGLE_GROUP_B = new double[] {
+            -0.5, 0.2, -1.2, 0.2, -1.2, 0.2, 0.2
     };
-    public static double[] MAX_ANGLE_RED = new double[] {
-            -0.547, -0.547, -0.547, -0.547, -0.547, -0.547, -0.547, -0.547, -0.547, -0.747
+    public static double[] MAX_ANGLE_GROUP_B = new double[] {
+            0.5, 1.2, -0.2, 1.2, -0.2, 1.2, 1.2
     };
-    public static double[] FEED_POWER_RED = new double[] {
-            -0.9, -0.4, -0.25, -0.49, -0.25, -0.4, -0.2, -0.15, -0.15, -0.15
+    public static double[] FEED_POWER_GROUP_B = new double[] {
+            -0.9, -0.9, -0.9, -0.9, -0.9, -0.9, -0.9
     };
-    public static double[] SIDE_POWER_RED = new double[] {
-            1.0, 1.0, 0.7, 1.0, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5
+    public static double[] SIDE_POWER_GROUP_B = new double[] {
+            1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0
     };
+
+    // Legacy Blue / Red table references
+    public static double[] DIST_IN_BLUE = DIST_IN_GROUP_A;
+    public static double[] TPS_AT_DIST_BLUE = TPS_AT_DIST_GROUP_A;
+    public static double[] MIN_ANGLE_BLUE = MIN_ANGLE_GROUP_A;
+    public static double[] MAX_ANGLE_BLUE = MAX_ANGLE_GROUP_A;
+    public static double[] FEED_POWER_BLUE = FEED_POWER_GROUP_A;
+    public static double[] SIDE_POWER_BLUE = SIDE_POWER_GROUP_A;
+
+    public static double[] DIST_IN_RED = DIST_IN_GROUP_B;
+    public static double[] TPS_AT_DIST_RED = TPS_AT_DIST_GROUP_B;
+    public static double[] MIN_ANGLE_RED = MIN_ANGLE_GROUP_B;
+    public static double[] MAX_ANGLE_RED = MAX_ANGLE_GROUP_B;
+    public static double[] FEED_POWER_RED = FEED_POWER_GROUP_B;
+    public static double[] SIDE_POWER_RED = SIDE_POWER_GROUP_B;
+
+    // Helper method to determine if an AprilTag ID is in Group A
+    public static boolean isGroupA(int tagId) {
+        return (tagId >= 38 && tagId <= 41) || (tagId >= 30 && tagId <= 33);
+    }
+
+    // Helper method to determine if an AprilTag ID is in Group B
+    public static boolean isGroupB(int tagId) {
+        return (tagId >= 42 && tagId <= 45) || (tagId >= 34 && tagId <= 37);
+    }
 
     // Constant Velocities for Auto
     public static double SHOOTER_VEL_LONG = 1550.0;
     public static double SHOOTER_VEL_SHORT = 1175.0;
 
-
-    //Teleops
+    // Teleops
     public static double DISTANCE_TO_SWITCH_TO_FAR = 70;
-    // Red-specific offsets
+
     public static double RED_ALIGN_OFFSET = 1.0;
     public static double RED_ALIGN_FAR_OFFSET = 1.0;
 
-    // Blue-specific offsets
     public static double BLUE_ALIGN_OFFSET = 1.0;
     public static double BLUE_ALIGN_FAR_OFFSET = 1.0;
-
-
 }

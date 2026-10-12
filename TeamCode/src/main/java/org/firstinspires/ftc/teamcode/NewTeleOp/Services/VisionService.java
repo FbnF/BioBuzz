@@ -19,6 +19,7 @@ public class VisionService {
     private boolean hasGoalTag = false;
     private double tx = 0.0;
     private double ty = 0.0;
+    private int currentTagId = -1;
     private int[] goalTagIds = new int[]{24};
     private boolean isBlue = false;
     private boolean visionEnabled = true;
@@ -46,6 +47,7 @@ public class VisionService {
         rawDistance = 0.0;
         tx = 0.0;
         ty = 0.0;
+        currentTagId = -1;
         lastSeenNs = 0;
         currentlySeeing = false;
         targetVisible = false;
@@ -93,6 +95,7 @@ public class VisionService {
                                 double a = ShooterConfig.DIST_SMOOTH_ALPHA;
                                 filteredDistance = (1.0 - a) * filteredDistance + a * rawDistance;
 
+                                currentTagId = f.getFiducialId();
                                 tx = f.getTargetXDegrees();
                                 ty = f.getTargetYDegrees();
                                 currentlySeeing = true;
@@ -119,10 +122,10 @@ public class VisionService {
     }
 
     public double[] getTxWindow() {
-        if (isBlue) { // Blue
-            return interpolateWindow(filteredDistance, ShooterConfig.DIST_IN_BLUE, ShooterConfig.MIN_ANGLE_BLUE, ShooterConfig.MAX_ANGLE_BLUE);
-        } else { // Red
-            return interpolateWindow(filteredDistance, ShooterConfig.DIST_IN_RED, ShooterConfig.MIN_ANGLE_RED, ShooterConfig.MAX_ANGLE_RED);
+        if (ShooterConfig.isGroupB(currentTagId)) {
+            return interpolateWindow(filteredDistance, ShooterConfig.DIST_IN_GROUP_B, ShooterConfig.MIN_ANGLE_GROUP_B, ShooterConfig.MAX_ANGLE_GROUP_B);
+        } else {
+            return interpolateWindow(filteredDistance, ShooterConfig.DIST_IN_GROUP_A, ShooterConfig.MIN_ANGLE_GROUP_A, ShooterConfig.MAX_ANGLE_GROUP_A);
         }
     }
 
@@ -155,4 +158,5 @@ public class VisionService {
     public double getTy() { return ty; }
     public boolean isCurrentlySeeing() { return currentlySeeing; }
     public int[] getGoalTagIds() { return goalTagIds; }
+    public int getCurrentTagId() { return currentTagId; }
 }

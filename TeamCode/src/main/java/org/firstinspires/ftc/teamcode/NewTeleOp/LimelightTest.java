@@ -19,13 +19,13 @@ public class LimelightTest extends LinearOpMode {
     private Follower follower;
     private PDController alignController;
 
-    private boolean isBlueAlliance = true; // true = Blue [39, 43], false = Red [35, 31]
+    private boolean isBlueAlliance = true; // true = Blue [8 IDs], false = Red [8 IDs]
     private boolean prevAllianceButton = false;
     private final double speedFactor = 0.8;
 
     @Override
     public void runOpMode() {
-        //added bulk caching
+        // Enable bulk caching for fast I2C reads and loop time optimization
         for (LynxModule hub : hardwareMap.getAll(LynxModule.class)) {
             hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
@@ -37,13 +37,14 @@ public class LimelightTest extends LinearOpMode {
         vision.init(hardwareMap);
         vision.reset();
         vision.setVisionEnabled(true);
-        vision.setGoalTagIds(39, 43);
+        // Default to Blue 8 IDs
+        vision.setGoalTagIds(45, 44, 43, 42, 38, 39, 40, 41);
         vision.setIsBlue(true);
 
         alignController = new PDController(ShooterConfig.ALIGN_KP, ShooterConfig.ALIGN_KD);
 
         telemetry.addLine("LimelightTest Initialized (Bulk Caching Enabled).");
-        telemetry.addLine("Press Dpad_Down to toggle Alliance (Blue <-> Red)");
+        telemetry.addLine("Press Dpad_Down to toggle Alliance (Blue [8 IDs] <-> Red [8 IDs])");
         telemetry.addLine("Hold Left Bumper to Auto-Align");
         telemetry.update();
 
@@ -58,10 +59,10 @@ public class LimelightTest extends LinearOpMode {
             if (allianceBtn && !prevAllianceButton) {
                 isBlueAlliance = !isBlueAlliance;
                 if (isBlueAlliance) {
-                    vision.setGoalTagIds(39, 43);
+                    vision.setGoalTagIds(45, 44, 43, 42, 38, 39, 40, 41);
                     vision.setIsBlue(true);
                 } else {
-                    vision.setGoalTagIds(35, 31);
+                    vision.setGoalTagIds(33, 32, 31, 30, 34, 35, 36, 37);
                     vision.setIsBlue(false);
                 }
             }
@@ -106,7 +107,7 @@ public class LimelightTest extends LinearOpMode {
 
             // Telemetry
             telemetry.addLine("=== Limelight Test & Auto-Align ===");
-            telemetry.addData("Active Alliance", isBlueAlliance ? "BLUE [39, 43]" : "RED [35, 31]");
+            telemetry.addData("Active Alliance", isBlueAlliance ? "BLUE [45,44,43,42,38,39,40,41]" : "RED [33,32,31,30,34,35,36,37]");
             telemetry.addData("Target Visible", vision.isTargetVisible());
             telemetry.addData("Currently Seeing", vision.isCurrentlySeeing());
             telemetry.addData("Distance (in)", "%.2f", vision.getDistance());

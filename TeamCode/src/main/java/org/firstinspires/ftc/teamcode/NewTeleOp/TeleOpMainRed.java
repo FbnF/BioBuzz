@@ -52,7 +52,7 @@ public class TeleOpMainRed extends LinearOpMode {
         robot.init(hardwareMap);
         vision.init(hardwareMap);
         vision.reset();
-        vision.setGoalTagIds(35, 31); // Replace with your two red goal tag IDs
+        vision.setGoalTagIds(33, 32, 31, 30, 34, 35, 36, 37); // Red 8 goal tag IDs
         shooter.setIsBlue(false);
         robot.launchMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(500, 3, 0, 4));
         
@@ -197,6 +197,13 @@ public class TeleOpMainRed extends LinearOpMode {
                 robot.feedServo.setPower(0);
             } else if (!isEjecting) {
                 if (!motorReady && !isLoaded) robot.feedServo.setPower(0);
+            }
+
+            // Sync blockServo with cam-jet (feedServo)
+            if (robot.feedServo.getPower() != 0.0) {
+                robot.blockServo.setPosition(0.38); // go
+            } else {
+                robot.blockServo.setPosition(0.15); // block
             }
 
             leds.setStatus(vision.isTargetVisible(), motorReady, noShotZone);

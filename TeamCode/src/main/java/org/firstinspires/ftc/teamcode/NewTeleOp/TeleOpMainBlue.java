@@ -53,7 +53,7 @@ public class TeleOpMainBlue extends LinearOpMode {
         robot.init(hardwareMap);
         vision.init(hardwareMap);
         vision.reset();
-        vision.setGoalTagIds(39, 43); // Replace with your two blue goal tag IDs
+        vision.setGoalTagIds(45, 44, 43, 42, 38, 39, 40, 41); // Blue 8 goal tag IDs
         shooter.setIsBlue(true);
         robot.launchMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(500, 3, 0, 4));
         follower = Constants.createFollower(hardwareMap);
@@ -199,6 +199,13 @@ public class TeleOpMainBlue extends LinearOpMode {
                 // Auto feed behavior preserved from previous logic if needed, 
                 // but user said X is Off, Y is On. I'll stick to explicit controls for now.
                 if (!motorReady && !isLoaded) robot.feedServo.setPower(0);
+            }
+
+            // Sync blockServo with cam-jet (feedServo)
+            if (robot.feedServo.getPower() != 0.0) {
+                robot.blockServo.setPosition(0.38); // go
+            } else {
+                robot.blockServo.setPosition(0.15); // block
             }
 
             leds.setStatus(vision.isTargetVisible(), motorReady, noShotZone);
