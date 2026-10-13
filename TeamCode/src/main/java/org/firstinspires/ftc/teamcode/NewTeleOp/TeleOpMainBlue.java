@@ -53,7 +53,7 @@ public class TeleOpMainBlue extends LinearOpMode {
         robot.init(hardwareMap);
         vision.init(hardwareMap);
         vision.reset();
-        vision.setGoalTagIds(45, 44, 43, 42, 38, 39, 40, 41); // Blue 8 goal tag IDs
+        vision.setGoalTagIds(44, 43, 42, 38, 39, 40); // Blue 6 goal tag IDs (45 and 41 filtered out)
         shooter.setIsBlue(true);
         robot.launchMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(500, 3, 0, 4));
         follower = Constants.createFollower(hardwareMap);
@@ -77,7 +77,7 @@ public class TeleOpMainBlue extends LinearOpMode {
             if (gamepad1.x) speedFactor = 0.70;
             if (gamepad1.y) speedFactor = 1.25;
 
-            double axial = -gamepad1.right_stick_y * speedFactor;
+            double axial = -gamepad1.left_stick_y * speedFactor;
             double lateral = -gamepad1.left_stick_x * speedFactor;
             double turn = -gamepad1.right_stick_x * speedFactor;
 

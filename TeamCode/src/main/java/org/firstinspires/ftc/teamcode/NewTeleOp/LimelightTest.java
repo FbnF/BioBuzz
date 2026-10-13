@@ -37,8 +37,8 @@ public class LimelightTest extends LinearOpMode {
         vision.init(hardwareMap);
         vision.reset();
         vision.setVisionEnabled(true);
-        // Default to Blue 8 IDs
-        vision.setGoalTagIds(45, 44, 43, 42, 38, 39, 40, 41);
+        // Default to Blue 6 IDs (45 and 41 filtered out)
+        vision.setGoalTagIds(44, 43, 42, 38, 39, 40);
         vision.setIsBlue(true);
 
         alignController = new PDController(ShooterConfig.ALIGN_KP, ShooterConfig.ALIGN_KD);
@@ -59,17 +59,17 @@ public class LimelightTest extends LinearOpMode {
             if (allianceBtn && !prevAllianceButton) {
                 isBlueAlliance = !isBlueAlliance;
                 if (isBlueAlliance) {
-                    vision.setGoalTagIds(45, 44, 43, 42, 38, 39, 40, 41);
+                    vision.setGoalTagIds(44, 43, 42, 38, 39, 40);
                     vision.setIsBlue(true);
                 } else {
-                    vision.setGoalTagIds(33, 32, 31, 30, 34, 35, 36, 37);
+                    vision.setGoalTagIds(32, 31, 30, 34, 35, 36);
                     vision.setIsBlue(false);
                 }
             }
             prevAllianceButton = allianceBtn;
 
             // Drivetrain controls
-            double axial = -gamepad1.right_stick_y * speedFactor;
+            double axial = -gamepad1.left_stick_y * speedFactor;
             double lateral = -gamepad1.left_stick_x * speedFactor;
             double turn = -gamepad1.right_stick_x * speedFactor;
 
@@ -107,7 +107,7 @@ public class LimelightTest extends LinearOpMode {
 
             // Telemetry
             telemetry.addLine("=== Limelight Test & Auto-Align ===");
-            telemetry.addData("Active Alliance", isBlueAlliance ? "BLUE [45,44,43,42,38,39,40,41]" : "RED [33,32,31,30,34,35,36,37]");
+            telemetry.addData("Active Alliance", isBlueAlliance ? "BLUE [44,43,42,38,39,40]" : "RED [32,31,30,34,35,36]");
             telemetry.addData("Target Visible", vision.isTargetVisible());
             telemetry.addData("Currently Seeing", vision.isCurrentlySeeing());
             telemetry.addData("Distance (in)", "%.2f", vision.getDistance());

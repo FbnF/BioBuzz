@@ -28,6 +28,7 @@ import org.firstinspires.ftc.teamcode.configs.HardwareConfig;
 import org.firstinspires.ftc.teamcode.configs.ShooterConfig;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
+@com.qualcomm.robotcore.eventloop.opmode.Disabled
 @Configurable
 @Autonomous(name = "BigTriRED6Clear", group = "Autonomous")
 public class BigTriRed6Clear extends LinearOpMode {

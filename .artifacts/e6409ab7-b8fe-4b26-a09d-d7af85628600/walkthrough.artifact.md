@@ -1,27 +1,19 @@
-# Walkthrough - Tag-Group-Based Shooter Tables & Angle Adjustments
+# Walkthrough - Create RED28LeavePark & Disable Previous Autonomous
 
-Refactored `ShooterConfig`, `VisionService`, and `ShooterService` to drive shooter TPS and angle-offset lookup tables by Tag Groupings (**Group A** vs **Group B**) rather than alliance color.
+Disabled all 16 previous season autonomous OpModes in `NewAutonomous` using `@Disabled` (preserving them as reference). Created the new `RED28LeavePark.java` under package `BiobuzzAuto` using Pedro 2 and Ivy commands.
 
 ## Changes
 
-### configs
+### NewAutonomous (Disabled OpModes)
+- Added `@com.qualcomm.robotcore.eventloop.opmode.Disabled` to all 16 OpModes under `NewAutonomous/BigTriBLUE`, `NewAutonomous/BigTriRED`, and `NewAutonomous/SmallTriangle`.
 
-#### [ShooterConfig.java](file:///C:/Users/mksla/OneDrive/Documents/Biobuzz/BioBuzz/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/configs/ShooterConfig.java)
-- Configured Tag Groups:
-  - **Group A:** Blue (`38, 39, 40, 41`) + Red (`30, 31, 32, 33`)
-  - **Group B:** Blue (`42, 43, 44, 45`) + Red (`34, 35, 36, 37`)
-- Added distance table `[70.0, 75.0, 80.0, 85.0, 90.0, 95.0, 100.0]` and TPS table `[1195, 1165, 1185, 1190, 1195, 1205, 1205]` for both groups.
-- Set uniform feed (`-0.9`) and side (`1.0`) powers across all distances.
-- Added helper methods `isGroupA(int tagId)` and `isGroupB(int tagId)`.
+### BiobuzzAuto
 
-### NewTeleOp/Services
-
-#### [VisionService.java](file:///C:/Users/mksla/OneDrive/Documents/Biobuzz/BioBuzz/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/NewTeleOp/Services/VisionService.java)
-- Tracks `currentTagId`.
-- Updates `getTxWindow()` to select Group A vs Group B angle tables dynamically based on `ShooterConfig.isGroupB(currentTagId)`.
-
-#### [ShooterService.java](file:///C:/Users/mksla/OneDrive/Documents/Biobuzz/BioBuzz/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/NewTeleOp/Services/ShooterService.java)
-- Updates `calculateVelocity(...)` and feed/side power lookups to pick Group A vs Group B tables dynamically based on `currentTagId`.
+#### [RED28LeavePark.java](file:///C:/Users/mksla/OneDrive/Documents/Biobuzz/BioBuzz/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/BiobuzzAuto/RED28LeavePark.java)
+- Converted Pedro 3 visualizer path to Pedro 2 `BezierLine` and `BezierCurve`.
+- Pre-spins flywheel to `1165.0 TPS` in parallel with `driveToShoot`.
+- Executes `combinedShootLogic()` at `shootPose` upon arrival.
+- Drives along curved path (`driveToPark`) and shuts down motors and servos at the end.
 
 ## Verification Results
 

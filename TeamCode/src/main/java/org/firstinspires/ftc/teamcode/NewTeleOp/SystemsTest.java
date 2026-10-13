@@ -53,7 +53,7 @@ public class SystemsTest extends LinearOpMode {
         vision.reset();
         vision.setVisionEnabled(true);
         // Blue alliance 8 IDs only
-        vision.setGoalTagIds(45, 44, 43, 42, 38, 39, 40, 41);
+        vision.setGoalTagIds(44, 43, 42, 38, 39, 40); // 45 and 41 filtered out
         vision.setIsBlue(true);
 
         follower = Constants.createFollower(hardwareMap);
@@ -87,7 +87,7 @@ public class SystemsTest extends LinearOpMode {
             vision.update();
 
             // Drivetrain & Auto-Align
-            double axial = -gamepad1.right_stick_y * 0.95;
+            double axial = -gamepad1.left_stick_y * 0.95;
             double lateral = -gamepad1.left_stick_x * 0.95;
             double turn = -gamepad1.right_stick_x * 0.95;
 

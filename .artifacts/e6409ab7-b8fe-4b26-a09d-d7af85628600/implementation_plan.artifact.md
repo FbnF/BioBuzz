@@ -1,41 +1,22 @@
-# Implementation Plan - Refactor Shooter Tables & Auto-Align by Tag Group (Group A vs Group B)
+# Implementation Plan - Create REDBLUE28ShootStart Autonomous
 
-Refactor shooter lookup tables and angle-offset windows in `ShooterConfig` to be driven by Tag Grouping (Group A vs. Group B) rather than alliance color (Red vs. Blue). Update `ShooterService`, `VisionService`, and TeleOp files to select tables dynamically based on the detected AprilTag ID group.
+Create the new `REDBLUE28ShootStart` autonomous OpMode under package `org.firstinspires.ftc.teamcode.BiobuzzAuto`. This OpMode starts directly at the shooting position (`58.817, 10.3836, 90°`), spins up the flywheel to `1165.0 TPS`, executes the shooting sequence upon reaching target speed, and then drives to the parking position (`13.9617, 97.3239, 290°`).
 
 ## User Review Required
 
 > [!IMPORTANT]
-> - **Group A Tags:** Blue (`38, 39, 40, 41`) + Red (`30, 31, 32, 33`)
-> - **Group B Tags:** Blue (`42, 43, 44, 45`) + Red (`34, 35, 36, 37`)
-> - **Data Points (Distances 70 to 100 in):** Measured TPS (`1195, 1165, 1185, 1190, 1195, 1205, 1205`) with linear interpolation.
-> - **Feed & Side Power:** Replaced distance-varying feed/side powers with uniform constants (`FEED_DEFAULT = -0.9`, `SIDE_DEFAULT = 1.0`).
-> - **Angle Windows:** Configured facing adjustments per distance point for Group A and Group B.
+> - **Starting Pose:** Robot starts directly at `(58.817, 10.3836, 90°)`.
+> - **Shoot From Start:** Flywheel spins up immediately upon start, waits for velocity to reach target speed (`1165.0 TPS`), unblocks `blockServo` (`0.38`), feeds and intakes.
+> - **Park Path:** Follows curved trajectory (`driveToPark`) to `(13.9617, 97.3239, 290°)` with control point `(27.6424, 53.3308, 0°)`.
+> - **Code Style:** Clean Pedro 2 + Ivy command implementation without comments.
 
 ## Proposed Changes
 
-### configs
+### BiobuzzAuto
 
-#### [MODIFY] [ShooterConfig.java](file:///C:/Users/mksla/OneDrive/Documents/Biobuzz/BioBuzz/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/configs/ShooterConfig.java)
-- Replace `DIST_IN_BLUE` / `DIST_IN_RED` tables with `GROUP_A` (`38..41, 30..33`) and `GROUP_B` (`42..45, 34..37`) distance, TPS, min/max angle, feed, and side power tables.
-- Standardize feed power (`-0.9`) and side power (`1.0`) across all distances.
-- Add helper methods to check if a tag ID belongs to Group A or Group B.
-
-### NewTeleOp/Services
-
-#### [MODIFY] [VisionService.java](file:///C:/Users/mksla/OneDrive/Documents/Biobuzz/BioBuzz/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/NewTeleOp/Services/VisionService.java)
-- Track active matched tag ID.
-- Update `getTxWindow()` to select Group A vs. Group B angle tables based on whether the detected tag ID is in Group A or Group B.
-
-#### [MODIFY] [ShooterService.java](file:///C:/Users/mksla/OneDrive/Documents/Biobuzz/BioBuzz/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/NewTeleOp/Services/ShooterService.java)
-- Update `calculateVelocity(...)` and feed/side power lookups to pick Group A vs. Group B tables based on the active tag ID group.
-
-### NewTeleOp
-
-#### [MODIFY] [TeleOpMainBlue.java](file:///C:/Users/mksla/OneDrive/Documents/Biobuzz/BioBuzz/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/NewTeleOp/TeleOpMainBlue.java)
-- Configure Blue alliance tag IDs (`38, 39, 40, 41, 42, 43, 44, 45`).
-
-#### [MODIFY] [TeleOpMainRed.java](file:///C:/Users/mksla/OneDrive/Documents/Biobuzz/BioBuzz/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/NewTeleOp/TeleOpMainRed.java)
-- Configure Red alliance tag IDs (`30, 31, 32, 33, 34, 35, 36, 37`).
+#### [NEW] [REDBLUE28ShootStart.java](file:///C:/Users/mksla/OneDrive/Documents/Biobuzz/BioBuzz/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/BiobuzzAuto/REDBLUE28ShootStart.java)
+- Implement `REDBLUE28ShootStart` matching `REDBLUE28LeavePark` hardware & Ivy setup.
+- Executes shooting sequence directly at start position before driving to park.
 
 ## Verification Plan
 

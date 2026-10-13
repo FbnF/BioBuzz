@@ -115,14 +115,14 @@ public final class ShooterConfig {
     public static double[] FEED_POWER_RED = FEED_POWER_GROUP_B;
     public static double[] SIDE_POWER_RED = SIDE_POWER_GROUP_B;
 
-    // Helper method to determine if an AprilTag ID is in Group A
+    // Helper method to determine if an AprilTag ID is in Group A (IDs: 38..40, 30..32)
     public static boolean isGroupA(int tagId) {
-        return (tagId >= 38 && tagId <= 41) || (tagId >= 30 && tagId <= 33);
+        return (tagId >= 38 && tagId <= 40) || (tagId >= 30 && tagId <= 32);
     }
 
-    // Helper method to determine if an AprilTag ID is in Group B
+    // Helper method to determine if an AprilTag ID is in Group B (IDs: 42..44, 34..36)
     public static boolean isGroupB(int tagId) {
-        return (tagId >= 42 && tagId <= 45) || (tagId >= 34 && tagId <= 37);
+        return (tagId >= 42 && tagId <= 44) || (tagId >= 34 && tagId <= 36);
     }
 
     // Constant Velocities for Auto

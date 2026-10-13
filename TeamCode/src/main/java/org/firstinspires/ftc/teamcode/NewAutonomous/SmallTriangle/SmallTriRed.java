@@ -28,6 +28,7 @@ import org.firstinspires.ftc.teamcode.configs.HardwareConfig;
 import org.firstinspires.ftc.teamcode.configs.ShooterConfig;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
+@com.qualcomm.robotcore.eventloop.opmode.Disabled
 @Configurable
 @Autonomous(name = "SmallTriRed", group = "Autonomous")
 public class SmallTriRed extends LinearOpMode {
