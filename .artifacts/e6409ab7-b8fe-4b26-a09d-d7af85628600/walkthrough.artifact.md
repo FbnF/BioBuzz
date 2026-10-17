@@ -1,19 +1,16 @@
-# Walkthrough - Create RED28LeavePark & Disable Previous Autonomous
+# Walkthrough - Add Front Servo Synced with Intake and Transfer
 
-Disabled all 16 previous season autonomous OpModes in `NewAutonomous` using `@Disabled` (preserving them as reference). Created the new `RED28LeavePark.java` under package `BiobuzzAuto` using Pedro 2 and Ivy commands.
+Added `frontServo` (`CRServo`) mapped in hardware and fully synced with intaking, outtaking/ejecting, and transfer operations across TeleOp modes, SystemsTest, and autonomous routines.
 
 ## Changes
 
-### NewAutonomous (Disabled OpModes)
-- Added `@com.qualcomm.robotcore.eventloop.opmode.Disabled` to all 16 OpModes under `NewAutonomous/BigTriBLUE`, `NewAutonomous/BigTriRED`, and `NewAutonomous/SmallTriangle`.
+### configs & Services
+- **[HardwareConfig.java](file:///C:/Users/mksla/OneDrive/Documents/Biobuzz/BioBuzz/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/configs/HardwareConfig.java):** Added `FRONT_SERVO = "frontServo"`.
+- **[RobotHardware.java](file:///C:/Users/mksla/OneDrive/Documents/Biobuzz/BioBuzz/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/NewTeleOp/Services/RobotHardware.java):** Mapped `frontServo` (`CRServo`) and initialized its power to `0.0`.
 
-### BiobuzzAuto
-
-#### [RED28LeavePark.java](file:///C:/Users/mksla/OneDrive/Documents/Biobuzz/BioBuzz/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/BiobuzzAuto/RED28LeavePark.java)
-- Converted Pedro 3 visualizer path to Pedro 2 `BezierLine` and `BezierCurve`.
-- Pre-spins flywheel to `1165.0 TPS` in parallel with `driveToShoot`.
-- Executes `combinedShootLogic()` at `shootPose` upon arrival.
-- Drives along curved path (`driveToPark`) and shuts down motors and servos at the end.
+### TeleOp & Autonomous
+- **TeleOp (`TeleOpMainBlue`, `TeleOpMainRed`, `SystemsTest`):** Synced `frontServo.setPower(...)` with intake/sideServo power state (running forward at `1.0` when intaking, reverse at `-1.0` when outtaking/ejecting, and `0.0` when stopped).
+- **Autonomous (`REDBLUE28Garden`, `REDBLUE28ShootStart`):** Synced `frontServo` alongside `sideServo` and `intake` during shooting/reloading and shutdown.
 
 ## Verification Results
 

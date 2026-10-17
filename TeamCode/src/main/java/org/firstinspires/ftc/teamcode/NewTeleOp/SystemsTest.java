@@ -133,6 +133,7 @@ public class SystemsTest extends LinearOpMode {
                 sideOn = intakeOn;
                 robot.intakeMotor.setPower(intakeOn ? ShooterConfig.INTAKE_POWER : 0);
                 robot.sideServo.setPower(sideOn ? ShooterConfig.SIDE_DEFAULT : 0);
+                robot.frontServo.setPower(sideOn ? -1.0 : 0.0);
             }
 
             // X Button = Feed Servo ON/OFF toggle
@@ -150,6 +151,7 @@ public class SystemsTest extends LinearOpMode {
 
                 robot.intakeMotor.setPower(ShooterConfig.INTAKE_POWER);
                 robot.sideServo.setPower(ShooterConfig.SIDE_DEFAULT);
+                robot.frontServo.setPower(-1.0);
                 robot.feedServo.setPower(ShooterConfig.FEED_DEFAULT);
                 robot.launchMotor.setVelocity(targetTPS);
             }
@@ -163,6 +165,7 @@ public class SystemsTest extends LinearOpMode {
 
                 robot.intakeMotor.setPower(0);
                 robot.sideServo.setPower(0);
+                robot.frontServo.setPower(0);
                 robot.feedServo.setPower(0);
                 robot.launchMotor.setVelocity(0);
             }

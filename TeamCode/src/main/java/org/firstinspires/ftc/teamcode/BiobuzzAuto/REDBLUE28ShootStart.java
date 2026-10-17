@@ -37,6 +37,7 @@ public class REDBLUE28ShootStart extends LinearOpMode {
     private DcMotorEx shooter;
     private CRServo feed;
     private CRServo sideServo;
+    private CRServo frontServo;
     private Servo blockServo;
     private DistanceSensor rangeSensor;
 
@@ -75,7 +76,8 @@ public class REDBLUE28ShootStart extends LinearOpMode {
                         instant(() -> feed.setPower(-0.9)),
                         instant(() -> blockServo.setPosition(0.38)),
                         instant(() -> intake.setPower(ShooterConfig.INTAKE_POWER)),
-                        instant(() -> sideServo.setPower(1.0))
+                        instant(() -> sideServo.setPower(1.0)),
+                        instant(() -> frontServo.setPower(-1.0))
                 ),
                 waitMs(4000),
                 instant(() -> {
@@ -84,6 +86,7 @@ public class REDBLUE28ShootStart extends LinearOpMode {
                     shooter.setVelocity(0);
                     intake.setPower(0);
                     sideServo.setPower(0);
+                    frontServo.setPower(0);
                 })
         );
     }
@@ -99,6 +102,7 @@ public class REDBLUE28ShootStart extends LinearOpMode {
                     shooter.setVelocity(0);
                     intake.setPower(0);
                     sideServo.setPower(0);
+                    frontServo.setPower(0);
                 })
         );
     }
@@ -110,6 +114,7 @@ public class REDBLUE28ShootStart extends LinearOpMode {
         shooter = (DcMotorEx) hardwareMap.get(DcMotor.class, HardwareConfig.SHOOTER_MOTOR);
         feed = hardwareMap.get(CRServo.class, HardwareConfig.FEED_SERVO);
         sideServo = hardwareMap.get(CRServo.class, HardwareConfig.SIDE_SERVO);
+        frontServo = hardwareMap.get(CRServo.class, HardwareConfig.FRONT_SERVO);
         blockServo = hardwareMap.get(Servo.class, HardwareConfig.BLOCK_SERVO);
         rangeSensor = hardwareMap.get(DistanceSensor.class, HardwareConfig.RANGE_SENSOR);
 

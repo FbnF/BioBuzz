@@ -1,0 +1,79 @@
+package org.firstinspires.ftc.teamcode.BiobuzzAuto;
+
+import static com.pedropathing.ivy.Scheduler.schedule;
+import static com.pedropathing.ivy.groups.Groups.sequential;
+import static com.pedropathing.ivy.pedro.PedroCommands.follow;
+
+import com.bylazar.configurables.annotations.Configurable;
+import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.BezierLine;
+import com.pedropathing.geometry.Pose;
+import com.pedropathing.ivy.Command;
+import com.pedropathing.ivy.Scheduler;
+import com.pedropathing.paths.PathChain;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
+import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
+
+@Configurable
+@Autonomous(name = "RED28LeavePark", group = "Autonomous")
+public class RED28LeavePark extends LinearOpMode {
+
+    private Follower follower;
+
+    public static double startPoseX = 31.9472;
+    public static double startPoseY = 132.3813;
+    public static double startPoseRotation = 270;
+
+    public static double parkPoseX = 13.5283;
+    public static double parkPoseY = 120.7266;
+    public static double parkPoseRotation = 290;
+
+    private final Pose startPose = new Pose(startPoseX, startPoseY, Math.toRadians(startPoseRotation));
+    private final Pose parkPose = new Pose(parkPoseX, parkPoseY, Math.toRadians(parkPoseRotation));
+
+    private PathChain driveToPark;
+
+    public void buildPaths() {
+        driveToPark = follower.pathBuilder()
+                .addPath(new BezierLine(startPose, parkPose))
+                .setLinearHeadingInterpolation(startPose.getHeading(), parkPose.getHeading())
+                .setGlobalDeceleration()
+                .build();
+    }
+
+    public Command autoRoutine() {
+        return sequential(
+                follow(follower, driveToPark, true)
+        );
+    }
+
+    @Override
+    public void runOpMode() {
+        follower = Constants.createFollower(hardwareMap);
+
+        Scheduler.reset();
+        buildPaths();
+        follower.setStartingPose(startPose);
+
+        telemetry.addLine("RED28LeavePark Ready.");
+        telemetry.update();
+
+        waitForStart();
+
+        if (isStopRequested()) return;
+
+        schedule(autoRoutine());
+
+        while (opModeIsActive()) {
+            follower.update();
+            Scheduler.execute();
+
+            telemetry.addData("X", follower.getPose().getX());
+            telemetry.addData("Y", follower.getPose().getY());
+            telemetry.addData("Heading", Math.toDegrees(follower.getPose().getHeading()));
+            telemetry.update();
+        }
+    }
+}

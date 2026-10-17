@@ -201,6 +201,17 @@ public class TeleOpMainBlue extends LinearOpMode {
                 if (!motorReady && !isLoaded) robot.feedServo.setPower(0);
             }
 
+            // Sync frontServo with intake / outtake state (flipped direction)
+            double frontPower = 0.0;
+            if (isEjecting) {
+                frontPower = 1.0;
+            } else if (currentIntakePower > 0) {
+                frontPower = -1.0;
+            } else if (currentIntakePower < 0) {
+                frontPower = 1.0;
+            }
+            robot.frontServo.setPower(frontPower);
+
             // Sync blockServo with cam-jet (feedServo)
             if (robot.feedServo.getPower() != 0.0) {
                 robot.blockServo.setPosition(0.38); // go
