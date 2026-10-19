@@ -25,6 +25,7 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.configs.HardwareConfig;
 import org.firstinspires.ftc.teamcode.configs.ShooterConfig;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
@@ -53,15 +54,15 @@ public class REDBLUE28Garden extends LinearOpMode {
     public static double path1Rotation = 180;
 
     public static double point2X = 29.6792;
-    public static double point2Y = 9.4127;
-    public static double point2Rotation = 180;
+    public static double point2Y = 10.4962;
+    public static double point2Rotation = 200;
 
     public static double point3X = 10.7726;
     public static double point3Y = 9.2443;
-    public static double point3Rotation = 180;
+    public static double point3Rotation = 200;
 
-    public static double point4X = 34.9456;
-    public static double point4Y = 104.8055;
+    public static double point4X = 32.562;
+    public static double point4Y = 103.072;
     public static double point4Rotation = 250;
 
     public static double point5Control1X = 59.4334;
@@ -138,9 +139,16 @@ public class REDBLUE28Garden extends LinearOpMode {
 
     public Command autoRoutine() {
         return sequential(
+                instant(() -> shooter.setVelocity(shooter_Vel)),
+                combinedShootLogic(),
                 instant(() -> follower.setMaxPower(0.6)),
                 follow(follower, path1Chain, true),
-                follow(follower, path2Chain, true),
+                parallel(
+                        follow(follower, path2Chain, true),
+                        instant(() -> intake.setPower(ShooterConfig.INTAKE_POWER)),
+                        instant(() -> sideServo.setPower(1.0)),
+                        instant(() -> frontServo.setPower(-1.0))
+                ),
                 follow(follower, path3Chain, true),
                 follow(follower, path4Chain, true),
                 parallel(
