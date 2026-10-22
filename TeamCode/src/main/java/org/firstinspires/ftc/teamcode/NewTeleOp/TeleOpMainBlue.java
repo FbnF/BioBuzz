@@ -42,6 +42,8 @@ public class TeleOpMainBlue extends LinearOpMode {
     private boolean prevG2LT = false;
     private boolean prevG2RB = false;
     private boolean prevG2LB = false;
+    private boolean prevG2A = false;
+    private boolean flowerDropped = false;
 
     private boolean isEjecting = false;
     private long ejectStartNs = 0;
@@ -201,16 +203,21 @@ public class TeleOpMainBlue extends LinearOpMode {
                 if (!motorReady && !isLoaded) robot.feedServo.setPower(0);
             }
 
-            // Sync frontServo with intake / outtake state (flipped direction)
-            double frontPower = 0.0;
-            if (isEjecting) {
-                frontPower = 1.0;
-            } else if (currentIntakePower > 0) {
-                frontPower = -1.0;
-            } else if (currentIntakePower < 0) {
-                frontPower = 1.0;
+            // Toggle flower drop mode with Gamepad 2 A button
+            boolean aPressed = gamepad2.a;
+            if (aPressed && !prevG2A) {
+                flowerDropped = !flowerDropped;
             }
-            robot.frontServo.setPower(frontPower);
+            prevG2A = aPressed;
+
+            // Sync frontServo torque servo positions (0.18 idle, 0.22 intaking, 0.35 toggle flower drop)
+            double frontPos = 0.18;
+            if (flowerDropped) {
+                frontPos = 0.35;
+            } else if (currentIntakePower != 0.0 || isEjecting) {
+                frontPos = 0.22;
+            }
+            robot.frontServo.setPosition(frontPos);
 
             // Sync blockServo with cam-jet (feedServo)
             if (robot.feedServo.getPower() != 0.0) {

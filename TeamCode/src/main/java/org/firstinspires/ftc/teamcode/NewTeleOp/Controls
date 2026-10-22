@@ -3,38 +3,32 @@
  TELEOP CONTROL MAP
 ============================================================
 
-GAMEPAD 1  (DRIVER)
-------------------------------------------------------------
- Right Stick (Y)                    Drive Forward / Backward
- Left Stick (X)                     Strafe Left / Right
- Right Stick (X)                    Rotate (Turn)
- A Button                           High Speed Mode (0.95)
- B Button                           Low Speed Mode  (0.40)
- X Button                           Normal Speed Mode (0.70)
- Y Button                           Extreme Speed Mode 1.25
- D-Pad Down                         Unused
- D-Pad (Up, Left, Right)            Unused
- Right Trigger/Bumper               Unused
- Left Trigger                       Unused
- Left Bumper                        Auto Align
+====================================================
+Gamepad 1 (Driver)
+====================================================
+Left Stick (Y-Axis): Forward / Backward movement
+Left Stick (X-Axis): Strafe Left / Right movement
+Right Stick (X-Axis): Robot Rotation / Turning only
+A Button: Speed preset – Normal (0.95 speed factor)
+B Button: Speed preset – Slow / Precision (0.40 speed factor)
+X Button: Speed preset – Medium (0.70 speed factor)
+Y Button: Speed preset – Turbo (1.25 speed factor)
+Left Bumper (Hold): Auto-Align with AprilTag vision target (uses PD control to lock onto the goal)
 
-------------------------------------------------------------
-GAMEPAD 2  (OPERATOR)
-------------------------------------------------------------
- D-Pad Up                           Switch to AUTO shooter mode
- D-Pad Down                      unused
- D-Pad Right                      Toggle Vision(on/off) toggle
- D-Pad Left                         activate/deactivate(on/off) toggle
+===================================================
+Gamepad 2 (Operator / Subsystems)
+===================================================
 
- A Button                           unused
- B Button                          unused
- Left Bumper                     eject the ball for intake(not continuously) turn on for 0.02 quick eject reverse for a small amount time
- X Button                           turn feed servo off(should be automatic. Not really used)
- Y Button                           turn feed servo on
-
- Right Trigger                      Intake on intaking only turns on but just requires a single press not holding
- Left Trigger                       Stop intake same single press
- Right Bumper                       Reverse intake and even once u let go itll keep reversing
+Right Trigger (> 0.5): Start Intake & Transfer (intake = 1.0, sideServo = 1.0, frontServo moves to 0.22 [blocking nectar])
+Left Trigger (> 0.5): Stop Intake / Transfer (intake = 0, sideServo = 0, frontServo returns to 0.18 [idle])
+Right Bumper: Reverse Intake / Outtake (intake = -1.0, frontServo at 0.22)
+Left Bumper (Press): Quick Eject Burst (briefly reverses intake to clear jams)
+Y Button: Shoot / Feed (runs the cam-jet feed servo dynamically tuned using Limelight distance ballistics)
+X Button: Stop Feed Servo
+A Button: Flower Drop Bar (drops frontServo to 0.35 to get objects out of the flower)
+Dpad Up: Trigger Auto-Shooter sequence
+Dpad Left: Toggle Auto-Spin armed state
+Dpad Right: Toggle Limelight Vision ON / OFF
 
 ------------------------------------------------------------
 AUTOMATIC LOGIC

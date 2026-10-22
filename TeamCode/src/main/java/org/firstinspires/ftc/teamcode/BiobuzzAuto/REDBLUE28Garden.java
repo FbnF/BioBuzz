@@ -25,7 +25,6 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.configs.HardwareConfig;
 import org.firstinspires.ftc.teamcode.configs.ShooterConfig;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
@@ -39,7 +38,7 @@ public class REDBLUE28Garden extends LinearOpMode {
     private DcMotorEx shooter;
     private CRServo feed;
     private CRServo sideServo;
-    private CRServo frontServo;
+    private Servo frontServo;
     private Servo blockServo;
     private DistanceSensor rangeSensor;
 
@@ -123,7 +122,7 @@ public class REDBLUE28Garden extends LinearOpMode {
                         instant(() -> blockServo.setPosition(0.38)),
                         instant(() -> intake.setPower(ShooterConfig.INTAKE_POWER)),
                         instant(() -> sideServo.setPower(1.0)),
-                        instant(() -> frontServo.setPower(-1.0))
+                        instant(() -> frontServo.setPosition(0.22))
                 ),
                 waitMs(4000),
                 instant(() -> {
@@ -132,7 +131,7 @@ public class REDBLUE28Garden extends LinearOpMode {
                     shooter.setVelocity(0);
                     intake.setPower(0);
                     sideServo.setPower(0);
-                    frontServo.setPower(0);
+                    frontServo.setPosition(0.18);
                 })
         );
     }
@@ -147,7 +146,7 @@ public class REDBLUE28Garden extends LinearOpMode {
                         follow(follower, path2Chain, true),
                         instant(() -> intake.setPower(ShooterConfig.INTAKE_POWER)),
                         instant(() -> sideServo.setPower(1.0)),
-                        instant(() -> frontServo.setPower(-1.0))
+                        instant(() -> frontServo.setPosition(0.22))
                 ),
                 follow(follower, path3Chain, true),
                 follow(follower, path4Chain, true),
@@ -163,7 +162,7 @@ public class REDBLUE28Garden extends LinearOpMode {
                     shooter.setVelocity(0);
                     intake.setPower(0);
                     sideServo.setPower(0);
-                    frontServo.setPower(0);
+                    frontServo.setPosition(0.18);
                 })
         );
     }
@@ -175,7 +174,7 @@ public class REDBLUE28Garden extends LinearOpMode {
         shooter = (DcMotorEx) hardwareMap.get(DcMotor.class, HardwareConfig.SHOOTER_MOTOR);
         feed = hardwareMap.get(CRServo.class, HardwareConfig.FEED_SERVO);
         sideServo = hardwareMap.get(CRServo.class, HardwareConfig.SIDE_SERVO);
-        frontServo = hardwareMap.get(CRServo.class, HardwareConfig.FRONT_SERVO);
+        frontServo = hardwareMap.get(Servo.class, HardwareConfig.FRONT_SERVO);
         blockServo = hardwareMap.get(Servo.class, HardwareConfig.BLOCK_SERVO);
         rangeSensor = hardwareMap.get(DistanceSensor.class, HardwareConfig.RANGE_SENSOR);
 
@@ -185,6 +184,7 @@ public class REDBLUE28Garden extends LinearOpMode {
         shooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(500, 3, 0, 4));
 
         blockServo.setPosition(0.15);
+        frontServo.setPosition(0.18);
 
         Scheduler.reset();
         buildPaths();

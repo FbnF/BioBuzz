@@ -18,7 +18,7 @@ public class RobotHardware {
     public DcMotorEx launchMotor;
     public CRServo feedServo;
     public CRServo sideServo;
-    public CRServo frontServo;
+    public Servo frontServo;
     public DistanceSensor rangeSensor;
     public VoltageSensor battery;
     public Servo puckLight;
@@ -37,7 +37,7 @@ public class RobotHardware {
         launchMotor = hardwareMap.get(DcMotorEx.class, HardwareConfig.SHOOTER_MOTOR);
         feedServo = hardwareMap.get(CRServo.class, HardwareConfig.FEED_SERVO);
         sideServo = hardwareMap.get(CRServo.class, HardwareConfig.SIDE_SERVO);
-        frontServo = hardwareMap.get(CRServo.class, HardwareConfig.FRONT_SERVO);
+        frontServo = hardwareMap.get(Servo.class, HardwareConfig.FRONT_SERVO);
         rangeSensor = hardwareMap.get(DistanceSensor.class, HardwareConfig.RANGE_SENSOR);
         puckLight = hardwareMap.get(Servo.class, "PuckLight");
         blockServo = hardwareMap.get(Servo.class, HardwareConfig.BLOCK_SERVO);
@@ -54,7 +54,7 @@ public class RobotHardware {
         launchMotor.setPower(0.0);
         feedServo.setPower(0.0);
         sideServo.setPower(0.0);
-        frontServo.setPower(0.0);
+        frontServo.setPosition(0.18);
         puckLight.setPosition(0.0);
         blockServo.setPosition(0.15);
 

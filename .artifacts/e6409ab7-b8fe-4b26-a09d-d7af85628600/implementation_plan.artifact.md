@@ -1,48 +1,21 @@
-# Implementation Plan - Add Front Servo Synced with Intake and Transfer
+# Implementation Plan - Create REDBLUE28WaitStart Autonomous
 
-Add a new continuous rotation servo (`frontServo`) mapped in hardware and fully synced with intaking, outtaking/ejecting, and transfer operations across TeleOp modes (`TeleOpMainBlue`, `TeleOpMainRed`, `SystemsTest`) and autonomous routines (`REDBLUE28LeavePark`, `REDBLUE28Garden`, `REDBLUE28ShootStart`).
+Create the new `REDBLUE28WaitStart` autonomous OpMode under package `org.firstinspires.ftc.teamcode.BiobuzzAuto`. This routine waits for 8 seconds at the starting position (`62.5008, 133.2481, 90°`), pre-spins the flywheel to `1165.0 TPS`, executes the shooting sequence (with `frontServo` torque servo at `0.3`), and then follows a curved path from `path1Start` (`62.5008, 133.2481, 270°`) via `path1Control1` (`59.9119, 115.8859, 0°`) to park at `path1` (`13.9617, 115.0926, 290°`).
 
 ## User Review Required
 
 > [!IMPORTANT]
-> - **Hardware Configuration:** Added `FRONT_SERVO = "frontServo"` to `HardwareConfig`.
-> - **RobotHardware Service:** Mapped `CRServo frontServo`, defaulting to power `0.0` on init.
-> - **TeleOp & Autonomous Logic:** Synced `frontServo` power with `sideServo` / intake power (runs forward at `1.0` when intaking, reverse at `-1.0` when outtaking/ejecting, and `0.0` when stopped).
+> - **Starting Pose & Wait:** Starts at `(62.5008, 133.2481, 90°)` and waits for 8 seconds (`waitMs(8000)`).
+> - **Shooting at Start:** Pre-spins flywheel to `1165.0 TPS` and executes shooting logic (`frontServo` at `0.3`, `blockServo` at `0.38`, `feed`, `intake`, `sideServo`).
+> - **Curve Pathing to Park:** Follows curve path from `path1Start` (`270°`) through `path1Control1` to park at `path1` (`290°`).
+> - **Code Style:** Clean Pedro 2 + Ivy implementation with no comments and updated `frontServo` torque servo dynamics (`0.2` idle, `0.3` intaking/shooting).
 
 ## Proposed Changes
 
-### configs
-
-#### [HardwareConfig.java](file:///C:/Users/mksla/OneDrive/Documents/Biobuzz/BioBuzz/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/configs/HardwareConfig.java)
-- Add `public static final String FRONT_SERVO = "frontServo";`
-
-### NewTeleOp/Services
-
-#### [RobotHardware.java](file:///C:/Users/mksla/OneDrive/Documents/Biobuzz/BioBuzz/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/NewTeleOp/Services/RobotHardware.java)
-- Add `public CRServo frontServo;`
-- Map `frontServo` in `init()` and set power to `0.0`.
-
-### NewTeleOp
-
-#### [TeleOpMainBlue.java](file:///C:/Users/mksla/OneDrive/Documents/Biobuzz/BioBuzz/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/NewTeleOp/TeleOpMainBlue.java)
-- Sync `frontServo.setPower(...)` with `sideServo` / intake power during intake, ejecting, and stop states.
-
-#### [TeleOpMainRed.java](file:///C:/Users/mksla/OneDrive/Documents/Biobuzz/BioBuzz/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/NewTeleOp/TeleOpMainRed.java)
-- Sync `frontServo.setPower(...)` with `sideServo` / intake power during intake, ejecting, and stop states.
-
-#### [SystemsTest.java](file:///C:/Users/mksla/OneDrive/Documents/Biobuzz/BioBuzz/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/NewTeleOp/SystemsTest.java)
-- Sync `frontServo.setPower(...)` with `sideOn` state.
-
 ### BiobuzzAuto
 
-#### [REDBLUE28LeavePark.java](file:///C:/Users/mksla/OneDrive/Documents/Biobuzz/BioBuzz/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/BiobuzzAuto/REDBLUE28LeavePark.java)
-- Map and sync `frontServo` alongside `sideServo` during shooting/reloading and shutdown.
-
-#### [REDBLUE28Garden.java](file:///C:/Users/mksla/OneDrive/Documents/Biobuzz/BioBuzz/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/BiobuzzAuto/REDBLUE28Garden.java)
-- Map and sync `frontServo` alongside `sideServo` during shooting/reloading and shutdown.
-
-#### [REDBLUE28ShootStart.java](file:///C:/Users/mksla/OneDrive/Documents/Biobuzz/BioBuzz/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/BiobuzzAuto/REDBLUE28ShootStart.java)
-- Map and sync `frontServo` alongside `sideServo` during shooting/reloading and shutdown.
+#### [NEW] [REDBLUE28WaitStart.java](file:///C:/Users/mksla/OneDrive/Documents/Biobuzz/BioBuzz/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/BiobuzzAuto/REDBLUE28WaitStart.java)
+- Implement `REDBLUE28WaitStart` with 8-second delay, start shooting sequence, and curve pathing to park.
 
 ## Verification Plan
 
