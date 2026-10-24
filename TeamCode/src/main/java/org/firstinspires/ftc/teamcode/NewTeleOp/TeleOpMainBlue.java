@@ -210,14 +210,21 @@ public class TeleOpMainBlue extends LinearOpMode {
             }
             prevG2A = aPressed;
 
-            // Sync frontServo torque servo positions (0.18 idle, 0.22 intaking, 0.35 toggle flower drop)
-            double frontPos = 0.18;
+            // Sync frontServo torque servo positions (0.28 idle, 0.52 toggle flower drop)
+            double frontPos = 0.28;
             if (flowerDropped) {
-                frontPos = 0.35;
-            } else if (currentIntakePower != 0.0 || isEjecting) {
-                frontPos = 0.22;
+                frontPos = 0.52;
             }
             robot.frontServo.setPosition(frontPos);
+
+            // Sync intakeHelper (-1 intaking, 1 reverse intaking/ejecting, 0 idle)
+            double helperPower = 0.0;
+            if (isEjecting || currentIntakePower > 0.0) {
+                helperPower = -1.0;
+            } else if (currentIntakePower < 0.0) {
+                helperPower = 1.0;
+            }
+            robot.intakeHelper.setPower(helperPower);
 
             // Sync blockServo with cam-jet (feedServo)
             if (robot.feedServo.getPower() != 0.0) {

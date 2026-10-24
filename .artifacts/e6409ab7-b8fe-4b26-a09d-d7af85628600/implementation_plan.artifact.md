@@ -1,21 +1,48 @@
-# Implementation Plan - Create REDBLUE28WaitStart Autonomous
+# Implementation Plan - Add intakeHelper CRServo (Port 5)
 
-Create the new `REDBLUE28WaitStart` autonomous OpMode under package `org.firstinspires.ftc.teamcode.BiobuzzAuto`. This routine waits for 8 seconds at the starting position (`62.5008, 133.2481, 90°`), pre-spins the flywheel to `1165.0 TPS`, executes the shooting sequence (with `frontServo` torque servo at `0.3`), and then follows a curved path from `path1Start` (`62.5008, 133.2481, 270°`) via `path1Control1` (`59.9119, 115.8859, 0°`) to park at `path1` (`13.9617, 115.0926, 290°`).
+Add a new continuous rotation servo (`intakeHelper`, port 5) mapped in hardware and fully synced with intake and transfer operations across TeleOp modes (`TeleOpMainBlue`, `TeleOpMainRed`), `SystemsTest`, and Autonomous routines (`REDBLUE28Garden`, `REDBLUE28ShootStart`, `REDBLUE28WaitStart`).
 
 ## User Review Required
 
 > [!IMPORTANT]
-> - **Starting Pose & Wait:** Starts at `(62.5008, 133.2481, 90°)` and waits for 8 seconds (`waitMs(8000)`).
-> - **Shooting at Start:** Pre-spins flywheel to `1165.0 TPS` and executes shooting logic (`frontServo` at `0.3`, `blockServo` at `0.38`, `feed`, `intake`, `sideServo`).
-> - **Curve Pathing to Park:** Follows curve path from `path1Start` (`270°`) through `path1Control1` to park at `path1` (`290°`).
-> - **Code Style:** Clean Pedro 2 + Ivy implementation with no comments and updated `frontServo` torque servo dynamics (`0.2` idle, `0.3` intaking/shooting).
+> - **Hardware Configuration:** Added `INTAKE_HELPER = "intakeHelper"` to `HardwareConfig`.
+> - **RobotHardware Service:** Mapped `CRServo intakeHelper`, defaulting to power `0.0` on init.
+> - **Sync Logic:** Runs at `-1` when intaking, `1` when reverse intaking/outtaking, and `0` when idle.
 
 ## Proposed Changes
 
+### configs
+
+#### [HardwareConfig.java](file:///C:/Users/mksla/OneDrive/Documents/Biobuzz/BioBuzz/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/configs/HardwareConfig.java)
+- Add `public static final String INTAKE_HELPER = "intakeHelper";`
+
+### NewTeleOp/Services
+
+#### [RobotHardware.java](file:///C:/Users/mksla/OneDrive/Documents/Biobuzz/BioBuzz/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/NewTeleOp/Services/RobotHardware.java)
+- Add `public CRServo intakeHelper;`
+- Map `intakeHelper` in `init()` and set power to `0.0`.
+
+### NewTeleOp
+
+#### [TeleOpMainBlue.java](file:///C:/Users/mksla/OneDrive/Documents/Biobuzz/BioBuzz/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/NewTeleOp/TeleOpMainBlue.java)
+- Sync `intakeHelper.setPower(...)` with intake / eject state (`-1.0` intaking, `1.0` reverse/eject, `0.0` idle).
+
+#### [TeleOpMainRed.java](file:///C:/Users/mksla/OneDrive/Documents/Biobuzz/BioBuzz/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/NewTeleOp/TeleOpMainRed.java)
+- Sync `intakeHelper.setPower(...)` with intake / eject state.
+
+#### [SystemsTest.java](file:///C:/Users/mksla/OneDrive/Documents/Biobuzz/BioBuzz/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/NewTeleOp/SystemsTest.java)
+- Sync `intakeHelper.setPower(...)` with `sideOn` state.
+
 ### BiobuzzAuto
 
-#### [NEW] [REDBLUE28WaitStart.java](file:///C:/Users/mksla/OneDrive/Documents/Biobuzz/BioBuzz/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/BiobuzzAuto/REDBLUE28WaitStart.java)
-- Implement `REDBLUE28WaitStart` with 8-second delay, start shooting sequence, and curve pathing to park.
+#### [REDBLUE28Garden.java](file:///C:/Users/mksla/OneDrive/Documents/Biobuzz/BioBuzz/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/BiobuzzAuto/REDBLUE28Garden.java)
+- Map and sync `intakeHelper` alongside `sideServo` and `intake` during intaking/shooting and shutdown.
+
+#### [REDBLUE28ShootStart.java](file:///C:/Users/mksla/OneDrive/Documents/Biobuzz/BioBuzz/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/BiobuzzAuto/REDBLUE28ShootStart.java)
+- Map and sync `intakeHelper` alongside `sideServo` and `intake` during intaking/shooting and shutdown.
+
+#### [REDBLUE28WaitStart.java](file:///C:/Users/mksla/OneDrive/Documents/Biobuzz/BioBuzz/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/BiobuzzAuto/REDBLUE28WaitStart.java)
+- Map and sync `intakeHelper` alongside `sideServo` and `intake` during intaking/shooting and shutdown.
 
 ## Verification Plan
 

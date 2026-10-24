@@ -1,17 +1,16 @@
-# Walkthrough - Create REDBLUE28WaitStart Autonomous
+# Walkthrough - Add intakeHelper CRServo (Port 5)
 
-Created the new `REDBLUE28WaitStart` autonomous OpMode under package `org.firstinspires.ftc.teamcode.BiobuzzAuto`.
+Added `intakeHelper` (`CRServo`, port 5) mapped in hardware and fully synced with intake and transfer operations across TeleOp modes, SystemsTest, and Autonomous routines.
 
 ## Changes
 
-### BiobuzzAuto
+### configs & Services
+- **[HardwareConfig.java](file:///C:/Users/mksla/OneDrive/Documents/Biobuzz/BioBuzz/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/configs/HardwareConfig.java):** Added `INTAKE_HELPER = "intakeHelper"`.
+- **[RobotHardware.java](file:///C:/Users/mksla/OneDrive/Documents/Biobuzz/BioBuzz/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/NewTeleOp/Services/RobotHardware.java):** Mapped `intakeHelper` (`CRServo`) and initialized its power to `0.0`.
 
-#### [REDBLUE28WaitStart.java](file:///C:/Users/mksla/OneDrive/Documents/Biobuzz/BioBuzz/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/BiobuzzAuto/REDBLUE28WaitStart.java)
-- Configured start pose `(62.5008, 133.2481, 90°)` and curve park path from `path1Start` (`270°`) through `path1Control1` to `parkPose` (`13.9617, 115.0926, 290°`).
-- Implements an 8-second wait (`waitMs(8000)`) at start while pre-spinning the flywheel (`1165.0 TPS`) in parallel, keeping `blockServo` at `0.15` (blocked) to save time without firing early.
-- Fires preloads using `combinedShootLogic()` (with `frontServo` torque servo at `0.3`, `blockServo` at `0.38`, `feed`, `intake`, and `sideServo`) after the 8-second delay.
-- Follows curve path to park.
-- Written in clean Pedro 2 + Ivy structure with zero comments.
+### TeleOp & Autonomous
+- **TeleOp (`TeleOpMainBlue`, `TeleOpMainRed`, `SystemsTest`):** Synced `intakeHelper.setPower(...)` with intake state (runs at `-1.0` when intaking, `1.0` when reverse intaking/outtaking, and `0.0` when idle).
+- **Autonomous (`REDBLUE28Garden`, `REDBLUE28ShootStart`, `REDBLUE28WaitStart`):** Synced `intakeHelper.setPower(-1.0)` alongside `sideServo` and `intake` during intaking/shooting and reset to `0.0` on shutdown.
 
 ## Verification Results
 

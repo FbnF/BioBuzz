@@ -14,5 +14,6 @@ public class HardwareConfig {
     public static final String SIDE_SERVO = "sideServo";
     public static final String BLOCK_SERVO = "blockServo";
     public static final String FRONT_SERVO = "frontServo";
+    public static final String INTAKE_HELPER = "intakeHelper";
     public static final String RANGE_SENSOR = "RangeSensor";
 }
