@@ -3,36 +3,36 @@ package org.firstinspires.ftc.teamcode.BasicMovement;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.CRServo;
 
 @Disabled
-@TeleOp(name = "Servo Test", group = "MotorTests")
-
+@TeleOp(name = "ArvinServo", group = "MotorTests")
 public class ArvinServo extends LinearOpMode {
-    Servo myServo;
+    CRServo intakeHelper;
 
     @Override
     public void runOpMode() {
-        myServo = hardwareMap.get(Servo.class, "servo");
-        myServo.setPosition(10.0);
+        intakeHelper = hardwareMap.get(CRServo.class, "intakeHelper");
+
+        intakeHelper.setPower(0.0);
 
         waitForStart();
 
-        boolean lastA = false; //memory of last state of button
-        boolean toggle = false; //memory of servo open or close
         while (opModeIsActive()) {
-            //logic stuff
-            //check for button press
-            if (gamepad1.a && !lastA) {
-                toggle = !toggle; //flip between true false each press
+            double power = 0.0;
+            if (gamepad1.a) {
+                power = 1.0;
+            } else if (gamepad1.b) {
+                power = -1.0;
+            } else if (gamepad1.x) {
+                power = 0.5;
+            } else if (gamepad1.y) {
+                power = -0.5;
             }
-            if (toggle) {
-                myServo.setPosition(1.0); //open
-            }
-            else {
-                myServo.setPosition(0.0); //closed
-            }
-            telemetry.addData("Servo Position: ", myServo.getPosition());
+
+            intakeHelper.setPower(power);
+
+            telemetry.addData("Testing intakeHelper Power", power);
             telemetry.update();
         }
     }

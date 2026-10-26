@@ -41,8 +41,6 @@ public class TeleOpMainRed extends LinearOpMode {
     private boolean prevG2LT = false;
     private boolean prevG2RB = false;
     private boolean prevG2LB = false;
-    private boolean prevG2A = false;
-    private boolean flowerDropped = false;
 
     private boolean isEjecting = false;
     private long ejectStartNs = 0;
@@ -201,27 +199,18 @@ public class TeleOpMainRed extends LinearOpMode {
                 if (!motorReady && !isLoaded) robot.feedServo.setPower(0);
             }
 
-            // Toggle flower drop mode with Gamepad 2 A button
-            boolean aPressed = gamepad2.a;
-            if (aPressed && !prevG2A) {
-                flowerDropped = !flowerDropped;
-            }
-            prevG2A = aPressed;
-
-            // Sync frontServo torque servo positions (0.28 idle, 0.52 toggle flower drop)
-            double frontPos = 0.28;
-            if (flowerDropped) {
-                frontPos = 0.52;
-            }
-            robot.frontServo.setPosition(frontPos);
-
-            // Sync intakeHelper (-1 intaking, 1 reverse intaking/ejecting, 0 idle)
+            // Sync frontServo and intakeHelper continuous powers directly from intakeMotor power
+            double intakePower = robot.intakeMotor.getPower();
+            double frontPower = 0.0;
             double helperPower = 0.0;
-            if (isEjecting || currentIntakePower > 0.0) {
-                helperPower = -1.0;
-            } else if (currentIntakePower < 0.0) {
-                helperPower = 1.0;
+            if (intakePower > 0.0) {
+                frontPower = ShooterConfig.FRONT_SERVO_INTAKE_POWER;
+                helperPower = ShooterConfig.INTAKE_HELPER_INTAKE_POWER;
+            } else if (intakePower < 0.0) {
+                frontPower = ShooterConfig.FRONT_SERVO_REVERSE_POWER;
+                helperPower = ShooterConfig.INTAKE_HELPER_REVERSE_POWER;
             }
+            robot.frontServo.setPower(frontPower);
             robot.intakeHelper.setPower(helperPower);
 
             // Sync blockServo with cam-jet (feedServo)

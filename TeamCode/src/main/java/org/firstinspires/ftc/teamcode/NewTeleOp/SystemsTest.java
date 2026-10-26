@@ -133,7 +133,8 @@ public class SystemsTest extends LinearOpMode {
                 sideOn = intakeOn;
                 robot.intakeMotor.setPower(intakeOn ? ShooterConfig.INTAKE_POWER : 0);
                 robot.sideServo.setPower(sideOn ? ShooterConfig.SIDE_DEFAULT : 0);
-                robot.intakeHelper.setPower(sideOn ? -1.0 : 0.0);
+                robot.frontServo.setPower(sideOn ? ShooterConfig.FRONT_SERVO_INTAKE_POWER : 0.0);
+                robot.intakeHelper.setPower(sideOn ? ShooterConfig.INTAKE_HELPER_INTAKE_POWER : 0.0);
             }
 
             // X Button = Feed Servo ON/OFF toggle
@@ -151,7 +152,8 @@ public class SystemsTest extends LinearOpMode {
 
                 robot.intakeMotor.setPower(ShooterConfig.INTAKE_POWER);
                 robot.sideServo.setPower(ShooterConfig.SIDE_DEFAULT);
-                robot.intakeHelper.setPower(-1.0);
+                robot.frontServo.setPower(ShooterConfig.FRONT_SERVO_INTAKE_POWER);
+                robot.intakeHelper.setPower(ShooterConfig.INTAKE_HELPER_INTAKE_POWER);
                 robot.feedServo.setPower(ShooterConfig.FEED_DEFAULT);
                 robot.launchMotor.setVelocity(targetTPS);
             }
@@ -165,15 +167,13 @@ public class SystemsTest extends LinearOpMode {
 
                 robot.intakeMotor.setPower(0);
                 robot.sideServo.setPower(0);
-                robot.frontServo.setPosition(0.28);
+                robot.frontServo.setPower(0.0);
                 robot.intakeHelper.setPower(0.0);
                 robot.feedServo.setPower(0);
                 robot.launchMotor.setVelocity(0);
             }
 
-            if (gamepad2.a) {
-                robot.frontServo.setPosition(0.52);
-            }
+
 
             // Sync blockServo with cam-jet (feedOn)
             if (feedOn) {

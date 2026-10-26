@@ -1,48 +1,24 @@
-# Implementation Plan - Add intakeHelper CRServo (Port 5)
+# Implementation Plan - Drive frontServo and intakeHelper Directly from intakeMotor Power in TeleOp
 
-Add a new continuous rotation servo (`intakeHelper`, port 5) mapped in hardware and fully synced with intake and transfer operations across TeleOp modes (`TeleOpMainBlue`, `TeleOpMainRed`), `SystemsTest`, and Autonomous routines (`REDBLUE28Garden`, `REDBLUE28ShootStart`, `REDBLUE28WaitStart`).
+Sync `frontServo` and `intakeHelper` power in TeleOp directly with `robot.intakeMotor.getPower()`, ensuring that whenever the intake motor runs (forward or reverse), both gecko wheels spin automatically at their designated speeds (`FRONT_SERVO_INTAKE_POWER`/`REVERSE_POWER` and `INTAKE_HELPER_INTAKE_POWER`/`REVERSE_POWER`).
 
 ## User Review Required
 
 > [!IMPORTANT]
-> - **Hardware Configuration:** Added `INTAKE_HELPER = "intakeHelper"` to `HardwareConfig`.
-> - **RobotHardware Service:** Mapped `CRServo intakeHelper`, defaulting to power `0.0` on init.
-> - **Sync Logic:** Runs at `-1` when intaking, `1` when reverse intaking/outtaking, and `0` when idle.
+> - **Intake Power Derivation:** `frontServo` and `intakeHelper` powers are now driven directly from `robot.intakeMotor.getPower()`.
+> - **Forward Intake (`intakePower > 0`):** `frontServo` = `1.0`, `intakeHelper` = `-1.0`.
+> - **Reverse Intake / Eject (`intakePower < 0`):** `frontServo` = `-1.0`, `intakeHelper` = `1.0`.
+> - **Idle (`intakePower == 0`):** `0.0`.
 
 ## Proposed Changes
 
-### configs
-
-#### [HardwareConfig.java](file:///C:/Users/mksla/OneDrive/Documents/Biobuzz/BioBuzz/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/configs/HardwareConfig.java)
-- Add `public static final String INTAKE_HELPER = "intakeHelper";`
-
-### NewTeleOp/Services
-
-#### [RobotHardware.java](file:///C:/Users/mksla/OneDrive/Documents/Biobuzz/BioBuzz/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/NewTeleOp/Services/RobotHardware.java)
-- Add `public CRServo intakeHelper;`
-- Map `intakeHelper` in `init()` and set power to `0.0`.
-
 ### NewTeleOp
 
-#### [TeleOpMainBlue.java](file:///C:/Users/mksla/OneDrive/Documents/Biobuzz/BioBuzz/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/NewTeleOp/TeleOpMainBlue.java)
-- Sync `intakeHelper.setPower(...)` with intake / eject state (`-1.0` intaking, `1.0` reverse/eject, `0.0` idle).
+#### [MODIFY] [TeleOpMainBlue.java](file:///C:/Users/mksla/OneDrive/Documents/Biobuzz/BioBuzz/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/NewTeleOp/TeleOpMainBlue.java)
+- Derive `frontServo` and `intakeHelper` powers from `robot.intakeMotor.getPower()`.
 
-#### [TeleOpMainRed.java](file:///C:/Users/mksla/OneDrive/Documents/Biobuzz/BioBuzz/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/NewTeleOp/TeleOpMainRed.java)
-- Sync `intakeHelper.setPower(...)` with intake / eject state.
-
-#### [SystemsTest.java](file:///C:/Users/mksla/OneDrive/Documents/Biobuzz/BioBuzz/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/NewTeleOp/SystemsTest.java)
-- Sync `intakeHelper.setPower(...)` with `sideOn` state.
-
-### BiobuzzAuto
-
-#### [REDBLUE28Garden.java](file:///C:/Users/mksla/OneDrive/Documents/Biobuzz/BioBuzz/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/BiobuzzAuto/REDBLUE28Garden.java)
-- Map and sync `intakeHelper` alongside `sideServo` and `intake` during intaking/shooting and shutdown.
-
-#### [REDBLUE28ShootStart.java](file:///C:/Users/mksla/OneDrive/Documents/Biobuzz/BioBuzz/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/BiobuzzAuto/REDBLUE28ShootStart.java)
-- Map and sync `intakeHelper` alongside `sideServo` and `intake` during intaking/shooting and shutdown.
-
-#### [REDBLUE28WaitStart.java](file:///C:/Users/mksla/OneDrive/Documents/Biobuzz/BioBuzz/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/BiobuzzAuto/REDBLUE28WaitStart.java)
-- Map and sync `intakeHelper` alongside `sideServo` and `intake` during intaking/shooting and shutdown.
+#### [MODIFY] [TeleOpMainRed.java](file:///C:/Users/mksla/OneDrive/Documents/Biobuzz/BioBuzz/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/NewTeleOp/TeleOpMainRed.java)
+- Derive `frontServo` and `intakeHelper` powers from `robot.intakeMotor.getPower()`.
 
 ## Verification Plan
 
