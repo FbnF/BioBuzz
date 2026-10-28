@@ -10,7 +10,6 @@ import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.follower.Follower;
-import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.ivy.Command;
@@ -25,14 +24,13 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.configs.HardwareConfig;
 import org.firstinspires.ftc.teamcode.configs.ShooterConfig;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 @Configurable
-@Autonomous(name = "REDBLUE28Garden", group = "Autonomous")
-public class REDBLUE28Garden extends LinearOpMode {
+@Autonomous(name = "28WaitP2", group = "Autonomous")
+public class WaitStart28P2 extends LinearOpMode {
 
     private Follower follower;
     private DcMotor intake;
@@ -47,72 +45,23 @@ public class REDBLUE28Garden extends LinearOpMode {
 
     private final double shooter_Vel = 1165.0;
 
-    public static double startPoseX = 56.2167;
-    public static double startPoseY = 9.0835;
-    public static double startPoseRotation = 90;
+    public static double startPoseX = 9.1499;
+    public static double startPoseY = 79.5414;
+    public static double startPoseRotation = 0;
 
-    public static double path1X = 44.0819;
-    public static double path1Y = 19.379;
-    public static double path1Rotation = 180;
+    public static double parkPoseX = 62.0779;
+    public static double parkPoseY = 132.3593;
+    public static double parkPoseRotation = 270;
 
-    public static double point2X = 29.6792;
-    public static double point2Y = 10.4962;
-    public static double point2Rotation = 200;
+    private final Pose startPose = new Pose(startPoseX, startPoseY, Math.toRadians(startPoseRotation));
+    private final Pose parkPose = new Pose(parkPoseX, parkPoseY, Math.toRadians(parkPoseRotation));
 
-    public static double point3X = 10.7726;
-    public static double point3Y = 9.2443;
-    public static double point3Rotation = 200;
-
-    public static double point4X = 32.562;
-    public static double point4Y = 103.072;
-    public static double point4Rotation = 250;
-
-    public static double point5Control1X = 59.4334;
-    public static double point5Control1Y = 120.2067;
-    public static double point5Control1Rotation = 0;
-
-    public static double point5X = 61.9617;
-    public static double point5Y = 132.0574;
-    public static double point5Rotation = 270;
-
-    private final Pose start = new Pose(startPoseX, startPoseY, Math.toRadians(startPoseRotation));
-    private final Pose p1 = new Pose(path1X, path1Y, Math.toRadians(path1Rotation));
-    private final Pose p2 = new Pose(point2X, point2Y, Math.toRadians(point2Rotation));
-    private final Pose p3 = new Pose(point3X, point3Y, Math.toRadians(point3Rotation));
-    private final Pose p4 = new Pose(point4X, point4Y, Math.toRadians(point4Rotation));
-    private final Pose p5Control1 = new Pose(point5Control1X, point5Control1Y, Math.toRadians(point5Control1Rotation));
-    private final Pose p5 = new Pose(point5X, point5Y, Math.toRadians(point5Rotation));
-
-    private PathChain path1Chain, path2Chain, path3Chain, path4Chain, path5Chain;
+    private PathChain path1Chain;
 
     public void buildPaths() {
         path1Chain = follower.pathBuilder()
-                .addPath(new BezierLine(start, p1))
-                .setLinearHeadingInterpolation(start.getHeading(), p1.getHeading())
-                .setGlobalDeceleration()
-                .build();
-
-        path2Chain = follower.pathBuilder()
-                .addPath(new BezierLine(p1, p2))
-                .setLinearHeadingInterpolation(p1.getHeading(), p2.getHeading())
-                .setGlobalDeceleration()
-                .build();
-
-        path3Chain = follower.pathBuilder()
-                .addPath(new BezierLine(p2, p3))
-                .setLinearHeadingInterpolation(p2.getHeading(), p3.getHeading())
-                .setGlobalDeceleration()
-                .build();
-
-        path4Chain = follower.pathBuilder()
-                .addPath(new BezierLine(p3, p4))
-                .setLinearHeadingInterpolation(p3.getHeading(), p4.getHeading())
-                .setGlobalDeceleration()
-                .build();
-
-        path5Chain = follower.pathBuilder()
-                .addPath(new BezierCurve(p4, p5Control1, p5))
-                .setLinearHeadingInterpolation(p4.getHeading(), p5.getHeading())
+                .addPath(new BezierLine(startPose, parkPose))
+                .setLinearHeadingInterpolation(startPose.getHeading(), parkPose.getHeading())
                 .setGlobalDeceleration()
                 .build();
     }
@@ -145,26 +94,13 @@ public class REDBLUE28Garden extends LinearOpMode {
 
     public Command autoRoutine() {
         return sequential(
-                instant(() -> shooter.setVelocity(shooter_Vel)),
+                parallel(
+                        waitMs(8000),
+                        instant(() -> shooter.setVelocity(shooter_Vel)),
+                        instant(() -> blockServo.setPosition(0.26))
+                ),
                 combinedShootLogic(),
-                instant(() -> follower.setMaxPower(0.6)),
                 follow(follower, path1Chain, true),
-                parallel(
-                        follow(follower, path2Chain, true),
-                        instant(() -> intake.setPower(ShooterConfig.INTAKE_POWER)),
-                        instant(() -> sideServo.setPower(1.0)),
-                        instant(() -> intakeHelper.setPower(ShooterConfig.INTAKE_HELPER_INTAKE_POWER)),
-                        instant(() -> frontServo.setPosition(ShooterConfig.FRONT_SERVO_FLOWER_POS)),
-                        instant(() -> flowerServo.setPower(1.0))
-                ),
-                follow(follower, path3Chain, true),
-                follow(follower, path4Chain, true),
-                parallel(
-                        follow(follower, path5Chain, true),
-                        instant(() -> shooter.setVelocity(shooter_Vel))
-                ),
-                instant(() -> follower.setMaxPower(1.0)),
-                combinedShootLogic(),
                 instant(() -> {
                     feed.setPower(0);
                     blockServo.setPosition(0.26);
@@ -203,9 +139,9 @@ public class REDBLUE28Garden extends LinearOpMode {
 
         Scheduler.reset();
         buildPaths();
-        follower.setStartingPose(start);
+        follower.setStartingPose(startPose);
 
-        telemetry.addLine("REDBLUE28Garden Ready.");
+        telemetry.addLine("28WaitP2 Ready.");
         telemetry.update();
 
         waitForStart();

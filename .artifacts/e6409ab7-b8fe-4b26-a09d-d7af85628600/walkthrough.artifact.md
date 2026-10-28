@@ -1,18 +1,17 @@
-# Walkthrough - Add flowerServo & Convert frontServo back to Positional Torque Servo
+# Walkthrough - Rename Autonomous Opmode Files and Update 28P2
 
-Added `flowerServo` (`CRServo`) as the opposite of `intakeHelper`, and converted `frontServo` back to a positional torque servo (`Servo`) controlled via Gamepad 2 A button.
+Successfully renamed all autonomous OpModes and updated their Driver Station display names and class files, while cleanly disabling the old files.
 
 ## Changes
 
-### configs & Services
-- **[HardwareConfig.java](file:///C:/Users/mksla/OneDrive/Documents/Biobuzz/BioBuzz/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/configs/HardwareConfig.java):** Added `FLOWER_SERVO = "flowerServo"`.
-- **[ShooterConfig.java](file:///C:/Users/mksla/OneDrive/Documents/Biobuzz/BioBuzz/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/configs/ShooterConfig.java):** Added `FRONT_SERVO_INIT_POS = 0.06` and `FRONT_SERVO_FLOWER_POS = 0.38`.
-- **[RobotHardware.java](file:///C:/Users/mksla/OneDrive/Documents/Biobuzz/BioBuzz/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/NewTeleOp/Services/RobotHardware.java):** Converted `frontServo` to `Servo` (init `0.06`) and mapped `flowerServo` as `CRServo` (init `0.0`).
+### BiobuzzAuto
 
-### TeleOp & SystemsTest
-- **TeleOp (`TeleOpMainBlue`, `TeleOpMainRed`, `SystemsTest`):**
-  - Gamepad 2 A button (`gamepad2.a`) toggles `frontServo` position between up (`0.06`) and down (`0.38`).
-  - `flowerServo` runs as the opposite of `intakeHelper` **only when `frontServo` is down (`0.38`) AND intake is active**. If `frontServo` is up (`0.06`), `flowerServo` stays `0.0`.
+#### New / Updated OpModes
+1. **`ZeroLeaveParkP1.java`** (`@Autonomous(name = "0LeaveParkP1")`): Non-shooting leave/park routine.
+2. **`LeavePark28P1.java`** (`@Autonomous(name = "28P1")`): Shooting + leave/park routine.
+3. **`LPGardenP1.java`** (`@Autonomous(name = "28LPGardenP1")`): Garden path routine.
+4. **`ShootStart28P2.java`** (`@Autonomous(name = "28P2")`): Updated with line path followed by curve path (`path1_2`) as requested, without 8-second delay.
+5. **`WaitStart28P1.java`** (`@Autonomous(name = "28WaitP1")`): 8-second wait with pre-spinning and shooting.
 
 ## Verification Results
 

@@ -17,18 +17,18 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 @Configurable
-@Autonomous(name = "RED28LeavePark", group = "Autonomous")
-public class RED28LeavePark extends LinearOpMode {
+@Autonomous(name = "0LeaveParkP2", group = "Autonomous")
+public class ZeroLeaveParkP2 extends LinearOpMode {
 
     private Follower follower;
 
-    public static double startPoseX = 31.9472;
-    public static double startPoseY = 132.3813;
-    public static double startPoseRotation = 270;
+    public static double startPoseX = 8.8966;
+    public static double startPoseY = 77.6421;
+    public static double startPoseRotation = 0;
 
-    public static double parkPoseX = 13.5283;
-    public static double parkPoseY = 120.7266;
-    public static double parkPoseRotation = 290;
+    public static double parkPoseX = 12.5687;
+    public static double parkPoseY = 123.8756;
+    public static double parkPoseRotation = 0;
 
     private final Pose startPose = new Pose(startPoseX, startPoseY, Math.toRadians(startPoseRotation));
     private final Pose parkPose = new Pose(parkPoseX, parkPoseY, Math.toRadians(parkPoseRotation));
@@ -57,7 +57,7 @@ public class RED28LeavePark extends LinearOpMode {
         buildPaths();
         follower.setStartingPose(startPose);
 
-        telemetry.addLine("RED28LeavePark Ready.");
+        telemetry.addLine("0LeaveParkP2 Ready.");
         telemetry.update();
 
         waitForStart();
