@@ -40,6 +40,8 @@ public class SystemsTest extends LinearOpMode {
 
     private double previousRightTrigger = 0;
     private double previousLeftTrigger = 0;
+    private boolean frontServoDown = false;
+    private boolean prevG2A = false;
 
     @Override
     public void runOpMode() {
@@ -127,14 +129,20 @@ public class SystemsTest extends LinearOpMode {
                 robot.launchMotor.setVelocity(0);
             }
 
+            // Toggle frontServo position with Gamepad 2 A button
+            boolean aPressed = gamepad2.a;
+            if (aPressed && !prevG2A) {
+                frontServoDown = !frontServoDown;
+            }
+            prevG2A = aPressed;
+            robot.frontServo.setPosition(frontServoDown ? ShooterConfig.FRONT_SERVO_FLOWER_POS : ShooterConfig.FRONT_SERVO_INIT_POS);
+
             // B Button = Intake + Transfer (Side Servo) ON/OFF toggle together
             if (gamepad1.b && !previousB) {
                 intakeOn = !intakeOn;
                 sideOn = intakeOn;
                 robot.intakeMotor.setPower(intakeOn ? ShooterConfig.INTAKE_POWER : 0);
                 robot.sideServo.setPower(sideOn ? ShooterConfig.SIDE_DEFAULT : 0);
-                robot.frontServo.setPower(sideOn ? ShooterConfig.FRONT_SERVO_INTAKE_POWER : 0.0);
-                robot.intakeHelper.setPower(sideOn ? ShooterConfig.INTAKE_HELPER_INTAKE_POWER : 0.0);
             }
 
             // X Button = Feed Servo ON/OFF toggle
@@ -152,8 +160,6 @@ public class SystemsTest extends LinearOpMode {
 
                 robot.intakeMotor.setPower(ShooterConfig.INTAKE_POWER);
                 robot.sideServo.setPower(ShooterConfig.SIDE_DEFAULT);
-                robot.frontServo.setPower(ShooterConfig.FRONT_SERVO_INTAKE_POWER);
-                robot.intakeHelper.setPower(ShooterConfig.INTAKE_HELPER_INTAKE_POWER);
                 robot.feedServo.setPower(ShooterConfig.FEED_DEFAULT);
                 robot.launchMotor.setVelocity(targetTPS);
             }
@@ -167,11 +173,15 @@ public class SystemsTest extends LinearOpMode {
 
                 robot.intakeMotor.setPower(0);
                 robot.sideServo.setPower(0);
-                robot.frontServo.setPower(0.0);
-                robot.intakeHelper.setPower(0.0);
                 robot.feedServo.setPower(0);
                 robot.launchMotor.setVelocity(0);
             }
+
+            // Sync intakeHelper and flowerServo
+            double helperPower = intakeOn ? ShooterConfig.INTAKE_HELPER_INTAKE_POWER : 0.0;
+            double flowerPower = (intakeOn && frontServoDown) ? -helperPower : 0.0;
+            robot.intakeHelper.setPower(helperPower);
+            robot.flowerServo.setPower(flowerPower);
 
 
 
@@ -179,7 +189,7 @@ public class SystemsTest extends LinearOpMode {
             if (feedOn) {
                 robot.blockServo.setPosition(0.38); // go
             } else {
-                robot.blockServo.setPosition(0.15); // block
+                robot.blockServo.setPosition(0.26); // block
             }
 
             // Flywheel TPS tuning controls

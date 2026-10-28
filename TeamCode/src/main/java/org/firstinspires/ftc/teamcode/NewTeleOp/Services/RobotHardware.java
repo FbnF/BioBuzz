@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import org.firstinspires.ftc.teamcode.configs.HardwareConfig;
+import org.firstinspires.ftc.teamcode.configs.ShooterConfig;
 
 // Robot hardware map
 public class RobotHardware {
@@ -19,7 +20,8 @@ public class RobotHardware {
     public CRServo feedServo;
     public CRServo sideServo;
     public CRServo intakeHelper;
-    public CRServo frontServo;
+    public CRServo flowerServo;
+    public Servo frontServo;
     public DistanceSensor rangeSensor;
     public VoltageSensor battery;
     public Servo puckLight;
@@ -39,7 +41,8 @@ public class RobotHardware {
         feedServo = hardwareMap.get(CRServo.class, HardwareConfig.FEED_SERVO);
         sideServo = hardwareMap.get(CRServo.class, HardwareConfig.SIDE_SERVO);
         intakeHelper = hardwareMap.get(CRServo.class, HardwareConfig.INTAKE_HELPER);
-        frontServo = hardwareMap.get(CRServo.class, HardwareConfig.FRONT_SERVO);
+        flowerServo = hardwareMap.get(CRServo.class, HardwareConfig.FLOWER_SERVO);
+        frontServo = hardwareMap.get(Servo.class, HardwareConfig.FRONT_SERVO);
         rangeSensor = hardwareMap.get(DistanceSensor.class, HardwareConfig.RANGE_SENSOR);
         puckLight = hardwareMap.get(Servo.class, "PuckLight");
         blockServo = hardwareMap.get(Servo.class, HardwareConfig.BLOCK_SERVO);
@@ -57,9 +60,10 @@ public class RobotHardware {
         feedServo.setPower(0.0);
         sideServo.setPower(0.0);
         intakeHelper.setPower(0.0);
-        frontServo.setPower(0.0);
+        flowerServo.setPower(0.0);
+        frontServo.setPosition(ShooterConfig.FRONT_SERVO_INIT_POS);
         puckLight.setPosition(0.0);
-        blockServo.setPosition(0.15);
+        blockServo.setPosition(0.26);
 
         // Bulk caching: without this, every getVelocity()/getDistance()/etc. call in the
         // TeleOp loop is a separate blocking I2C transaction to the hub, which slows the

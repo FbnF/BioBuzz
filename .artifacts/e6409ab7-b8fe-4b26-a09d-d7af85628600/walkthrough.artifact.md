@@ -1,15 +1,18 @@
-# Walkthrough - Drive frontServo and intakeHelper Directly from intakeMotor Power
+# Walkthrough - Add flowerServo & Convert frontServo back to Positional Torque Servo
 
-Updated TeleOp modes (`TeleOpMainBlue` and `TeleOpMainRed`) so `frontServo` and `intakeHelper` derive their continuous power directly from `robot.intakeMotor.getPower()`.
+Added `flowerServo` (`CRServo`) as the opposite of `intakeHelper`, and converted `frontServo` back to a positional torque servo (`Servo`) controlled via Gamepad 2 A button.
 
 ## Changes
 
-### TeleOp
-- **[TeleOpMainBlue.java](file:///C:/Users/mksla/OneDrive/Documents/Biobuzz/BioBuzz/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/NewTeleOp/TeleOpMainBlue.java) / [TeleOpMainRed.java](file:///C:/Users/mksla/OneDrive/Documents/Biobuzz/BioBuzz/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/NewTeleOp/TeleOpMainRed.java):**
-  - Reads `double intakePower = robot.intakeMotor.getPower();` each loop cycle.
-  - When `intakePower > 0.0`: drives `frontServo` at `FRONT_SERVO_INTAKE_POWER` (`1.0`) and `intakeHelper` at `INTAKE_HELPER_INTAKE_POWER` (`-1.0`).
-  - When `intakePower < 0.0`: drives `frontServo` at `FRONT_SERVO_REVERSE_POWER` (`-1.0`) and `intakeHelper` at `INTAKE_HELPER_REVERSE_POWER` (`1.0`).
-  - When idle (`0.0`): both are set to `0.0`.
+### configs & Services
+- **[HardwareConfig.java](file:///C:/Users/mksla/OneDrive/Documents/Biobuzz/BioBuzz/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/configs/HardwareConfig.java):** Added `FLOWER_SERVO = "flowerServo"`.
+- **[ShooterConfig.java](file:///C:/Users/mksla/OneDrive/Documents/Biobuzz/BioBuzz/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/configs/ShooterConfig.java):** Added `FRONT_SERVO_INIT_POS = 0.06` and `FRONT_SERVO_FLOWER_POS = 0.38`.
+- **[RobotHardware.java](file:///C:/Users/mksla/OneDrive/Documents/Biobuzz/BioBuzz/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/NewTeleOp/Services/RobotHardware.java):** Converted `frontServo` to `Servo` (init `0.06`) and mapped `flowerServo` as `CRServo` (init `0.0`).
+
+### TeleOp & SystemsTest
+- **TeleOp (`TeleOpMainBlue`, `TeleOpMainRed`, `SystemsTest`):**
+  - Gamepad 2 A button (`gamepad2.a`) toggles `frontServo` position between up (`0.06`) and down (`0.38`).
+  - `flowerServo` runs as the opposite of `intakeHelper` **only when `frontServo` is down (`0.38`) AND intake is active**. If `frontServo` is up (`0.06`), `flowerServo` stays `0.0`.
 
 ## Verification Results
 

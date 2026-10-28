@@ -96,7 +96,7 @@ public class REDBLUE28LeavePark extends LinearOpMode {
                 waitMs(4000),
                 instant(() -> {
                     feed.setPower(0);
-                    blockServo.setPosition(0.15);
+                    blockServo.setPosition(0.26);
                     shooter.setVelocity(0);
                     intake.setPower(0);
                     sideServo.setPower(0);
@@ -114,7 +114,7 @@ public class REDBLUE28LeavePark extends LinearOpMode {
                 follow(follower, driveToPark, true),
                 instant(() -> {
                     feed.setPower(0);
-                    blockServo.setPosition(0.15);
+                    blockServo.setPosition(0.26);
                     shooter.setVelocity(0);
                     intake.setPower(0);
                     sideServo.setPower(0);
@@ -137,7 +137,7 @@ public class REDBLUE28LeavePark extends LinearOpMode {
         shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         shooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(500, 3, 0, 4));
 
-        blockServo.setPosition(0.15);
+        blockServo.setPosition(0.26);
 
         Scheduler.reset();
         buildPaths();

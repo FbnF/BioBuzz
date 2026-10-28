@@ -41,6 +41,8 @@ public class TeleOpMainRed extends LinearOpMode {
     private boolean prevG2LT = false;
     private boolean prevG2RB = false;
     private boolean prevG2LB = false;
+    private boolean prevG2A = false;
+    private boolean frontServoDown = false;
 
     private boolean isEjecting = false;
     private long ejectStartNs = 0;
@@ -199,25 +201,38 @@ public class TeleOpMainRed extends LinearOpMode {
                 if (!motorReady && !isLoaded) robot.feedServo.setPower(0);
             }
 
-            // Sync frontServo and intakeHelper continuous powers directly from intakeMotor power
-            double intakePower = robot.intakeMotor.getPower();
-            double frontPower = 0.0;
-            double helperPower = 0.0;
-            if (intakePower > 0.0) {
-                frontPower = ShooterConfig.FRONT_SERVO_INTAKE_POWER;
-                helperPower = ShooterConfig.INTAKE_HELPER_INTAKE_POWER;
-            } else if (intakePower < 0.0) {
-                frontPower = ShooterConfig.FRONT_SERVO_REVERSE_POWER;
-                helperPower = ShooterConfig.INTAKE_HELPER_REVERSE_POWER;
+            // Toggle frontServo position up (0.06) / down (0.38) with Gamepad 2 A button
+            boolean aPressed = gamepad2.a;
+            if (aPressed && !prevG2A) {
+                frontServoDown = !frontServoDown;
             }
-            robot.frontServo.setPower(frontPower);
+            prevG2A = aPressed;
+
+            double frontPos = frontServoDown ? ShooterConfig.FRONT_SERVO_FLOWER_POS : ShooterConfig.FRONT_SERVO_INIT_POS;
+            robot.frontServo.setPosition(frontPos);
+
+            // Sync intakeHelper and flowerServo (flowerServo runs opposite to intakeHelper only when down and intaking)
+            double helperPower = 0.0;
+            double flowerPower = 0.0;
+            if (isEjecting || currentIntakePower > 0.0) {
+                helperPower = ShooterConfig.INTAKE_HELPER_INTAKE_POWER;
+                if (frontServoDown) {
+                    flowerPower = -helperPower;
+                }
+            } else if (currentIntakePower < 0.0) {
+                helperPower = ShooterConfig.INTAKE_HELPER_REVERSE_POWER;
+                if (frontServoDown) {
+                    flowerPower = -helperPower;
+                }
+            }
             robot.intakeHelper.setPower(helperPower);
+            robot.flowerServo.setPower(flowerPower);
 
             // Sync blockServo with cam-jet (feedServo)
             if (robot.feedServo.getPower() != 0.0) {
                 robot.blockServo.setPosition(0.38); // go
             } else {
-                robot.blockServo.setPosition(0.15); // block
+                robot.blockServo.setPosition(0.26); // block
             }
 
             leds.setStatus(vision.isTargetVisible(), motorReady, noShotZone);

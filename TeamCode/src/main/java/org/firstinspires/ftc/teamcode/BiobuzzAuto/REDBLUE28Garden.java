@@ -19,11 +19,11 @@ import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.configs.HardwareConfig;
@@ -40,7 +40,8 @@ public class REDBLUE28Garden extends LinearOpMode {
     private CRServo feed;
     private CRServo sideServo;
     private CRServo intakeHelper;
-    private CRServo frontServo;
+    private CRServo flowerServo;
+    private Servo frontServo;
     private Servo blockServo;
     private DistanceSensor rangeSensor;
 
@@ -125,17 +126,19 @@ public class REDBLUE28Garden extends LinearOpMode {
                         instant(() -> intake.setPower(ShooterConfig.INTAKE_POWER)),
                         instant(() -> sideServo.setPower(1.0)),
                         instant(() -> intakeHelper.setPower(ShooterConfig.INTAKE_HELPER_INTAKE_POWER)),
-                        instant(() -> frontServo.setPower(ShooterConfig.FRONT_SERVO_INTAKE_POWER))
+                        instant(() -> frontServo.setPosition(ShooterConfig.FRONT_SERVO_FLOWER_POS)),
+                        instant(() -> flowerServo.setPower(1.0))
                 ),
                 waitMs(4000),
                 instant(() -> {
                     feed.setPower(0);
-                    blockServo.setPosition(0.15);
+                    blockServo.setPosition(0.26);
                     shooter.setVelocity(0);
                     intake.setPower(0);
                     sideServo.setPower(0);
                     intakeHelper.setPower(0);
-                    frontServo.setPower(0);
+                    flowerServo.setPower(0);
+                    frontServo.setPosition(ShooterConfig.FRONT_SERVO_INIT_POS);
                 })
         );
     }
@@ -151,7 +154,8 @@ public class REDBLUE28Garden extends LinearOpMode {
                         instant(() -> intake.setPower(ShooterConfig.INTAKE_POWER)),
                         instant(() -> sideServo.setPower(1.0)),
                         instant(() -> intakeHelper.setPower(ShooterConfig.INTAKE_HELPER_INTAKE_POWER)),
-                        instant(() -> frontServo.setPower(ShooterConfig.FRONT_SERVO_INTAKE_POWER))
+                        instant(() -> frontServo.setPosition(ShooterConfig.FRONT_SERVO_FLOWER_POS)),
+                        instant(() -> flowerServo.setPower(1.0))
                 ),
                 follow(follower, path3Chain, true),
                 follow(follower, path4Chain, true),
@@ -163,12 +167,13 @@ public class REDBLUE28Garden extends LinearOpMode {
                 combinedShootLogic(),
                 instant(() -> {
                     feed.setPower(0);
-                    blockServo.setPosition(0.15);
+                    blockServo.setPosition(0.26);
                     shooter.setVelocity(0);
                     intake.setPower(0);
                     sideServo.setPower(0);
                     intakeHelper.setPower(0);
-                    frontServo.setPower(0);
+                    flowerServo.setPower(0);
+                    frontServo.setPosition(ShooterConfig.FRONT_SERVO_INIT_POS);
                 })
         );
     }
@@ -181,7 +186,8 @@ public class REDBLUE28Garden extends LinearOpMode {
         feed = hardwareMap.get(CRServo.class, HardwareConfig.FEED_SERVO);
         sideServo = hardwareMap.get(CRServo.class, HardwareConfig.SIDE_SERVO);
         intakeHelper = hardwareMap.get(CRServo.class, HardwareConfig.INTAKE_HELPER);
-        frontServo = hardwareMap.get(CRServo.class, HardwareConfig.FRONT_SERVO);
+        flowerServo = hardwareMap.get(CRServo.class, HardwareConfig.FLOWER_SERVO);
+        frontServo = hardwareMap.get(Servo.class, HardwareConfig.FRONT_SERVO);
         blockServo = hardwareMap.get(Servo.class, HardwareConfig.BLOCK_SERVO);
         rangeSensor = hardwareMap.get(DistanceSensor.class, HardwareConfig.RANGE_SENSOR);
 
@@ -190,9 +196,10 @@ public class REDBLUE28Garden extends LinearOpMode {
         shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         shooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(500, 3, 0, 4));
 
-        blockServo.setPosition(0.15);
-        frontServo.setPower(0.0);
+        blockServo.setPosition(0.26);
+        frontServo.setPosition(ShooterConfig.FRONT_SERVO_INIT_POS);
         intakeHelper.setPower(0.0);
+        flowerServo.setPower(0.0);
 
         Scheduler.reset();
         buildPaths();

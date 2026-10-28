@@ -138,9 +138,11 @@ public final class ShooterConfig {
     public static double BLUE_ALIGN_OFFSET = 1.0;
     public static double BLUE_ALIGN_FAR_OFFSET = 1.0;
 
-    // Front Servo & Intake Helper Powers (Gecko Wheels)
-    public static double FRONT_SERVO_INTAKE_POWER = 1.0;
-    public static double FRONT_SERVO_REVERSE_POWER = -1.0;
+    // Front Servo Positional Torque Positions
+    public static double FRONT_SERVO_INIT_POS = 0.06;
+    public static double FRONT_SERVO_FLOWER_POS = 0.35;
+
+    // Intake Helper Powers
     public static double INTAKE_HELPER_INTAKE_POWER = -1.0;
     public static double INTAKE_HELPER_REVERSE_POWER = 1.0;
 }
