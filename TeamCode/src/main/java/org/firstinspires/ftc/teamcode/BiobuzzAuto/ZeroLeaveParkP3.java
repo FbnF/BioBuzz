@@ -17,8 +17,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 @Configurable
-@Autonomous(name = "0LeaveParkP1", group = "Autonomous")
-public class ZeroLeaveParkP1 extends LinearOpMode {
+@Autonomous(name = "0LeaveParkP3", group = "Autonomous")
+public class ZeroLeaveParkP3 extends LinearOpMode {
 
     private Follower follower;
 

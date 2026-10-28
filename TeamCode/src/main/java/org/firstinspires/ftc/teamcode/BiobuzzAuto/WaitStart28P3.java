@@ -24,14 +24,13 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.configs.HardwareConfig;
 import org.firstinspires.ftc.teamcode.configs.ShooterConfig;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 @Configurable
-@Autonomous(name = "28WaitP1", group = "Autonomous")
-public class WaitStart28P1 extends LinearOpMode {
+@Autonomous(name = "28WaitP3", group = "Autonomous")
+public class WaitStart28P3 extends LinearOpMode {
 
     private Follower follower;
     private DcMotor intake;
