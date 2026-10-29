@@ -161,6 +161,7 @@ public class TeleOpMainBlue extends LinearOpMode {
             boolean ltPressed = gamepad2.left_trigger > 0.5;
             if (ltPressed && !prevG2LT) {
                 currentIntakePower = 0.0;
+                robot.feedServo.setPower(0);
             }
             prevG2LT = ltPressed;
 
