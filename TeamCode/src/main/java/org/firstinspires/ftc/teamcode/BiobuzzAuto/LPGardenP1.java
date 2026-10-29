@@ -45,7 +45,7 @@ public class LPGardenP1 extends LinearOpMode {
     private Servo blockServo;
     private DistanceSensor rangeSensor;
 
-    private final double shooter_Vel = 1205.0;
+    private final double shooter_Vel = 1165.0;
 
     public static double startPoseX = 56.2167;
     public static double startPoseY = 9.0835;

@@ -44,7 +44,7 @@ public class WaitStart28P3 extends LinearOpMode {
     private Servo blockServo;
     private DistanceSensor rangeSensor;
 
-    private final double shooter_Vel = 1205.0;
+    private final double shooter_Vel = 1165.0;
 
     public static double startPoseX = 62.5008;
     public static double startPoseY = 133.2481;
