@@ -25,7 +25,7 @@ public class VisionService {
     private boolean visionEnabled = true;
     
     private long lastSeenNs = 0;
-    private static final long NULL_DELAY_NS = 1_500_000_000L;
+    private static final long NULL_DELAY_NS = 2_000_000_000L;
 
     private boolean currentlySeeing = false;
 

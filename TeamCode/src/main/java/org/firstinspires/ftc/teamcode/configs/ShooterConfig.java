@@ -65,13 +65,13 @@ public final class ShooterConfig {
             70.0, 75.0, 80.0, 85.0, 90.0, 95.0, 100.0, 121
     };
     public static double[] TPS_AT_DIST_GROUP_A = new double[] {
-            1195.0, 1165.0, 1185.0, 1190.0, 1220, 1205.0, 1205.0, 1230
+            1210.0, 1190.0, 1185.0, 1190.0, 1220, 1205.0, 1205.0, 1230
     };
     public static double[] MIN_ANGLE_GROUP_A = new double[] {
-            -0.5, 0.2, -0.5, -1.2, 1.42, 3.97, 0.2, -2.8
+            -0.5, 0.2, -0.5, -1.2, -5.20, 3.97, 0.2, -2.8
     };
     public static double[] MAX_ANGLE_GROUP_A = new double[] {
-            0.5, 1.2, 0.5, -0.2, 1.42, 3.97, 1.2, -2.8
+            0.5, 1.2, 0.5, -0.2, -5.20, 3.97, 1.2, -2.8
     };
     public static double[] FEED_POWER_GROUP_A = new double[] {
             -0.9, -0.9, -0.9, -0.9, -0.9, -0.9, -0.9, -0.9
@@ -85,7 +85,7 @@ public final class ShooterConfig {
             70.0, 75.0, 80.0, 85.0, 90.0, 95.0, 100.0
     };
     public static double[] TPS_AT_DIST_GROUP_B = new double[] {
-            1195.0, 1165.0, 1255, 1190.0, 1195.0, 1205.0, 1205.0
+            1210.0, 1190.0, 1255, 1190.0, 1195.0, 1205.0, 1205.0
     };
     public static double[] MIN_ANGLE_GROUP_B = new double[] {
             -0.5, 0.2, -1.2, 12.1, -1.2, 0.2, 0.2
