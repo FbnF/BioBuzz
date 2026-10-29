@@ -24,6 +24,7 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.configs.HardwareConfig;
 import org.firstinspires.ftc.teamcode.configs.ShooterConfig;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
@@ -43,7 +44,7 @@ public class WaitStart28P3 extends LinearOpMode {
     private Servo blockServo;
     private DistanceSensor rangeSensor;
 
-    private final double shooter_Vel = 1165.0;
+    private final double shooter_Vel = 1205.0;
 
     public static double startPoseX = 62.5008;
     public static double startPoseY = 133.2481;
@@ -151,7 +152,7 @@ public class WaitStart28P3 extends LinearOpMode {
         buildPaths();
         follower.setStartingPose(startPose);
 
-        telemetry.addLine("28WaitP1 Ready.");
+        telemetry.addLine("REDBLUE28WaitStart Ready.");
         telemetry.update();
 
         waitForStart();

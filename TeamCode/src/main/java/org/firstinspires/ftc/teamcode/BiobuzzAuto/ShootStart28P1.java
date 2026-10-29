@@ -11,7 +11,6 @@ import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierCurve;
-import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.ivy.Command;
 import com.pedropathing.ivy.Scheduler;
@@ -44,46 +43,30 @@ public class ShootStart28P1 extends LinearOpMode {
     private Servo blockServo;
     private DistanceSensor rangeSensor;
 
-    private final double shooter_Vel = 1165.0;
+    private final double shooter_Vel = 1210.0;
 
-    public static double startX = 56.0;
-    public static double startY = 9.7335;
-    public static double startRotation = 90;
+    public static double startPoseX = 56.0;
+    public static double startPoseY = 9.7335;
+    public static double startPoseRotation = 90;
 
-    public static double point1X = 56.1156;
-    public static double point1Y = 9.0743;
-    public static double point1Rotation = 90;
-
-    public static double path1StartX = 56.1156;
-    public static double path1StartY = 9.0743;
-    public static double path1StartRotation = 90;
-
-    public static double path1Control1X = 27.6424;
-    public static double path1Control1Y = 53.3308;
+    public static double path1Control1X = 25.6424;
+    public static double path1Control1Y = 51.3308;
     public static double path1Control1Rotation = 0;
 
-    public static double path1X = 25.4086;
-    public static double path1Y = 94.6335;
-    public static double path1Rotation = 290;
+    public static double parkPoseX = 20.1286;
+    public static double parkPoseY = 105.7749;
+    public static double parkPoseRotation = 290;
 
-    private final Pose startPose = new Pose(startX, startY, Math.toRadians(startRotation));
-    private final Pose point1Pose = new Pose(point1X, point1Y, Math.toRadians(point1Rotation));
-    private final Pose path1StartPose = new Pose(path1StartX, path1StartY, Math.toRadians(path1StartRotation));
+    private final Pose startPose = new Pose(startPoseX, startPoseY, Math.toRadians(startPoseRotation));
     private final Pose path1Control1 = new Pose(path1Control1X, path1Control1Y, Math.toRadians(path1Control1Rotation));
-    private final Pose path1Pose = new Pose(path1X, path1Y, Math.toRadians(path1Rotation));
+    private final Pose parkPose = new Pose(parkPoseX, parkPoseY, Math.toRadians(parkPoseRotation));
 
-    private PathChain linePath, curvePath;
+    private PathChain driveToPark;
 
     public void buildPaths() {
-        linePath = follower.pathBuilder()
-                .addPath(new BezierLine(startPose, point1Pose))
-                .setLinearHeadingInterpolation(startPose.getHeading(), point1Pose.getHeading())
-                .setGlobalDeceleration()
-                .build();
-
-        curvePath = follower.pathBuilder()
-                .addPath(new BezierCurve(path1StartPose, path1Control1, path1Pose))
-                .setLinearHeadingInterpolation(path1StartPose.getHeading(), path1Pose.getHeading())
+        driveToPark = follower.pathBuilder()
+                .addPath(new BezierCurve(startPose, path1Control1, parkPose))
+                .setLinearHeadingInterpolation(startPose.getHeading(), parkPose.getHeading())
                 .setGlobalDeceleration()
                 .build();
     }
@@ -118,8 +101,7 @@ public class ShootStart28P1 extends LinearOpMode {
         return sequential(
                 instant(() -> shooter.setVelocity(shooter_Vel)),
                 combinedShootLogic(),
-                follow(follower, linePath, true),
-                follow(follower, curvePath, true),
+                follow(follower, driveToPark, true),
                 instant(() -> {
                     feed.setPower(0);
                     blockServo.setPosition(0.26);
@@ -160,7 +142,7 @@ public class ShootStart28P1 extends LinearOpMode {
         buildPaths();
         follower.setStartingPose(startPose);
 
-        telemetry.addLine("28P2 Ready.");
+        telemetry.addLine("REDBLUE28ShootStart Ready.");
         telemetry.update();
 
         waitForStart();

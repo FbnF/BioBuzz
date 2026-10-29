@@ -57,7 +57,7 @@ public class ZeroLeaveParkP3 extends LinearOpMode {
         buildPaths();
         follower.setStartingPose(startPose);
 
-        telemetry.addLine("0LeaveParkP1 Ready.");
+        telemetry.addLine("RED28LeavePark Ready.");
         telemetry.update();
 
         waitForStart();

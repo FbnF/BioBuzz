@@ -40,7 +40,7 @@ public class LeavePark28P2 extends LinearOpMode {
     private Servo blockServo;
     private DistanceSensor rangeSensor;
 
-    private final double shooter_Vel = 1150.0;
+    private final double shooter_Vel = 1205.0;
 
     public static double startPoseX = 8.9778;
     public static double startPoseY = 62.6064;
@@ -58,7 +58,7 @@ public class LeavePark28P2 extends LinearOpMode {
     public static double point2Control1Y = 48.8285;
     public static double point2Control1Rotation = 0;
 
-    public static double parkPoseX = 13.1784;
+    public static double parkPoseX = 16.1784;
     public static double parkPoseY = 93.4541;
     public static double parkPoseRotation = 290;
 
@@ -143,7 +143,7 @@ public class LeavePark28P2 extends LinearOpMode {
         buildPaths();
         follower.setStartingPose(startPose);
 
-        telemetry.addLine("28P1 Ready.");
+        telemetry.addLine("RED28LeavePark Ready.");
         telemetry.update();
 
         waitForStart();

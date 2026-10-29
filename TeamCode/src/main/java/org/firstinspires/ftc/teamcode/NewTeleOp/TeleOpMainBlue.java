@@ -180,7 +180,7 @@ public class TeleOpMainBlue extends LinearOpMode {
 
             if (isEjecting) {
                 double elapsed = (System.nanoTime() - ejectStartNs) / 1e9;
-                if (elapsed >= 0.2) {
+                if (elapsed >= 0.1) {
                     isEjecting = false;
                     robot.intakeMotor.setPower(currentIntakePower);
                     // Sync side servo only for forward intake
