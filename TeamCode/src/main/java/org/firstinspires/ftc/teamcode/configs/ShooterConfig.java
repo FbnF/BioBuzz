@@ -85,7 +85,7 @@ public final class ShooterConfig {
             70.0, 75.0, 80.0, 85.0, 90.0, 95.0, 100.0
     };
     public static double[] TPS_AT_DIST_GROUP_B = new double[] {
-            119.0, 1165.0, 1185.0, 1190.0, 1195.0, 1205.0, 1205.0
+            1195.0, 1165.0, 1185.0, 1190.0, 1195.0, 1205.0, 1205.0
     };
     public static double[] MIN_ANGLE_GROUP_B = new double[] {
             -0.5, 0.2, -1.2, 0.2, -1.2, 0.2, 0.2

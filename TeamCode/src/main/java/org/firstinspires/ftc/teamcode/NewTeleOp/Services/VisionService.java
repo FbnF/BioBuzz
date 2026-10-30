@@ -59,7 +59,7 @@ public class VisionService {
         limelight = hardwareMap.get(Limelight3A.class, "Limelight");
         limelight.setPollRateHz(100);
         limelight.start();
-        limelight.pipelineSwitch(0);
+        limelight.pipelineSwitch(2);
     }
 
     public void update() {
