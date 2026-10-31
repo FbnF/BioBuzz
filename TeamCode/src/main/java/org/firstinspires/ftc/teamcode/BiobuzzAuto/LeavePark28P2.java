@@ -38,6 +38,7 @@ public class LeavePark28P2 extends LinearOpMode {
     private CRServo feed;
     private CRServo sideServo;
     private Servo blockServo;
+    private Servo frontServo;
     private DistanceSensor rangeSensor;
 
     private final double shooter_Vel = 1165.0;
@@ -91,6 +92,7 @@ public class LeavePark28P2 extends LinearOpMode {
                         instant(() -> feed.setPower(-0.9)),
                         instant(() -> blockServo.setPosition(0.38)),
                         instant(() -> intake.setPower(ShooterConfig.INTAKE_POWER)),
+                        instant(() -> frontServo.setPosition(ShooterConfig.FRONT_SERVO_INIT_POS)),
                         instant(() -> sideServo.setPower(1.0))
                 ),
                 waitMs(4000),

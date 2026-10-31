@@ -80,7 +80,7 @@ public class ShootStart28P1 extends LinearOpMode {
                         instant(() -> intake.setPower(ShooterConfig.INTAKE_POWER)),
                         instant(() -> sideServo.setPower(1.0)),
                         instant(() -> intakeHelper.setPower(ShooterConfig.INTAKE_HELPER_INTAKE_POWER)),
-                        instant(() -> frontServo.setPosition(ShooterConfig.FRONT_SERVO_FLOWER_POS)),
+                        instant(() -> frontServo.setPosition(ShooterConfig.FRONT_SERVO_INIT_POS)),
                         instant(() -> flowerServo.setPower(1.0))
                 ),
                 waitMs(4000),

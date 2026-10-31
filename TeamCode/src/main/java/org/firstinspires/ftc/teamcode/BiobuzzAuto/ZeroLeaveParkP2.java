@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.BiobuzzAuto;
 
 import static com.pedropathing.ivy.Scheduler.schedule;
+import static com.pedropathing.ivy.commands.Commands.instant;
+import static com.pedropathing.ivy.groups.Groups.parallel;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 
@@ -13,12 +15,15 @@ import com.pedropathing.ivy.Scheduler;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.configs.ShooterConfig;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 @Configurable
 @Autonomous(name = "0LeaveParkP2", group = "Autonomous")
 public class ZeroLeaveParkP2 extends LinearOpMode {
+    private Servo frontServo;
 
     private Follower follower;
 
@@ -44,8 +49,13 @@ public class ZeroLeaveParkP2 extends LinearOpMode {
     }
 
     public Command autoRoutine() {
+
         return sequential(
-                follow(follower, driveToPark, true)
+                follow(follower, driveToPark, true),
+                parallel(
+                        instant(() -> frontServo.setPosition(ShooterConfig.FRONT_SERVO_INIT_POS))
+
+                )
         );
     }
 
