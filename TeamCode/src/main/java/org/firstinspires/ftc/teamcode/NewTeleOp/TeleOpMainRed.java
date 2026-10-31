@@ -136,7 +136,7 @@ public class TeleOpMainRed extends LinearOpMode {
                 }
             } else {
                 // Manual presets removed as per new specs
-                robot.launchMotor.setVelocity(1195.0);
+                robot.launchMotor.setVelocity(1165.0);
             }
 
             // Subsystems
