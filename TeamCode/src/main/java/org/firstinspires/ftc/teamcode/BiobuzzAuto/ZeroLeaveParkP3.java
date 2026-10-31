@@ -53,7 +53,7 @@ public class ZeroLeaveParkP3 extends LinearOpMode {
         return sequential(
                 follow(follower, driveToPark, true),
                 parallel(
-                        instant(() -> frontServo.setPosition(ShooterConfig.FRONT_SERVO_INIT_POS))
+
 
                 )
         );
@@ -66,10 +66,11 @@ public class ZeroLeaveParkP3 extends LinearOpMode {
         Scheduler.reset();
         buildPaths();
         follower.setStartingPose(startPose);
+        frontServo = hardwareMap.get(Servo.class, "frontServo");
 
         telemetry.addLine("RED28LeavePark Ready.");
         telemetry.update();
-
+        frontServo.setPosition(ShooterConfig.FRONT_SERVO_INIT_POS);
         waitForStart();
 
         if (isStopRequested()) return;

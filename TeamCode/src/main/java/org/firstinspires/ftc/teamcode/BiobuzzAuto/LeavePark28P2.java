@@ -92,7 +92,6 @@ public class LeavePark28P2 extends LinearOpMode {
                         instant(() -> feed.setPower(-0.9)),
                         instant(() -> blockServo.setPosition(0.38)),
                         instant(() -> intake.setPower(ShooterConfig.INTAKE_POWER)),
-                        instant(() -> frontServo.setPosition(ShooterConfig.FRONT_SERVO_INIT_POS)),
                         instant(() -> sideServo.setPower(1.0))
                 ),
                 waitMs(4000),
@@ -140,6 +139,7 @@ public class LeavePark28P2 extends LinearOpMode {
         shooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(500, 3, 0, 4));
 
         blockServo.setPosition(0.26);
+        frontServo.setPosition(ShooterConfig.FRONT_SERVO_INIT_POS);
 
         Scheduler.reset();
         buildPaths();

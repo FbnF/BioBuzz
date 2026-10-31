@@ -157,6 +157,7 @@ public class WaitStart28P2 extends LinearOpMode {
 
         blockServo.setPosition(0.26);
         frontServo.setPosition(ShooterConfig.FRONT_SERVO_INIT_POS);
+
         intakeHelper.setPower(0.0);
         flowerServo.setPower(0.0);
 
