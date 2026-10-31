@@ -10,7 +10,7 @@ import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.follower.Follower;
-import com.pedropathing.geometry.BezierLine;
+import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.ivy.Command;
 import com.pedropathing.ivy.Scheduler;
@@ -45,23 +45,44 @@ public class WaitStart28P2 extends LinearOpMode {
 
     private final double shooter_Vel = 1165.0;
 
-    public static double startPoseX = 9.1499;
-    public static double startPoseY = 79.5414;
+    public static double startPoseX = 8.5634;
+    public static double startPoseY = 79.1805;
     public static double startPoseRotation = 0;
 
-    public static double parkPoseX = 62.0779;
-    public static double parkPoseY = 132.3593;
-    public static double parkPoseRotation = 270;
+    public static double path1Control1X = 59.0102;
+    public static double path1Control1Y = 108.9584;
+    public static double path1Control1Rotation = 0;
+
+    public static double shootPoseX = 64.5534;
+    public static double shootPoseY = 133.1494;
+    public static double shootPoseRotation = 270;
+
+    public static double point2Control1X = 61.3052;
+    public static double point2Control1Y = 115.414;
+    public static double point2Control1Rotation = 0;
+
+    public static double parkPoseX = 18.884;
+    public static double parkPoseY = 119.9909;
+    public static double parkPoseRotation = 290;
 
     private final Pose startPose = new Pose(startPoseX, startPoseY, Math.toRadians(startPoseRotation));
+    private final Pose path1Control1 = new Pose(path1Control1X, path1Control1Y, Math.toRadians(path1Control1Rotation));
+    private final Pose shootPose = new Pose(shootPoseX, shootPoseY, Math.toRadians(shootPoseRotation));
+    private final Pose point2Control1 = new Pose(point2Control1X, point2Control1Y, Math.toRadians(point2Control1Rotation));
     private final Pose parkPose = new Pose(parkPoseX, parkPoseY, Math.toRadians(parkPoseRotation));
 
-    private PathChain path1Chain;
+    private PathChain path1Chain, path2Chain;
 
     public void buildPaths() {
         path1Chain = follower.pathBuilder()
-                .addPath(new BezierLine(startPose, parkPose))
-                .setLinearHeadingInterpolation(startPose.getHeading(), parkPose.getHeading())
+                .addPath(new BezierCurve(startPose, path1Control1, shootPose))
+                .setLinearHeadingInterpolation(startPose.getHeading(), shootPose.getHeading())
+                .setGlobalDeceleration()
+                .build();
+
+        path2Chain = follower.pathBuilder()
+                .addPath(new BezierCurve(shootPose, point2Control1, parkPose))
+                .setLinearHeadingInterpolation(shootPose.getHeading(), parkPose.getHeading())
                 .setGlobalDeceleration()
                 .build();
     }
@@ -95,12 +116,13 @@ public class WaitStart28P2 extends LinearOpMode {
     public Command autoRoutine() {
         return sequential(
                 parallel(
-                        waitMs(8000),
+                        follow(follower, path1Chain, true),
                         instant(() -> shooter.setVelocity(shooter_Vel)),
                         instant(() -> blockServo.setPosition(0.26))
                 ),
+                waitMs(8000),
                 combinedShootLogic(),
-                follow(follower, path1Chain, true),
+                follow(follower, path2Chain, true),
                 instant(() -> {
                     feed.setPower(0);
                     blockServo.setPosition(0.26);

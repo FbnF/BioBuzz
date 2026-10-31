@@ -181,7 +181,7 @@ public class TeleOpMainRed extends LinearOpMode {
 
             if (isEjecting) {
                 double elapsed = (System.nanoTime() - ejectStartNs) / 1e9;
-                if (elapsed >= 0.1) {
+                if (elapsed >= 0.07) {
                     isEjecting = false;
                     robot.intakeMotor.setPower(currentIntakePower);
                     // Sync side servo only for forward intake
@@ -243,6 +243,8 @@ public class TeleOpMainRed extends LinearOpMode {
             telemetry.addData("Shooter Mode", autoShooter ? "AUTO" : "OFF");
             telemetry.addData("Armed (Auto)", autoSpinArmed);
             telemetry.addData("Speed Factor", speedFactor);
+            if (frontPos==0.35) telemetry.addLine("Flower Servo: Down");
+            else telemetry.addLine("Flower Servo: Up");
 
             telemetry.addLine("---- Vision ----");
             telemetry.addData("Visible", vision.isTargetVisible());

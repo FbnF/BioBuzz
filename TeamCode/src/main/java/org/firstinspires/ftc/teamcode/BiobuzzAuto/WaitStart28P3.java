@@ -24,7 +24,6 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.configs.HardwareConfig;
 import org.firstinspires.ftc.teamcode.configs.ShooterConfig;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
@@ -46,33 +45,28 @@ public class WaitStart28P3 extends LinearOpMode {
 
     private final double shooter_Vel = 1165.0;
 
-    public static double startPoseX = 62.5008;
-    public static double startPoseY = 133.2481;
-    public static double startPoseRotation = 90;
+    public static double startPoseX = 62.2006;
+    public static double startPoseY = 133.218;
+    public static double startPoseRotation = 270;
 
-    public static double path1StartX = 62.5008;
-    public static double path1StartY = 133.2481;
-    public static double path1StartRotation = 270;
+    public static double point1Control1X = 53.6964;
+    public static double point1Control1Y = 117.7612;
+    public static double point1Control1Rotation = 0;
 
-    public static double path1Control1X = 59.9119;
-    public static double path1Control1Y = 115.8859;
-    public static double path1Control1Rotation = 0;
-
-    public static double parkPoseX = 13.9617;
-    public static double parkPoseY = 115.0926;
+    public static double parkPoseX = 11.884;
+    public static double parkPoseY = 119.9909;
     public static double parkPoseRotation = 290;
 
     private final Pose startPose = new Pose(startPoseX, startPoseY, Math.toRadians(startPoseRotation));
-    private final Pose path1StartPose = new Pose(path1StartX, path1StartY, Math.toRadians(path1StartRotation));
-    private final Pose path1Control1 = new Pose(path1Control1X, path1Control1Y, Math.toRadians(path1Control1Rotation));
+    private final Pose point1Control1 = new Pose(point1Control1X, point1Control1Y, Math.toRadians(point1Control1Rotation));
     private final Pose parkPose = new Pose(parkPoseX, parkPoseY, Math.toRadians(parkPoseRotation));
 
     private PathChain path1Chain;
 
     public void buildPaths() {
         path1Chain = follower.pathBuilder()
-                .addPath(new BezierCurve(path1StartPose, path1Control1, parkPose))
-                .setLinearHeadingInterpolation(path1StartPose.getHeading(), parkPose.getHeading())
+                .addPath(new BezierCurve(startPose, point1Control1, parkPose))
+                .setLinearHeadingInterpolation(startPose.getHeading(), parkPose.getHeading())
                 .setGlobalDeceleration()
                 .build();
     }
@@ -152,7 +146,7 @@ public class WaitStart28P3 extends LinearOpMode {
         buildPaths();
         follower.setStartingPose(startPose);
 
-        telemetry.addLine("REDBLUE28WaitStart Ready.");
+        telemetry.addLine("28WaitP3 Ready.");
         telemetry.update();
 
         waitForStart();
