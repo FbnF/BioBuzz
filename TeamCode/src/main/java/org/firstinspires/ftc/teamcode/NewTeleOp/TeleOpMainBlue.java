@@ -136,7 +136,7 @@ public class TeleOpMainBlue extends LinearOpMode {
                 }
             } else {
                 // Manual presets removed as per new specs
-                robot.launchMotor.setPower(0);
+                robot.launchMotor.setVelocity(1195.0);
             }
 
             // Subsystems
