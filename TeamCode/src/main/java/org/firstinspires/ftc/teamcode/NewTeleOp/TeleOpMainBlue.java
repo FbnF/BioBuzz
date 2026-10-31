@@ -116,7 +116,7 @@ public class TeleOpMainBlue extends LinearOpMode {
             follower.setTeleOpDrive(axial, lateral, turn, true);
 
             // Shooter modes (GP2)
-            if (gamepad2.dpad_up && !prevG2DpadUp) autoShooter = true;
+            if (gamepad2.dpad_up && !prevG2DpadUp) autoShooter =!autoShooter;
             prevG2DpadUp = gamepad2.dpad_up;
 
             if (gamepad2.dpad_left && !prevG2DpadLeft) autoSpinArmed = !autoSpinArmed;
