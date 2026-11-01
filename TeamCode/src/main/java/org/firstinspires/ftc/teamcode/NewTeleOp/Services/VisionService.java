@@ -74,6 +74,10 @@ public class VisionService {
         hasGoalTag = false;
 
         if (result != null && result.isValid() && result.getStaleness() < 250) {
+            if(result.getPipelineIndex() != 2){
+                limelight.pipelineSwitch(2);
+                return;
+            }
             List<LLResultTypes.FiducialResult> fiducials = result.getFiducialResults();
             if (fiducials != null) {
                 for (LLResultTypes.FiducialResult f : fiducials) {
