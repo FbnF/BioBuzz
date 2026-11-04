@@ -1,6 +1,6 @@
-# Task List - Create 28WaitP2 Autonomous OpMode
+# Task List - Create LimelightWaitStartRedP2 & LimelightWaitStartBlueP2
 
-- [ ] Create implementation plan (done)
-- [ ] Create WaitStart28P2.java under BiobuzzAuto package
-- [ ] Verify build with gradle build
-- [ ] Create walkthrough artifact
+- [x] Create implementation plan
+- [x] Create LimelightWaitStartRedP2.java and LimelightWaitStartBlueP2.java
+- [x] Verify build with gradle build
+- [x] Create walkthrough artifact

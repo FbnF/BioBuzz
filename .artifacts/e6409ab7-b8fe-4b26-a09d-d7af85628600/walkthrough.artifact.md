@@ -1,17 +1,19 @@
-# Walkthrough - Rename Autonomous Opmode Files and Update 28P2
+# Walkthrough - Create LimelightWaitStartRedP2 & LimelightWaitStartBlueP2 Autonomous OpModes
 
-Successfully renamed all autonomous OpModes and updated their Driver Station display names and class files, while cleanly disabling the old files.
+Created **`LimelightWaitStartRedP2`** and **`LimelightWaitStartBlueP2`** under package `org.firstinspires.ftc.teamcode.BiobuzzAuto`.
 
 ## Changes
 
 ### BiobuzzAuto
 
-#### New / Updated OpModes
-1. **`ZeroLeaveParkP1.java`** (`@Autonomous(name = "0LeaveParkP1")`): Non-shooting leave/park routine.
-2. **`LeavePark28P1.java`** (`@Autonomous(name = "28P1")`): Shooting + leave/park routine.
-3. **`LPGardenP1.java`** (`@Autonomous(name = "28LPGardenP1")`): Garden path routine.
-4. **`ShootStart28P2.java`** (`@Autonomous(name = "28P2")`): Updated with line path followed by curve path (`path1_2`) as requested, without 8-second delay.
-5. **`WaitStart28P1.java`** (`@Autonomous(name = "28WaitP1")`): 8-second wait with pre-spinning and shooting.
+#### [LimelightWaitStartRedP2.java](file:///C:/Users/mksla/OneDrive/Documents/Biobuzz/BioBuzz/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/BiobuzzAuto/LimelightWaitStartRedP2.java) & [LimelightWaitStartBlueP2.java](file:///C:/Users/mksla/OneDrive/Documents/Biobuzz/BioBuzz/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/BiobuzzAuto/LimelightWaitStartBlueP2.java)
+- Travel-first pathing based on `WaitStart28P2` (`28WaitP2`): follows `path1Chain` to the shooting position while pre-spinning the flywheel and holding `blockServo` at `0.26` (blocked).
+- Integrates `VisionService`:
+  - **Red (`LimelightWaitStartRedP2`):** Configured for AprilTag IDs `30, 31, 32, 33`.
+  - **Blue (`LimelightWaitStartBlueP2`):** Configured for AprilTag IDs `38, 39, 40, 41`.
+- Waits until Limelight sees the target (`waitUntil(() -> vision.isCurrentlySeeing())`), then waits 3 seconds (`waitMs(3000)`) for settling.
+- Executes `combinedShootLogic()` and follows `path2Chain` to park.
+- Clean Pedro 2 + Ivy implementation with zero comments.
 
 ## Verification Results
 

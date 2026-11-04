@@ -1,22 +1,28 @@
-# Implementation Plan - Create 28WaitP2 Autonomous OpMode
+# Implementation Plan - Create LimelightWaitStartRedP2 & LimelightWaitStartBlueP2 Autonomous OpModes
 
-Create the new `WaitStart28P2` autonomous OpMode under package `org.firstinspires.ftc.teamcode.BiobuzzAuto` with DS name `"28WaitP2"`. This routine mirrors `28WaitP1` (8-second wait with flywheel pre-spin and blocked `blockServo`, followed by shooting logic), but uses the new line path from start `(8.8966, 77.6421, 0°)` to park at `(12.5687, 123.8756, 0°)`.
+Create two new autonomous OpModes under package `org.firstinspires.ftc.teamcode.BiobuzzAuto`:
+1. **`LimelightWaitStartRedP2`** (DS Name: `"LimelightWaitStartRedP2"`, tags `30, 31, 32, 33`)
+2. **`LimelightWaitStartBlueP2`** (DS Name: `"LimelightWaitStartBlueP2"`, tags `38, 39, 40, 41`)
+
+These routines are based on `WaitStart28P2`: they travel to the shooting position first (`path1Chain`), pre-spin the flywheel while traveling with `blockServo` blocked (`0.26`), wait until Limelight sees the alliance AprilTag, wait 3 seconds for settling, execute `combinedShootLogic()`, and then follow `path2Chain` to park.
 
 ## User Review Required
 
 > [!IMPORTANT]
-> - **Driver Station Name:** `"28WaitP2"` (Class name: `WaitStart28P2`).
-> - **Starting Pose & Wait:** Starts at `(8.8966, 77.6421, 0°)` and waits for 8 seconds (`waitMs(8000)`) while pre-spinning the flywheel.
-> - **Shooting Sequence:** Same as `28WaitP1` (`blockServo`, `feed`, `intake`, `sideServo`, `intakeHelper`, `flowerServo`, `frontServo`).
-> - **Line Pathing to Park:** Follows a straight line from start to `(12.5687, 123.8756, 0°)`.
+> - **Driver Station Names:** `"LimelightWaitStartRedP2"` and `"LimelightWaitStartBlueP2"`.
+> - **Travel-First Vision Logic:** Travels to `shootPose` first (`path1Chain`), pre-spinning flywheel and holding `blockServo` at `0.26`, then waits until `vision.isCurrentlySeeing()` (with alliance tags configured).
+> - **Settling Delay:** Waits 3 seconds (`waitMs(3000)`) after tag detection before shooting.
 > - **Code Style:** Clean Pedro 2 + Ivy implementation with zero comments.
 
 ## Proposed Changes
 
 ### BiobuzzAuto
 
-#### [NEW] [WaitStart28P2.java](file:///C:/Users/mksla/OneDrive/Documents/Biobuzz/BioBuzz/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/BiobuzzAuto/WaitStart28P2.java)
-- Implement `WaitStart28P2` combining the 8-second wait shooting logic with the new start and park line path coordinates.
+#### [NEW] [LimelightWaitStartRedP2.java](file:///C:/Users/mksla/OneDrive/Documents/Biobuzz/BioBuzz/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/BiobuzzAuto/LimelightWaitStartRedP2.java)
+- Implement `LimelightWaitStartRedP2` with travel-first pathing, pre-spin, Limelight tag detection (`30..33`), 3-second settle, shooting, and park path.
+
+#### [NEW] [LimelightWaitStartBlueP2.java](file:///C:/Users/mksla/OneDrive/Documents/Biobuzz/BioBuzz/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/BiobuzzAuto/LimelightWaitStartBlueP2.java)
+- Implement `LimelightWaitStartBlueP2` with travel-first pathing, pre-spin, Limelight tag detection (`38..41`), 3-second settle, shooting, and park path.
 
 ## Verification Plan
 

@@ -1,0 +1,198 @@
+package org.firstinspires.ftc.teamcode.BiobuzzAuto;
+
+import static com.pedropathing.ivy.Scheduler.schedule;
+import static com.pedropathing.ivy.commands.Commands.instant;
+import static com.pedropathing.ivy.commands.Commands.waitMs;
+import static com.pedropathing.ivy.commands.Commands.waitUntil;
+import static com.pedropathing.ivy.groups.Groups.parallel;
+import static com.pedropathing.ivy.groups.Groups.sequential;
+import static com.pedropathing.ivy.pedro.PedroCommands.follow;
+
+import com.bylazar.configurables.annotations.Configurable;
+import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.BezierCurve;
+import com.pedropathing.geometry.Pose;
+import com.pedropathing.ivy.Command;
+import com.pedropathing.ivy.Scheduler;
+import com.pedropathing.paths.PathChain;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.hardware.Servo;
+
+import org.firstinspires.ftc.teamcode.NewTeleOp.Services.VisionService;
+import org.firstinspires.ftc.teamcode.configs.HardwareConfig;
+import org.firstinspires.ftc.teamcode.configs.ShooterConfig;
+import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
+
+@Configurable
+@Autonomous(name = "LimelightWaitStartBlueP2", group = "Autonomous")
+public class LimelightWaitStartBlueP2 extends LinearOpMode {
+
+    private Follower follower;
+    private DcMotor intake;
+    private DcMotorEx shooter;
+    private CRServo feed;
+    private CRServo sideServo;
+    private CRServo intakeHelper;
+    private CRServo flowerServo;
+    private Servo frontServo;
+    private Servo blockServo;
+    private DistanceSensor rangeSensor;
+    private VisionService vision;
+
+    private final double shooter_Vel = 1165.0;
+
+    public static double startPoseX = 8.5634;
+    public static double startPoseY = 79.1805;
+    public static double startPoseRotation = 0;
+
+    public static double path1Control1X = 59.0102;
+    public static double path1Control1Y = 108.9584;
+    public static double path1Control1Rotation = 0;
+
+    public static double shootPoseX = 64.5534;
+    public static double shootPoseY = 133.1494;
+    public static double shootPoseRotation = 270;
+
+    public static double point2Control1X = 61.3052;
+    public static double point2Control1Y = 115.414;
+    public static double point2Control1Rotation = 0;
+
+    public static double parkPoseX = 18.884;
+    public static double parkPoseY = 119.9909;
+    public static double parkPoseRotation = 290;
+
+    private final Pose startPose = new Pose(startPoseX, startPoseY, Math.toRadians(startPoseRotation));
+    private final Pose path1Control1 = new Pose(path1Control1X, path1Control1Y, Math.toRadians(path1Control1Rotation));
+    private final Pose shootPose = new Pose(shootPoseX, shootPoseY, Math.toRadians(shootPoseRotation));
+    private final Pose point2Control1 = new Pose(point2Control1X, point2Control1Y, Math.toRadians(point2Control1Rotation));
+    private final Pose parkPose = new Pose(parkPoseX, parkPoseY, Math.toRadians(parkPoseRotation));
+
+    private PathChain path1Chain, path2Chain;
+
+    public void buildPaths() {
+        path1Chain = follower.pathBuilder()
+                .addPath(new BezierCurve(startPose, path1Control1, shootPose))
+                .setLinearHeadingInterpolation(startPose.getHeading(), shootPose.getHeading())
+                .setGlobalDeceleration()
+                .build();
+
+        path2Chain = follower.pathBuilder()
+                .addPath(new BezierCurve(shootPose, point2Control1, parkPose))
+                .setLinearHeadingInterpolation(shootPose.getHeading(), parkPose.getHeading())
+                .setGlobalDeceleration()
+                .build();
+    }
+
+    public Command combinedShootLogic() {
+        return sequential(
+                waitUntil(() -> Math.abs(shooter.getVelocity() - shooter_Vel) < ShooterConfig.TPS_TOL),
+                parallel(
+                        instant(() -> feed.setPower(-0.9)),
+                        instant(() -> blockServo.setPosition(0.38)),
+                        instant(() -> intake.setPower(ShooterConfig.INTAKE_POWER)),
+                        instant(() -> sideServo.setPower(1.0)),
+                        instant(() -> intakeHelper.setPower(ShooterConfig.INTAKE_HELPER_INTAKE_POWER)),
+                        instant(() -> frontServo.setPosition(ShooterConfig.FRONT_SERVO_FLOWER_POS)),
+                        instant(() -> flowerServo.setPower(1.0))
+                ),
+                waitMs(4000),
+                instant(() -> {
+                    feed.setPower(0);
+                    blockServo.setPosition(0.26);
+                    shooter.setVelocity(0);
+                    intake.setPower(0);
+                    sideServo.setPower(0);
+                    intakeHelper.setPower(0);
+                    flowerServo.setPower(0);
+                    frontServo.setPosition(ShooterConfig.FRONT_SERVO_INIT_POS);
+                })
+        );
+    }
+
+    public Command autoRoutine() {
+        return sequential(
+                parallel(
+                        follow(follower, path1Chain, true),
+                        instant(() -> shooter.setVelocity(shooter_Vel)),
+                        instant(() -> blockServo.setPosition(0.26))
+                ),
+                waitUntil(() -> vision.isCurrentlySeeing()),
+                waitMs(3000),
+                combinedShootLogic(),
+                follow(follower, path2Chain, true),
+                instant(() -> {
+                    feed.setPower(0);
+                    blockServo.setPosition(0.26);
+                    shooter.setVelocity(0);
+                    intake.setPower(0);
+                    sideServo.setPower(0);
+                    intakeHelper.setPower(0);
+                    flowerServo.setPower(0);
+                    frontServo.setPosition(ShooterConfig.FRONT_SERVO_INIT_POS);
+                })
+        );
+    }
+
+    @Override
+    public void runOpMode() {
+        follower = Constants.createFollower(hardwareMap);
+        intake = hardwareMap.get(DcMotor.class, HardwareConfig.INTAKE_MOTOR);
+        shooter = (DcMotorEx) hardwareMap.get(DcMotor.class, HardwareConfig.SHOOTER_MOTOR);
+        feed = hardwareMap.get(CRServo.class, HardwareConfig.FEED_SERVO);
+        sideServo = hardwareMap.get(CRServo.class, HardwareConfig.SIDE_SERVO);
+        intakeHelper = hardwareMap.get(CRServo.class, HardwareConfig.INTAKE_HELPER);
+        flowerServo = hardwareMap.get(CRServo.class, HardwareConfig.FLOWER_SERVO);
+        frontServo = hardwareMap.get(Servo.class, HardwareConfig.FRONT_SERVO);
+        blockServo = hardwareMap.get(Servo.class, HardwareConfig.BLOCK_SERVO);
+        rangeSensor = hardwareMap.get(DistanceSensor.class, HardwareConfig.RANGE_SENSOR);
+
+        vision = VisionService.getInstance();
+        vision.init(hardwareMap);
+        vision.reset();
+        vision.setVisionEnabled(true);
+        vision.setGoalTagIds(38, 39, 40, 41);
+
+        intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        shooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        shooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(500, 3, 0, 4));
+
+        blockServo.setPosition(0.26);
+        frontServo.setPosition(ShooterConfig.FRONT_SERVO_INIT_POS);
+        intakeHelper.setPower(0.0);
+        flowerServo.setPower(0.0);
+
+        Scheduler.reset();
+        buildPaths();
+        follower.setStartingPose(startPose);
+
+        telemetry.addLine("LimelightWaitStartBlueP2 Ready.");
+        telemetry.update();
+
+        waitForStart();
+
+        if (isStopRequested()) return;
+
+        schedule(autoRoutine());
+
+        while (opModeIsActive()) {
+            follower.update();
+            vision.update();
+            Scheduler.execute();
+
+            telemetry.addData("X", follower.getPose().getX());
+            telemetry.addData("Y", follower.getPose().getY());
+            telemetry.addData("Heading", Math.toDegrees(follower.getPose().getHeading()));
+            telemetry.addData("Limelight Seeing Tag (38-41)", vision.isCurrentlySeeing());
+            telemetry.addData("Tag ID", vision.getCurrentTagId());
+            telemetry.addData("Distance", vision.getDistance());
+            telemetry.update();
+        }
+    }
+}
