@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.NewTeleOp.Services.LedService;
+import org.firstinspires.ftc.teamcode.NewTeleOp.Services.LocalizationService;
 import org.firstinspires.ftc.teamcode.NewTeleOp.Services.LoggingService;
 import org.firstinspires.ftc.teamcode.NewTeleOp.Services.RobotHardware;
 import org.firstinspires.ftc.teamcode.NewTeleOp.Services.ShooterService;
@@ -51,6 +52,8 @@ public class TeleOpMainRed extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+
+
         robot.init(hardwareMap);
         vision.init(hardwareMap);
         vision.reset();
@@ -257,6 +260,9 @@ public class TeleOpMainRed extends LinearOpMode {
             telemetry.addData("Actual TPS", "%.0f", robot.launchMotor.getVelocity());
             telemetry.addData("Ready", motorReady);
             telemetry.addData("Loaded", isLoaded);
+            telemetry.addLine("-----Localization--------");
+            telemetry.addData("SuperPose", LocalizationService.superPose(vision.returnLimelight(hardwareMap), follower, 0.15));
+            telemetry.addData("Limelight Pipeline", vision.returnLimelight(hardwareMap).getLatestResult().getPipelineIndex());
             telemetry.update();
         }
         

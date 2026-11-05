@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.NewTeleOp;
 
 import com.bylazar.configurables.annotations.Configurable;
+import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.pedropathing.follower.Follower;
@@ -17,6 +18,7 @@ import org.firstinspires.ftc.teamcode.NewTeleOp.Services.VisionService;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.configs.ShooterConfig;
 import org.firstinspires.ftc.teamcode.utils.PDController;
+import org.firstinspires.ftc.teamcode.NewTeleOp.Services.LocalizationService;
 
 // Main Blue TeleOp
 @Configurable
@@ -68,6 +70,9 @@ public class TeleOpMainBlue extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
+
+
+
             follower.update();
             vision.update();
             leds.update();
@@ -259,6 +264,9 @@ public class TeleOpMainBlue extends LinearOpMode {
             telemetry.addData("Actual TPS", "%.0f", robot.launchMotor.getVelocity());
             telemetry.addData("Ready", motorReady);
             telemetry.addData("Loaded", isLoaded);
+            telemetry.addLine("------ Localization Service -------");
+            telemetry.addData("SuperPose", LocalizationService.superPose(vision.returnLimelight(hardwareMap), follower, 0.15));
+            telemetry.addData("Limelight Pipeline", vision.returnLimelight(hardwareMap).getLatestResult().getPipelineIndex());
             telemetry.update();
         }
         
