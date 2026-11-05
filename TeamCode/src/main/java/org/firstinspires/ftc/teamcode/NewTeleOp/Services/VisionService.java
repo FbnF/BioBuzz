@@ -62,6 +62,16 @@ public class VisionService {
         limelight.pipelineSwitch(2);
     }
 
+    public Limelight3A returnLimelight(HardwareMap hardwareMap){
+        limelight = hardwareMap.get(Limelight3A.class, "Limelight");
+        return limelight;
+    }
+
+    public int getPipeline(LLResult result){
+        return result.getPipelineIndex();
+    }
+
+
     public void update() {
         if (!visionEnabled || limelight == null) {
             targetVisible = false;
