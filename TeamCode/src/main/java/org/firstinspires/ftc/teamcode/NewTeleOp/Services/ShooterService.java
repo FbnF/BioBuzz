@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.NewTeleOp.Services;
 
+import static org.firstinspires.ftc.teamcode.configs.ShooterConfig.INACTIVEFACTOR;
+
 import org.firstinspires.ftc.teamcode.configs.ShooterConfig;
 import org.firstinspires.ftc.teamcode.utils.Calculations;
 
@@ -27,7 +29,7 @@ public class ShooterService {
     public double calculateVelocity(double distanceInches, boolean targetVisible, boolean currentlySeeing) {
         if (!targetVisible || distanceInches < ShooterConfig.MIN_RANGE_IN) {
             physicsTPS = tableTPS = baseTPS = finalTPS = 0.0;
-            return lastTargetTPS * 0.8; 
+            return lastTargetTPS * INACTIVEFACTOR;
         }
 
         // HOLD logic: If we have vision buffer but aren't TRULY seeing the tag right now,

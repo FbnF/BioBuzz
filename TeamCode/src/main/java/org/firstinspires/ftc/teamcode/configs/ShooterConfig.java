@@ -11,6 +11,9 @@ public final class ShooterConfig {
     public static double TPS_MIN_AUTO = 800.0;   // below this, AUTO stays off
     public static double TPS_TOL = 50.0;
 
+    public static double INACTIVEFACTOR = 1;
+    //used when the robot doesnt detect an april tag
+
     public static double TPS_MAX_MECH = 2800.0;  // absolute safety limit
     public static double TPS_MAX_AUTO = 2400.0;  // clamp used by AUTO
 
